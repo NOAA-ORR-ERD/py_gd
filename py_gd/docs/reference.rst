@@ -19,7 +19,6 @@ Class Reference:
 --------------------------------------------------
 .. autoclass:: py_gd.Image 
    :members:
-   .. automethod:: __init__
 
 Factory functions
 -----------------------------------------------------

@@ -30,22 +30,34 @@ cwd = os.getcwd()
 
 def download(name):
     name = name+'.tar.gz'
+    
+    # see if it's already there:
+    if os.path.isfile(name):
+        print "%s already there -- not downloading again"%name
+        return 
 
     ## note: bitbucket does not seem t o support direct download links liek this
     ##       is there a way?
     ##       go here to download by hand: https://bitbucket.org/libgd/gd-libgd/downloads
-    cmd = 'curl --output {0} https://bitbucket.org/libgd/gd-libgd/downloads/{0} '.format(name)
-
-    if name.startswith('libpng'):
-        print "you need to download this by hand from sourceforge: http://sourceforge.net/projects/libpng/files/libpng16/1.6.2/libpng-1.6.2.tar.gz/download"
-        #cmd = 'curl --output {0} http://sourceforge.net/projects/libpng/files/libpng16/1.6.2/libpng-1.6.2.tar.gz/download'.format(name)
-        return 1
+    #curl -L --output junk.tar.gz https://bitbucket.org/libgd/gd-libgd/downloads/libgd-2.1.0.tar.gz
+    
+    if name.startswith('libgd'):
+        cmd = 'curl -L --output {0} https://bitbucket.org/libgd/gd-libgd/downloads/{0}'.format(name)
+    elif name.startswith('libpng-1.6.3'):
+        #raise Exception("you need to download this by hand from sourceforge: http://sourceforge.net/projects/libpng/files/libpng16/1.6.2/libpng-1.6.2.tar.gz/download")
+        #http://sourceforge.net/projects/libpng/files/libpng16/1.6.3/libpng-1.6.3.tar.gz
+        cmd = 'curl -L --output {0} http://sourceforge.net/projects/libpng/files/libpng16/1.6.3/libpng-1.6.3.tar.gz'.format(name)
+    else:
+        raise Exception("I don't know how to download: %s"%name)
     print "downloading:", name
     print cmd
 
     os.system(cmd)
 
 def unpack(lib):
+    if os.path.isdir(lib):
+        print "%s already unpacked, not unpacking again"%lib
+        return 
     lib = lib +'.tar.gz'
     cmd = "tar -xvf "+lib
     print "Unpacking:", cmd
@@ -55,8 +67,16 @@ def configure(lib):
     ## need this with the not-yet fixed configure:
     #conf = './configure  --disable-shared --with-png={0} CFLAGS="-arch i386" LDFLAGS="-L{0}/lib" --prefix={0}'.format(prefix)
     ## this should work with the new one
-    conf = './configure  --disable-shared --with-png={0} CFLAGS="-arch i386" --prefix={0}'.format(prefix)
+    flags = ['--disable-shared',
+             'CFLAGS="-arch i386"',
+             '--prefix={0}'.format(prefix),
+             ]
+    
+    if lib.startswith('libgd'):
+        flags.append( '--with-png={0}'.format(prefix) )
 
+    #conf = './configure '  --disable-shared --with-png={0} CFLAGS="-arch i386" --prefix={0}'.format(prefix)
+    conf = './configure ' + ' '.join(flags)
 
     os.chdir(lib)
     print conf
@@ -114,16 +134,15 @@ if __name__ == "__main__":
 
     ## this libs to download and bulid
     libs = [ 
-            "libpng-1.6.2",
-            "libgd-2.1.0-rc2",
+            "libpng-1.6.3",
+            "libgd-2.1.0",
             ]
     
     for lib in libs:
-        #download(lib)
-        #unpack(lib)
+        download(lib)
+        unpack(lib)
         configure(lib)
         build(lib)
-        #check(lib)
         install(lib)
         pass
 

@@ -52,7 +52,7 @@ def test_info():
     assert repr(img) == "Image(width=400, height=300)"
 
 def test_add_colors():
-    img = py_gd.Image(10, 10, preset_colors='basic')
+    img = py_gd.Image(10, 10, preset_colors='BW')
 
     assert img.get_color_names() == ['transparent', 'black', 'white']
 
@@ -68,7 +68,7 @@ def test_add_colors():
         img.draw_rectangle((2,2), (7,7), fill_color='red')
 
 def test_add_colors_repeat():
-    img = py_gd.Image(10, 10, preset_colors='basic')
+    img = py_gd.Image(10, 10, preset_colors='BW')
 
     index_1 = img.add_color('blue', (0, 0, 255))
     
@@ -83,7 +83,7 @@ def test_add_colors_repeat():
 
 
 def test_add_colors_max():
-    img = py_gd.Image(10, 10, preset_colors='basic')
+    img = py_gd.Image(10, 10, preset_colors='BW')
 
     # should be able to add this many:
     for i in range(253):
@@ -313,7 +313,7 @@ def test_colors():
 
 
 def test_array():
-    img = py_gd.Image(10, 5)
+    img = py_gd.Image(10, 5, )
     img.draw_line( (0, 0), (9, 4), 'black', line_width=1)
     print "result from __array__", img.__array__()
     arr = np.asarray(img)

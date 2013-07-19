@@ -21,23 +21,34 @@ from cython cimport view
 
 ## basic named color set
 ##  http://en.wikipedia.org/wiki/Web_colors#HTML_color_names
-web_colors = [('black',  (  0,  0,  0) ),  
-              ('white',  (255, 255, 255) ),
-              ('silver', (191, 191, 191) ),
-              ('gray',   (127, 127, 127) ),
-              ('red',    (255,   0,   0) ),
-              ('maroon', (127,   0,   0) ),
-              ('yellow', (255, 255,   0) ),
-              ('olive',  (127, 127,   0) ),
-              ('lime',   (  0, 255,   0) ),
-              ('green',  (  0, 127,   0) ),
-              ('aqua',   (  0, 255, 255) ),
-              ('teal',   (  0, 127, 127) ),
-              ('blue',   (  0,   0, 255) ),
-              ('navy',   (  0,   0, 127) ),
-              ('fuchsia',(255,   0, 255) ),
-              ('purple', (127,   0, 127) ),
-              ]
+
+transparent_colors = [('transparent', (  0,  0,  0, 127) ) ]
+
+BW_colors = transparent_colors + [('black',       (  0,  0,  0) ),  
+                                     ('white',       (255, 255, 255) ),
+                                     ]
+
+web_colors = BW_colors + [ ('silver', (191, 191, 191) ),
+                              ('gray',   (127, 127, 127) ),
+                              ('red',    (255,   0,   0) ),
+                              ('maroon', (127,   0,   0) ),
+                              ('yellow', (255, 255,   0) ),
+                              ('olive',  (127, 127,   0) ),
+                              ('lime',   (  0, 255,   0) ),
+                              ('green',  (  0, 127,   0) ),
+                              ('aqua',   (  0, 255, 255) ),
+                              ('teal',   (  0, 127, 127) ),
+                              ('blue',   (  0,   0, 255) ),
+                              ('navy',   (  0,   0, 127) ),
+                              ('fuchsia',(255,   0, 255) ),
+                              ('purple', (127,   0, 127) ),
+                              ]
+
+## note that the 1GB max is arbitrary -- you can change it after import,
+## before initizing an Image. On my system going bigger than this brings
+## the system to an almost halt before raising a memory error, so I set
+## a limit here.
+MAX_IMAGE_SIZE = 1073741824 #1 GB limit
 
 cdef class Image:
     """
@@ -51,21 +62,19 @@ cdef class Image:
     cdef list color_rgb
     cdef dict colors 
 
-    def __cinit__(self, int width, int height, preset_colors='web_colors'):
+    def __cinit__(self,
+                  int width,
+                  int height,
+                  preset_colors=None):
 
         self.width = width
         self.height = height
 
-        ## note that the 1GB max is arbitrary -- you can change it in the code.
-        ## But my system, at least, will try to allocate much more memory that
-        ## you'd want, bringing the system to an almost halt, before raising 
-        ## a memory error, so I set a limit here.
-
-        if width*height > 1073741824: #1 GB limit
+        if width*height > MAX_IMAGE_SIZE: 
             raise MemoryError("Can't create a larger than 1GB image (arbitrary...)")
         self._image = gdImageCreatePalette(width, height)
         if self._image is NULL:
-            raise MemoryError()
+            raise MemoryError("could not create a gdImage")
 
     def __dealloc__(self):
         """
@@ -74,7 +83,7 @@ cdef class Image:
         if self._image is not NULL:
             gdImageDestroy(self._image)
 
-    def __init__(self, width, height, preset_colors='web_colors'):
+    def __init__(self, width, height, preset_colors='web'):
         """
         create a new Image object
 
@@ -84,36 +93,81 @@ cdef class Image:
         :param height: height of image in pixels
         :type height: integer
 
-        :param preset_colors='web_colors': which set of preset colors you want.                                   options are:
-                                           
-                                            'web_colors' - the basic named colors for the web: transparent background
-
-                                           'basic' - transparent, black, and white: transparent background
-                                           
-                                           'none' - no pre-allocated colors -- the first one you allocate will be the background color 
-        :type preset_colors: string
+        :param preset_colors=web_colors: which set of preset colors you want. options are:
+                                         
+                                         'web' - the basic named colors for the web: transparent background
+                                         
+                                         'BW' - transparent, black, and white: transparent background
+                                         
+                                         'transparent' - transparent background, no other colors set
+                                         
+                                         None - no pre-allocated colors -- the first one you allocate will be the background color 
+        :type preset_colors: string or None
 
         The Image is created as a 8-bit Paletted Image.
 
         NOTE: the initilization of the C structs is happening in the __cinit__
         """
         # set first color (background) to transparent
-        self.colors = {'transparent': gdImageColorAllocateAlpha(self._image, 0, 0, 0, 127)}# set first color (background) to transparent
-        self.color_names = ['transparent']
-        ## initilize a couple standard colors
-        if preset_colors == 'web_colors':
-            [ self.colors.setdefault(name, gdImageColorAllocate (self._image, r, g, b) ) for (name, (r,g,b)) in web_colors ]
-            [ self.color_names.append(name) for (name, c) in web_colors ]
-        elif preset_colors == 'basic':
-            self.colors['black'] = gdImageColorAllocate (self._image, 0, 0, 0)
-            self.color_names.append('black')
-            self.colors['white'] = gdImageColorAllocate (self._image, 255, 255, 255)
-            self.color_names.append('white')
-        elif preset_colors == 'none':
-            self.colors = {}
-            self.color_names = []
+        ## initilize the colors
+        self.colors = {}
+        self.color_names = []
+        if preset_colors is None:
+            pass
+        elif preset_colors == 'transparent':
+            self.add_colors(transparent_colors)
+        elif preset_colors == 'BW':
+            self.add_colors(BW_colors)
+        elif preset_colors == 'web':
+            self.add_colors(web_colors)
         else:
-            raise ValueError("preset_colors needs to one of 'web_colors', 'basic', or 'none'")
+            raise ValueError("preset_colors needs to one of 'web', 'BW', 'transparent', or None")
+
+    def add_color(self, name, color):
+        """
+        add a new color to the palette
+
+        :param name: the name of the color
+        :type name: string 
+
+        :param color: red, green, blue values for color - 0 to 255 or red, grenn, blue, alpha values (note: alpha is 0-127)
+        :type color: 3-tuple of integers (r,g,b) or 4-tuple of integers (r, g, b, a)
+
+        :returns color_index: the index of that new color
+        """
+        ##fixme: should it check if the same color is already in the palette?
+        ##       not just the name?
+        if name in self.colors:
+            raise ValueError("%s already in the palette"%name)
+
+        cdef int color_index            
+        if len(color) == 4:
+            self.colors.setdefault(name, gdImageColorAllocateAlpha(self._image, color[0], color[1], color[2], color[3]) )
+        elif len(color) == 3:
+            color_index = gdImageColorAllocate(self._image, color[0], color[1], color[2])
+        else:
+            raise ValueError("color must be an (r,g,b) triple or (r,g,b,a) quad")
+
+        if color_index == -1:
+            raise ValueError("there are no more colors available to allocate")
+
+        self.colors[name] = color_index
+        self.color_names.append(name)
+
+        return color_index
+
+    def add_colors(self, color_list):
+        """
+        Add a list of colors to the pallette
+
+        :param color_list: list of colors - each elemnt of the list is a 2-tuple: ( 'color_name', (r,g,b) )
+        
+        :returns indexes: list of color indexes.
+        """
+        indexes = []
+        for name, color in color_list:
+            indexes.append( self.add_color(name, color) )
+        return indexes
 
     @cython.boundscheck(False)
     def __array__(self):
@@ -237,30 +291,6 @@ cdef class Image:
             fclose(fp)
         else:
             raise ValueError('"bmp", "gif", "png", and "jpeg" are the only valid file_type')
-
-    def add_color(self, name, rgb):
-        """
-        add a new color to the Palette
-
-        :param name: the name of the color
-        :type name: string 
-
-        :param rgb: red, green, blue values for color - 0 to 255
-        :type rgb: 3-tuple of integers (r,g,b)
-
-        :returns color_index: the index of that new color
-        """
-        ##fixme: should it check if the same color is already in the palette?
-        if name in self.colors:
-            raise ValueError("%s already in the palette"%name)
-        
-        cdef int color_index = gdImageColorAllocate (self._image, rgb[0], rgb[1], rgb[2])
-        if color_index == -1:
-            raise ValueError("there are no more colors available to allocate")
-        self.colors[name] = color_index
-        self.color_names.append(name)
-
-        return color_index
 
     def get_color_names(self):
         """

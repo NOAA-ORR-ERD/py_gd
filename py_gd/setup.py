@@ -13,12 +13,12 @@ import numpy #for the include dirs...
 
 ext_modules=[ Extension("py_gd.py_gd",
                         ["py_gd/py_gd.pyx"],
-                        include_dirs = ["../static_libs/include/",
+                        include_dirs = ["./static_libs/include/",
                                         numpy.get_include(),
                                         ],
                         libraries=["jpeg"],
-                        extra_objects=["../static_libs/lib/libgd.a",
-                                       "../static_libs/lib/libpng.a"],
+                        extra_objects=["./static_libs/lib/libgd.a",
+                                       "./static_libs/lib/libpng.a"],
                          )]
 setup(
     name = "py_gd",
