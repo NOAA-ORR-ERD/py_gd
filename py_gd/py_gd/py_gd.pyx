@@ -65,7 +65,7 @@ cdef class Image:
     def __cinit__(self,
                   int width,
                   int height,
-                  preset_colors=None):
+                  preset_colors='web'):
 
         self.width = width
         self.height = height
@@ -168,26 +168,61 @@ cdef class Image:
         for name, color in color_list:
             indexes.append( self.add_color(name, color) )
         return indexes
-
+  
     @cython.boundscheck(False)
     def __array__(self):
         """
-        Returns a numpy array object with a copy of the data
+        :returns arr: numpy array object with a copy of the data
 
-        Note that the array is (height, width) in size, in
-        keeping with image storage standards (e.g. PIL)
+        Note that the array is (width, height) in size, in keeping
+        with image convensions, but not array conventions. data is
+        in Fortran order
         """
-        cdef cnp.ndarray[cnp.uint8_t, ndim=2, mode='c'] arr
-        arr = np.zeros((self.height, self.width), dtype=np.uint8)
-        cdef unsigned int row
+        cdef cnp.ndarray[cnp.uint8_t, ndim=2, mode='fortran'] arr
+        arr = np.zeros((self.width, self.height), dtype=np.uint8, order='F')
+        cdef unsigned int row, col
 
-        ##copy the data, row by row
-        for row in range(self.height):
-            memcpy( &arr[row, 0], self._image.pixels[row], self.width)
+        ##copy the data, row by row (copying into columns)
+        #for row in range(self.height):
+        #    memcpy( &arr[0, row], self._image.pixels[row], self.width)
+        ##copy the data, item by item (copying into columns)
+        for col in range(self.height):
+            memcpy( &arr[0, col], self._image.pixels[col], self.width)
+            #for row in range(self.width):
+            #    arr[row, col] = self._image.pixels[col][row]
+        
         return arr
+
+    #def set_data(self, cnp.ndarray[char, ndim=2, mode='c'] arr not None):
+    def set_data(self, char[:,:] arr not None):
+        """
+        Set the contents of the image from the input array.
+
+        array must be the right size and data type (np.uint8)
+
+        Note that the array is (width, height) in size.
+
+        """
+        #print "f-contig:", arr.is_f_contig()
+        #print "c-contig:", arr.is_c_contig()
+        #print "memview flags are:", arr.flags
+        if arr.shape[0] <> self.width or arr.shape[1] <> self.height:
+            raise ValueError("input array must be of shape: (width, height), and the same size as image")
+
+        cdef unsigned int row, col
+
+        # ##copy the data, row by row
+        #for row in range(self.height):
+        #   memcpy(self._image.pixels[row], &arr[row, 0], self.width)
+        # ##copy the data, item by item
+        for row in range(self.height):
+            for col in range(self.width):
+                self._image.pixels[row][col] = arr[col, row]
 
 
     # def __getbuffer__(self, Py_buffer* buffer, int flags):
+    ## attempt to use buffer interface instaed of numpy arrays...
+    ## didn't quite work
     #     print "__getbuffer__ called"
 
     #     #allocate the array:
@@ -228,27 +263,6 @@ cdef class Image:
 
     def __repr__(self):
         return "Image(width=%i, height=%i)"%(self.width, self.height)
-
-    #def set_data(self, cnp.ndarray[char, ndim=2, mode='c'] arr not None):
-    def set_data(self, char[:,:] arr not None):
-        """
-        Set the contents of the image from the input array.
-
-        array must be the right size and data type (np.uint8)
-
-        Note that the array is (height, width) in size, in
-        keeping with image storage standards (e.g. PIL)
-
-        """
-        if arr.shape[0] <> self.height or arr.shape[1] <> self.width:
-            raise ValueError("input array must be the same size as image")
-
-        cdef unsigned int row, col
-
-        # ##copy the data, row by row
-        for row in range(self.height):
-           memcpy(self._image.pixels[row], &arr[row, 0], self.width)
-        return arr
 
     ## Saving images
     def save(self, file_name, file_type="bmp", compression=None):
@@ -328,12 +342,21 @@ cdef class Image:
 
     def get_pixel_value(self, point):
         """
-        returns the value if the pixel at a point
+        returns the value (index into palette) of the pixel at a point
 
-        :param point: the (x,y) coord you want the color of
+        :param point: the (x,y) coord you want the value of
 
         """
         return gdImageGetPixel(self._image, point[0], point[1])
+
+    def set_pixel_value(self, point, value):
+        """
+        returns the value (index into palette) of the pixel at a point
+
+        :param point: the (x,y) coord you want the value of
+
+        """
+        gdImageSetPixel(self._image, point[0], point[1], value)
 
     ### The drawing functions:
     def draw_pixel(self, point, color):
@@ -621,17 +644,17 @@ cdef class Image:
 #def from_array(cnp.ndarray[char, ndim=2, mode='c'] arr not None):
 def from_array(char [:,:] arr not None, *args, **kwargs):
     """
-    create an Image from a numpy array, or other object that exposed the PEP 3118 bufer interface.
+    Create an Image from a numpy array, or other object that exposed the PEP 3118 buffer interface.
 
-    the image is the same size as the input array, with the contents copied.
+    The image is the same size as the input array, with the contents copied.
 
-    :param arr: the input array
+    :param arr: the input array, shape (width, height)
     :type arr: an array, or other PEP 3118 buffer compliant object. Should be 2-d, and of type np.unit8 ('B')
 
     Other parameters are passed on to the Image() constructor.
 
     """
-    img = Image(arr.shape[1], arr.shape[0], *args, **kwargs)
+    img = Image(arr.shape[0], arr.shape[1], *args, **kwargs)
     img.set_data(arr)
 
     return img

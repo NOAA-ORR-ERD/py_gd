@@ -61,7 +61,7 @@ def test_add_colors():
     assert img._get_color_index('light grey') == 3
 
     img.draw_rectangle((2,2), (7,7), fill_color='light grey')
-    img.save('test_image_color.bmp')
+    img.save('test_image_grey.bmp')
 
     with pytest.raises(ValueError):
         # color doesn't exist
@@ -313,46 +313,76 @@ def test_colors():
 
 
 def test_array():
-    img = py_gd.Image(10, 5, )
+    img = py_gd.Image(10, 5)
     img.draw_line( (0, 0), (9, 4), 'black', line_width=1)
     print "result from __array__", img.__array__()
     arr = np.asarray(img)
-    assert np.array_equal(arr, [[1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-                                [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-                                [0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
-                                [0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
-                                [0, 0, 0, 0, 0, 0, 0, 0, 1, 1]]
-                                )
+    assert np.array_equal(arr, [[1, 0, 0, 0, 0],
+                                [1, 0, 0, 0, 0],
+                                [0, 1, 0, 0, 0],
+                                [0, 1, 0, 0, 0],
+                                [0, 0, 1, 0, 0],
+                                [0, 0, 1, 0, 0],
+                                [0, 0, 0, 1, 0],
+                                [0, 0, 0, 1, 0],
+                                [0, 0, 0, 0, 1],
+                                [0, 0, 0, 0, 1]]
+                          )
+
+def test_set_pixel_value():
+    """
+    test if setting the pixel value directly works.
+    """
+    img = py_gd.Image(4, 5)
+    for i in range(4):
+        for j in range(5):
+            img.set_pixel_value( (i, j), i)
+
+    #check:
+    for i in range(4):
+        for j in range(5):
+            assert img.get_pixel_value( (i,j) ) == i
+    
 
 def test_array_set():
     arr = np.array( [[ 0, 1, 2],
-                     [ 3, 4, 0],
-                     [ 1, 2, 3],
-                     [ 4, 0, 1] ],
-                     dtype=np.uint8)
+                     [ 3, 4, 5],
+                     [ 6, 7, 8],
+                     [ 9, 10, 11] ],
+                     dtype=np.uint8,
+                     order='f')
  
-    img = py_gd.Image(arr.shape[1], arr.shape[0])
+    img = py_gd.Image(arr.shape[0], arr.shape[1], preset_colors='web')
     img.set_data(arr)
     
-    img.save('junk.bmp')
+    img.save('test_image_array1.png')
+
+    print img.get_color_names()
+    for i in range(4):
+        for j in range(3):
+            print img.get_pixel_color( (i,j) ), 
+            print img.get_pixel_value( (i,j) )
+
 
     for y in range(img.height):
         for x in range(img.width):
-            assert arr[y,x] == img.get_pixel_value( (x,y) )
+            assert arr[x,y] == img.get_pixel_value( (x,y) )
+
 
 def test_array_creation():
-    arr = np.array( [[ 0, 1, 2],
-                     [ 3, 4, 0],
-                     [ 1, 2, 3],
-                     [ 4, 0, 1] ],
-                     dtype=np.uint8)
+    arr = np.array( [[ 0,  1,  2],
+                     [ 3,  4,  5],
+                     [ 6,  7,  8],
+                     [ 9, 10, 11] ],
+                     dtype=np.uint8,
+                     order='c')
  
     img = py_gd.from_array(arr)
     
-    img.save('junk.bmp')
+    img.save('test_image_array2.bmp')
 
     for y in range(img.height):
         for x in range(img.width):
-            assert arr[y,x] == img.get_pixel_value( (x,y) )
+            assert arr[x,y] == img.get_pixel_value( (x,y) )
 
 
