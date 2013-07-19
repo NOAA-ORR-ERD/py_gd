@@ -313,7 +313,7 @@ cdef class Image:
         return self.color_names
 
 
-    def _get_color_index(self, color):
+    def get_color_index(self, color):
         """
         returns the color index for a named or integer color
         """
@@ -368,7 +368,7 @@ cdef class Image:
         """
         gdImageSetPixel (self._image,
                          point[0], point[1],
-                         self._get_color_index(color)
+                         self.get_color_index(color)
                          )
 
     def draw_line(self, pt1, pt2, color, int line_width=1):
@@ -387,7 +387,7 @@ cdef class Image:
         gdImageSetThickness(self._image, line_width)
         gdImageLine(self._image,
                     pt1[0], pt1[1], pt2[0], pt2[1],
-                    self._get_color_index(color)
+                    self.get_color_index(color)
                     )  
         gdImageSetThickness(self._image, 1)
 
@@ -422,7 +422,7 @@ cdef class Image:
             gdImageFilledPolygon(self._image,
                                  <gdPointPtr> &points_arr[0,0],
                                  n,
-                                 self._get_color_index(fill_color)
+                                 self.get_color_index(fill_color)
                                  )
 
         if line_color is not None:
@@ -430,7 +430,7 @@ cdef class Image:
             gdImagePolygon(self._image,
                            <gdPointPtr> &points_arr[0,0],
                            n,
-                           self._get_color_index(line_color)
+                           self.get_color_index(line_color)
                            )
             gdImageSetThickness(self._image, 1)
 
@@ -465,7 +465,7 @@ cdef class Image:
             gdImageOpenPolygon(self._image,
                            <gdPointPtr> &points_arr[0,0],
                            n,
-                           self._get_color_index(line_color)
+                           self.get_color_index(line_color)
                            )
             gdImageSetThickness(self._image, 1)
 
@@ -492,7 +492,7 @@ cdef class Image:
             gdImageFilledRectangle(self._image,
                                    pt1[0], pt1[1],
                                    pt2[0], pt2[1],
-                                   self._get_color_index(fill_color)
+                                   self.get_color_index(fill_color)
                                    )
 
         if line_color is not None:
@@ -500,7 +500,7 @@ cdef class Image:
             gdImageRectangle(self._image,
                              pt1[0], pt1[1],
                              pt2[0], pt2[1],
-                             self._get_color_index(line_color)
+                             self.get_color_index(line_color)
                              )
             gdImageSetThickness(self._image, 1)
 
@@ -569,7 +569,7 @@ cdef class Image:
                              center[0], center[1],
                              width, height, 
                              start, end,
-                             self._get_color_index(fill_color),
+                             self.get_color_index(fill_color),
                              flag,
                              )
         if line_color is not None:
@@ -581,7 +581,7 @@ cdef class Image:
                              center[0], center[1],
                              width, height, 
                              start, end,
-                             self._get_color_index(line_color),
+                             self.get_color_index(line_color),
                              flag,
                              )
             gdImageSetThickness(self._image, 1)
@@ -628,7 +628,7 @@ cdef class Image:
                       gdfont,
                       point[0], point[1],
                       text_bytes,
-                      self._get_color_index(color),
+                      self.get_color_index(color),
                       )
 
 
@@ -637,7 +637,7 @@ cdef class Image:
         #                center[0], center[1],
         #                width, height, 
         #                start, end,
-        #                self._get_color_index(line_color)
+        #                self.get_color_index(line_color)
         #                )
 
 

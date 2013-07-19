@@ -58,7 +58,7 @@ def test_add_colors():
 
     img.add_color('light grey', (220,220,220) )
     assert img.get_color_names() == ['transparent', 'black', 'white', 'light grey']
-    assert img._get_color_index('light grey') == 3
+    assert img.get_color_index('light grey') == 3
 
     img.draw_rectangle((2,2), (7,7), fill_color='light grey')
     img.save('test_image_grey.bmp')
@@ -284,31 +284,31 @@ def test_colors():
     img = py_gd.Image(5, 5)
 
     # this shold work
-    img._get_color_index('black')
+    img.get_color_index('black')
 
     # so should this:
-    img._get_color_index(0)
-    img._get_color_index(255)
+    img.get_color_index(0)
+    img.get_color_index(255)
 
     # will round floating point numbers
     # shoul dthi sbe changed?
-    assert img._get_color_index(2.3) == 2
+    assert img.get_color_index(2.3) == 2
 
     with pytest.raises(ValueError):
         # error if index not in 0--255
-        img._get_color_index(300)
+        img.get_color_index(300)
 
     with pytest.raises(ValueError):
         # error if color is not in dict
-        img._get_color_index('something else')
+        img.get_color_index('something else')
 
     with pytest.raises(ValueError):
         # error if color is not anumber
-        img._get_color_index((1,2,3))
+        img.get_color_index((1,2,3))
 
     with pytest.raises(TypeError):
         # error if color is unhasable
-        img._get_color_index(['a', 'random', 4])
+        img.get_color_index(['a', 'random', 4])
 
 
 
