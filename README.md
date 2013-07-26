@@ -10,7 +10,7 @@ py-gd aims to provide nice pythonic wrappers around libgd -- a nice, fast, and s
 http://libgd.bitbucket.org/
 
 Why gd?
-==========
+---------
 
 For the project at hand we needed fast and simple drawing -- 8-bit color, no anti-aliasing.
 We also wanted a nice simple API to work with. There are a number of newer drawing libs (AGG, Skia)
@@ -19,7 +19,7 @@ anti-aliased drawing. If  you want the prettiest rendering possible, I encourage
 If you want something fast and simple -- py_gd may be for you.
 
 Why a new python wrapper for gd?
-==================================
+----------------------------------
 
 gdmodule (recently moved to gitHub: https://github.com/Solomoriah/gdmodule) is a wrapper
 for gd that has been aaround along time. However:
@@ -39,7 +39,7 @@ On the other hand:
 However, there is some nice stuff in gdmodule (like including a truetype font) that I we want to borrow.
 
 How is py_gd built?
-=====================
+----------------------
 
 py_gd is built using Cython: (www.cython.org). Cython allows us to both call into the existing gd C lib,
 and to also write wrapper code to make a nicer API in a very efficient way. You shouldn't need Cython
@@ -47,7 +47,7 @@ to build and use py_gd, but you'll need it if you want to contribute to the wrap
 
 
 Dependencies:
-===============
+---------------
 
 py_gd currently requires the numpy package: www.numpy.org
 
@@ -56,11 +56,11 @@ polygons, etc, and can be used to get a copy of the image buffer, and manipulate
 as well as passing it back to py_gd.
 
 Is py_gd a complete wrapper around gd?
-=============================================
+----------------------------------------
 
 In a word: no.
 
-py_gd is in its infancy, and not the lest bit complete. It does, however have enough to be useful (at least to us).
+py_gd is in its infancy, and not the least bit complete. It does, however have enough to be useful (at least to us).
 
 Major Working features:
  * 8-bit "paletted" images
@@ -77,7 +77,7 @@ Major Missing features:
  * image manipulations: scaling, etc
 
 Can I contribute?
-==================
+-------------------
 
 You sure you can -- fork the source, and hack away -- you can actually add features pretty easily by taking
 a look at what's there -- with just a little C and/or Cython knowledge (not much!) you should be able to
