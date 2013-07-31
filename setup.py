@@ -36,7 +36,7 @@ print need_to_build
 
 
 all_args = " ".join(sys.argv[1:])
-if 'build' in all_args or 'develop' in all_args:
+if 'build' in all_args or 'develop' in all_args or 'install' in all_args:
      # check for static_libs dir
      if need_to_build:
         print "*** Need to build:", need_to_build, '\n'
