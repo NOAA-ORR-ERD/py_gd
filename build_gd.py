@@ -130,14 +130,7 @@ def install(lib):
     os.chdir(cwd)
 
 
-if __name__ == "__main__":
-
-    ## this libs to download and bulid
-    libs = [ 
-            "libpng-1.6.3",
-            "libgd-2.1.0",
-            ]
-    
+def do_it_all(libs):
     for lib in libs:
         download(lib)
         unpack(lib)
@@ -146,6 +139,12 @@ if __name__ == "__main__":
         install(lib)
         pass
 
+if __name__ == "__main__":
+
+    ## this libs to download and bulid
+    do_it_all( [ "libpng-1.6.3",
+                 "libgd-2.1.0",
+                 ] )
 
 
 
