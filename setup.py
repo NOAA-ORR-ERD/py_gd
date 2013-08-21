@@ -14,12 +14,31 @@ from Cython.Build import cythonize
 
 import numpy #for the include dirs...
 
+include_dirs = [numpy.get_include(), './static_libs/include']
+library_dirs = ['./static_libs/lib']
+
+## This setup requires libgd and libpng
+## It expects to find them in ./static_libs
+## if they are not there, or on a "usual path", 
+## you can set them below, or override them with the following 
+## environmment variables:
+# LIBGD_LOCATION
+# LIBPNG_LOCATION
+# it will look for 'include' and 'lib' in those locations
+
+## check for environment variables:
+for loc in [os.environ.get('LIBGD_LOCATION', ''),
+            os.environ.get('LIBPNG_LOCATION', ''),
+            ]:
+    if loc:
+        include_dirs.append(os.path.join(loc,'include') )
+        library_dirs.append(os.path.join(loc, 'lib') )
 
 ext_modules=[ Extension("py_gd.py_gd",
                         ["py_gd/py_gd.pyx"],
-                        include_dirs = [numpy.get_include(),
-                                        ],
-                        libraries=["gd","png", "jpeg"],
+                        include_dirs = include_dirs,
+                        library_dirs = library_dirs,
+                        libraries=["gd","png","jpeg"],
                          )]
 setup(
     name = "py_gd",
