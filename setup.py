@@ -2,43 +2,37 @@
 
 """
 setup.py script for the py_gd package
+
+Tested with Anaconda on OS_X only so far.
+
+libgd is assumed to be installed (and its dependencies) already.
+
 """
 
 import sys, os
 
-from setuptools import setup
+from setuptools import setup, Extension
 
 #from distutils.core import setup
-from distutils.extension import Extension
+# from distutils.extension import Extension
+
 from Cython.Build import cythonize
 
 import numpy #for the include dirs...
 
-include_dirs = [numpy.get_include(), './static_libs/include']
-library_dirs = ['./static_libs/lib']
+include_dirs = [numpy.get_include(),]
+library_dirs = []
 
-## This setup requires libgd and libpng
-## It expects to find them in ./static_libs
-## if they are not there, or on a "usual path", 
-## you can set them below, or override them with the following 
-## environmment variables:
-# LIBGD_LOCATION
-# LIBPNG_LOCATION
-# it will look for 'include' and 'lib' in those locations
+#library_dirs = ['./static_libs/lib']
 
-## check for environment variables:
-for loc in [os.environ.get('LIBGD_LOCATION', ''),
-            os.environ.get('LIBPNG_LOCATION', ''),
-            ]:
-    if loc:
-        include_dirs.append(os.path.join(loc,'include') )
-        library_dirs.append(os.path.join(loc, 'lib') )
+## This setup requires libgd 
+## It expects to find them in the "usual" locations
 
 ext_modules=[ Extension("py_gd.py_gd",
                         ["py_gd/py_gd.pyx"],
                         include_dirs = include_dirs,
                         library_dirs = library_dirs,
-                        libraries=["gd","png","jpeg"],
+                        libraries=["gd"],
                          )]
 setup(
     name = "py_gd",
@@ -47,7 +41,7 @@ setup(
     #long_description=read('README'),
     author = "Christopher H. Barker",
     author_email = "chris.barker@noaa.gov",
-    #url="",
+    url="https://github.com/NOAA-ORR-ERD/py_gd",
     license = "Public Domain",
     keywords = "graphics cython drawing",
     ext_modules = cythonize(ext_modules), 

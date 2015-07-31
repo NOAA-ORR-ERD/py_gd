@@ -4,6 +4,9 @@
 This version builds all of gd into the extension, rather than separately.
 
 setup.py script for the py_gd package
+
+not sure when/if this worked, but it's not maintained.
+
 """
 
 import sys, os

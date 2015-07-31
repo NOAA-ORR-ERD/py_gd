@@ -25,24 +25,24 @@ from cython cimport view
 transparent_colors = [('transparent', (  0,  0,  0, 127) ) ]
 
 BW_colors = transparent_colors + [('black',       (  0,  0,  0) ),  
-                                     ('white',       (255, 255, 255) ),
-                                     ]
+                                  ('white',       (255, 255, 255) ),
+                                 ]
 
 web_colors = BW_colors + [ ('silver', (191, 191, 191) ),
-                              ('gray',   (127, 127, 127) ),
-                              ('red',    (255,   0,   0) ),
-                              ('maroon', (127,   0,   0) ),
-                              ('yellow', (255, 255,   0) ),
-                              ('olive',  (127, 127,   0) ),
-                              ('lime',   (  0, 255,   0) ),
-                              ('green',  (  0, 127,   0) ),
-                              ('aqua',   (  0, 255, 255) ),
-                              ('teal',   (  0, 127, 127) ),
-                              ('blue',   (  0,   0, 255) ),
-                              ('navy',   (  0,   0, 127) ),
-                              ('fuchsia',(255,   0, 255) ),
-                              ('purple', (127,   0, 127) ),
-                              ]
+                           ('gray',   (127, 127, 127) ),
+                           ('red',    (255,   0,   0) ),
+                           ('maroon', (127,   0,   0) ),
+                           ('yellow', (255, 255,   0) ),
+                           ('olive',  (127, 127,   0) ),
+                           ('lime',   (  0, 255,   0) ),
+                           ('green',  (  0, 127,   0) ),
+                           ('aqua',   (  0, 255, 255) ),
+                           ('teal',   (  0, 127, 127) ),
+                           ('blue',   (  0,   0, 255) ),
+                           ('navy',   (  0,   0, 127) ),
+                           ('fuchsia',(255,   0, 255) ),
+                           ('purple', (127,   0, 127) ),
+                          ]
 
 ## note that the 1GB max is arbitrary -- you can change it after import,
 ## before initizing an Image. On my system going bigger than this brings
@@ -67,11 +67,12 @@ cdef class Image:
                   int height,
                   preset_colors='web'):
 
-        self.width = width
+        self.width  = width
         self.height = height
 
         if width*height > MAX_IMAGE_SIZE: 
-            raise MemoryError("Can't create a larger than 1GB image (arbitrary...)")
+            raise MemoryError("""Can't create a larger than %i byte image (arbitrary...)\n
+This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         self._image = gdImageCreatePalette(width, height)
         if self._image is NULL:
             raise MemoryError("could not create a gdImage")
@@ -142,7 +143,7 @@ cdef class Image:
 
         cdef int color_index            
         if len(color) == 4:
-            self.colors.setdefault(name, gdImageColorAllocateAlpha(self._image, color[0], color[1], color[2], color[3]) )
+            color_index = gdImageColorAllocateAlpha(self._image, color[0], color[1], color[2], color[3])
         elif len(color) == 3:
             color_index = gdImageColorAllocate(self._image, color[0], color[1], color[2])
         else:
@@ -411,7 +412,7 @@ cdef class Image:
         cdef int n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
         
-        points_arr = np.asarray(points, dtype=np.int).reshape( (-1,2) )
+        points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
         n = points_arr.shape[0]
         
         if n < 3:
@@ -454,7 +455,7 @@ cdef class Image:
         cdef int n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
         
-        points_arr = np.asarray(points, dtype=np.int).reshape( (-1,2) )
+        points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
         n = points_arr.shape[0]
         
         if n < 3:

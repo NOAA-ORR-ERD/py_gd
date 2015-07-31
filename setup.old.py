@@ -2,6 +2,10 @@
 
 """
 setup.py script for the py_gd package
+
+This version links in static versions of the required libs, which must be build  separately.
+
+The "regular" version, finds the dynamic libs.
 """
 
 import sys, os
@@ -14,55 +18,31 @@ from Cython.Build import cythonize
 
 import numpy #for the include dirs...
 
-## total kludge here: for building libpng and gd itself:
-## you should be able to replace these for an installed gd or png lib.
+include_dirs = [numpy.get_include(), './static_libs/include']
+library_dirs = ['./static_libs/lib']
 
-static_libs = ["./static_libs/lib/libgd.a",
-              "./static_libs/lib/libpng.a"]
+## This setup requires libgd and libpng
+## It expects to find them in ./static_libs
+## if they are not there, or on a "usual path", 
+## you can set them below, or override them with the following 
+## environmment variables:
+# LIBGD_LOCATION
+# LIBPNG_LOCATION
+# it will look for 'include' and 'lib' in those locations
 
-includes    = ["./static_libs/include/gd.h",
-               "./static_libs/include/png.h",
-               ]
-
-include_dirs = [os.path.split(filename)[0] for filename in includes]
-include_dirs = list(set(include_dirs)) # remove the duplicates
-
-need_to_build = []
-for lib in static_libs:
-    if not os.path.isfile(lib):
-        need_to_build.append(lib)
-
-if 'build_deps' in sys.argv:
-     # check for static_libs dir
-     if need_to_build:
-        print "*** Need to build:", need_to_build, '\n'
-        # libpng?
-        lib_names = []
-        if "libpng" in " ".join(need_to_build):
-            lib_names.append("libpng-1.6.3")
-        if "libgd" in " ".join(need_to_build):
-            lib_names.append("libgd-2.1.0")
-
-        import build_gd
-        build_gd.do_it_all(lib_names)
-
-if need_to_build:
-    print "\n********"
-    print "Dependencies aren't there. It needs:",
-    print need_to_build
-    print 'run "python setup.py build_deps" to auto-build them'
-    print "********\n"
-    sys.exit(1)
-
+## check for environment variables:
+for loc in [os.environ.get('LIBGD_LOCATION', ''),
+            os.environ.get('LIBPNG_LOCATION', ''),
+            ]:
+    if loc:
+        include_dirs.append(os.path.join(loc,'include') )
+        library_dirs.append(os.path.join(loc, 'lib') )
 
 ext_modules=[ Extension("py_gd.py_gd",
                         ["py_gd/py_gd.pyx"],
-                        include_dirs = ["./static_libs/include/",
-                                        numpy.get_include(),
-                                        ],
-                        libraries=["jpeg"],
-                        extra_objects=["./static_libs/lib/libgd.a",
-                                       "./static_libs/lib/libpng.a"],
+                        include_dirs = include_dirs,
+                        library_dirs = library_dirs,
+                        libraries=["gd","png","jpeg"],
                          )]
 setup(
     name = "py_gd",
@@ -70,7 +50,7 @@ setup(
     description = "python wrappers around libgd graphics lib",
     #long_description=read('README'),
     author = "Christopher H. Barker",
-    author_email = "chris.barker@Nnoaa.gov",
+    author_email = "chris.barker@noaa.gov",
     #url="",
     license = "Public Domain",
     keywords = "graphics cython drawing",

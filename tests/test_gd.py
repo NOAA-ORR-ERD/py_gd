@@ -16,8 +16,45 @@ import numpy as np
 
 import py_gd
 
+def test_init_simple():
+    """
+    simplest possible initilization -- no preset color palette
+    """
+    img = py_gd.Image(width=400,
+                      height=400,
+                      preset_colors=None)
 
-def test_init():
+def test_init_simple_add_rgb():
+    """
+    simplest possible initilization -- no preset color palette
+    """
+    img = py_gd.Image(width=400,
+                      height=400,
+                      preset_colors=None)
+
+    img.add_color('white', (255, 255, 255))
+
+def test_init_simple_add_rgba():
+    """
+    simplest possible initilization -- no preset color palette
+    """
+    img = py_gd.Image(width=400,
+                      height=400,
+                      preset_colors=None)
+
+    img.add_color('white', (255, 255, 255, 127))
+
+
+def test_init_default_colors():
+    """
+    Initialize with the default palette
+    """
+    img = py_gd.Image(width=400, height=300)
+
+def test_init_BW():
+    img = py_gd.Image(10, 10, preset_colors='BW')
+
+def test_init2():
     img = py_gd.Image(width=400, height=400)
 
     img = py_gd.Image(400, 400)
@@ -384,5 +421,13 @@ def test_array_creation():
     for y in range(img.height):
         for x in range(img.width):
             assert arr[x,y] == img.get_pixel_value( (x,y) )
+
+if __name__ == "__main__":
+    # just run these tests..
+    #test_init_default_palette()
+    #test_init_BW()
+    #test_init_simple_add_rgb()
+    test_init_simple_add_rgba()
+
 
 
