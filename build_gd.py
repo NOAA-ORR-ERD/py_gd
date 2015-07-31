@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
 """
+NOTE: this worked at one point in 2013 -- not maintained.
+
+Decided to go to conda instead -- see conda_recipe
+
 script to download, build and install the libs needed for
-the netcdf4 Python package.
+the py_gd Python package.
 
 look in the "if __name__" clause at the bottom:
   you can turn on and off different libs, and different parts of the process

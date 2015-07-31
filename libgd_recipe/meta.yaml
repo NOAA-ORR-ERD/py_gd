@@ -1,0 +1,23 @@
+package:
+  name: libgd
+  version: 2.1.1
+
+source:
+  fn: libgd-2.1.1.tar.gz
+  # NOTE: the tarball on github does not have a configure script
+  #       and I couldn't get cmake or autotools to work 
+  url: https://bitbucket.org/libgd/gd-libgd/downloads/libgd-2.1.1.tar.gz
+
+about:
+    home: http://libgd.github.io/
+
+requirements:
+  build:
+    - libpng
+    - jpeg
+    - freetype
+
+  run:
+    - libpng
+    - jpeg
+    - freetype
