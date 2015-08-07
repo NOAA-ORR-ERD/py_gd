@@ -5,11 +5,19 @@ package:
 source:
   fn: libgd-2.1.1.tar.gz
   # NOTE: the tarball on github does not have a configure script
-  #       and I couldn't get cmake or autotools to work 
+  #       if you install all the autotools deps, it shoudl work
+  #       with the "bootstrap.sh" script, but this source version
+  #       is easier, with a configure script ready to go
+  #       the gd devs indicated that they will probably put
+  #       configured source tarball on github at some point...
   url: https://bitbucket.org/libgd/gd-libgd/downloads/libgd-2.1.1.tar.gz
+
+extras:
+   recipe_maintainer : https://github.com/NOAA-ORR-ERD/py_gd
 
 about:
     home: http://libgd.github.io/
+
 
 requirements:
   build:

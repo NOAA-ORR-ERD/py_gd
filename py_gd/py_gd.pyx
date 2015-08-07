@@ -458,8 +458,8 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
         n = points_arr.shape[0]
         
-        if n < 3:
-            raise ValueError("There must be at least three points specified for a polygon")
+        if n < 2:
+            raise ValueError("There must be at least two points specified for a polyline")
 
         if line_color is not None:
             gdImageSetThickness(self._image, line_width)

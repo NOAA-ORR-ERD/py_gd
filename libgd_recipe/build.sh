@@ -2,7 +2,7 @@
 
 # build script for libgd -- tested on OS-X
 
-## this should let configure find teh png, etc libs
+## this should let configure find the png, etc. libs
 export CFLAGS="-I$PREFIX/include $CFLAGS"
 export LDFLAGS="-L$PREFIX/lib $LDFLAGS"
 

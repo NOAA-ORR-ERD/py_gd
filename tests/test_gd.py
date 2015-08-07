@@ -250,17 +250,18 @@ def test_polyline():
                ( 50,  50),
               )
 
-    img.draw_polyline( points, 'red', line_width=3)
+    #img.draw_polyline( points, 'red', line_width=3)
 
     points = ( ( 50,  50),
                ( 90, 190),
                ( 10,  10),
               )
 
-    img.draw_polyline( points, 'blue', line_width=5)
+    #img.draw_polyline( points, 'blue', line_width=5)
 
     with pytest.raises(ValueError):
-        img.draw_polyline( ((10,10),(90,90)), 'blue')
+        # can't accept just one point
+        img.draw_polyline( ((10,10),), 'blue')
 
     img.save("test_image_polyline.bmp")
 
