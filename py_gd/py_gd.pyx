@@ -11,6 +11,7 @@ from py_gd cimport *
 from libc.stdio cimport FILE, fopen, fclose
 from libc.string cimport memcpy
 from libc.stdlib cimport malloc, free
+#from libc.stdint cimport uint8_t, uint32_t
 
 import operator
 
@@ -268,10 +269,21 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
     ## Saving images
     def save(self, file_name, file_type="bmp", compression=None):
         """
-        save the image to disk
+        save the image to disk file format options are:
+
+        "bmp"
+        "gif"
+        "png"
+        "jpeg"
+
+        NOTE: these may not always we avalible, depending on how libgd was compiled.
+              But bmp and gif should always be there.
 
         :param file_name: full or relative path to file you want created
         :type file_name: str or unicode object (but only ascii is supported for now)
+
+        :param file_type: type of file you want written
+        :type file_type: string
 
         """
         cdef bytes file_path
@@ -360,17 +372,195 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         gdImageSetPixel(self._image, point[0], point[1], value)
 
     ### The drawing functions:
-    def draw_pixel(self, point, color):
+    def draw_pixel(self, point, color='black'):
         """
         set the pixel at the point:(x,y) to the color
 
-        :param point: (x, y cxoord inate of the pixel of interest)
+        :param point: (x, y coordinate of the pixel of interest)
         :type point: 2-tuple of integers (or other sequence)
         """
         gdImageSetPixel (self._image,
                          point[0], point[1],
                          self.get_color_index(color)
                          )
+
+    def draw_dot(self, point, color='black', int diameter=1):
+        """
+        draw a dot (filled circle) at the point:(x,y)
+
+        :param point: (x, y coordinate of the pixel of interest)
+        :type point: 2-tuple of integers (or other sequence)
+
+        :param color='black': color to draw the dot
+        :type color: string colorname of color index
+
+        :param diameter=1: diamter of the dot
+        :type diameter: integer
+        """
+        cdef cnp.uint8_t c
+        
+        c = self.get_color_index(color)
+        if diameter == 1:
+            gdImageSetPixel (self._image,
+                                 point[0], point[1],
+                                 c,
+                                 )
+        elif diameter == 2: # draw four pixels
+            gdImageSetPixel (self._image,
+                             point[0], point[1],
+                             c,
+                             )
+            gdImageSetPixel (self._image,
+                             point[0]+1, point[1],
+                             c,
+                             )
+            gdImageSetPixel (self._image,
+                             point[0], point[1]+1,
+                             c,
+                             )
+            gdImageSetPixel (self._image,
+                             point[0]+1, point[1]+1,
+                             c,
+                             )
+        elif diameter > 2:
+            gdImageFilledArc(self._image,
+                             point[0], point[1],
+                             diameter, diameter, 
+                             0, 360,
+                             c,
+                             gdArc,
+                             )
+        else:
+            raise NotImplementedError("only diameters >= 1 are supported.")
+
+
+    def draw_dots(self, points, color='black', int diameter=1):
+
+        """
+        Draws a set of individual dots all in the same color
+
+        :param points: the (x,y) coordianates of the center of the dots
+        :type points: a Nx2 numpy array of integers, or something that can be turned in to one
+
+        :param diameter=1: diameter of the dots in pixels.
+        :type diameter: integer
+
+        :param color='black': color of points
+        :type  color: color name or index
+        """
+
+        cdef cnp.uint8_t c
+        cdef cnp.uint32_t i, n
+        cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
+        
+        points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
+        n = points_arr.shape[0]
+
+        c = self.get_color_index(color)
+        if diameter == 1:
+            for i in range(n):
+                gdImageSetPixel (self._image,
+                                 points_arr[i, 0], points_arr[i, 1],
+                                 c,
+                                 )
+        elif diameter == 2: # draw four pixels
+            for i in range(n):
+                gdImageSetPixel (self._image,
+                                 points_arr[i, 0], points_arr[i, 1],
+                                 c,
+                                 )
+                gdImageSetPixel (self._image,
+                                 points_arr[i, 0]+1, points_arr[i, 1],
+                                 c,
+                                 )
+                gdImageSetPixel (self._image,
+                                 points_arr[i, 0], points_arr[i, 1]+1,
+                                 c,
+                                 )
+                gdImageSetPixel (self._image,
+                                 points_arr[i, 0]+1, points_arr[i, 1]+1,
+                                 c,
+                                 )
+        elif diameter > 2:
+            for i in range(n):
+                gdImageFilledArc(self._image,
+                             points_arr[i, 0], points_arr[i, 1],
+                             diameter, diameter, 
+                             0, 360,
+                             c,
+                             gdArc,
+                             )
+        else:
+            raise NotImplementedError("only diameters >= 1 are supported.")
+
+    def draw_xes(self, points, color='black', int diameter=2, int line_width=1):
+
+        """
+        Draws a set of individual Xs all in the same color
+
+        :param points: the (x,y) coordianates of the center of the dots
+        :type points: a Nx2 numpy array of integers, or something that can be turned in to one
+
+        :param color='black': color of X
+        :type  color: color name or index
+
+        :param diameter=2: diameter of the X in pixels.
+        :type diameter: integer
+
+        :param line_width=1: width of line in pixels.
+        :type diameter: integer
+
+        """
+
+        cdef int r
+        cdef cnp.uint8_t c
+        cdef cnp.uint32_t i, n
+        cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
+        
+        points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
+        n = points_arr.shape[0]
+
+        c = self.get_color_index(color)
+        if diameter == 2: # draw five pixels
+            for i in range(n):
+                gdImageSetPixel (self._image,
+                                 points_arr[i, 0], points_arr[i, 1],
+                                 c,
+                                 )
+                gdImageSetPixel (self._image,
+                                 points_arr[i, 0]+1, points_arr[i, 1]+1,
+                                 c,
+                                 )
+                gdImageSetPixel (self._image,
+                                 points_arr[i, 0]-1, points_arr[i, 1]-1,
+                                 c,
+                                 )
+                gdImageSetPixel (self._image,
+                                 points_arr[i, 0]+1, points_arr[i, 1]-1,
+                                 c,
+                                 )
+                gdImageSetPixel (self._image,
+                                 points_arr[i, 0]-1, points_arr[i, 1]+1,
+                                 c,
+                                 )
+        elif diameter > 2:
+            gdImageSetThickness(self._image, line_width)
+            r = diameter / 2
+            for i in range(n):
+                gdImageLine(self._image,
+                            points_arr[i, 0]-r, points_arr[i, 1]-r,
+                            points_arr[i, 0]+r, points_arr[i, 1]+r,
+                            c
+                            )  
+                gdImageLine(self._image,
+                            points_arr[i, 0]-r, points_arr[i, 1]+r,
+                            points_arr[i, 0]+r, points_arr[i, 1]-r,
+                            c
+                            )  
+            gdImageSetThickness(self._image, 1)
+        else:
+            raise NotImplementedError("only diameters >= 2 are supported.")
+
 
     def draw_line(self, pt1, pt2, color, int line_width=1):
         """
@@ -381,6 +571,8 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
 
         :param pt2: (x,y) coordinates of end point
         :type pt2: (x,y) sequence of integers
+
+        :param color: color to draw the line
 
         :param line_width=1: width of line
         :type line_width: integer

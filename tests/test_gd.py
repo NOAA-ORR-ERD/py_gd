@@ -213,6 +213,8 @@ def test_Polygon2():
               )
 
     img.draw_polygon( points, fill_color='blue')
+
+
     img.save("test_image_poly2.bmp")
 
 def test_Polygon3():
@@ -316,6 +318,220 @@ def test_text():
     img.draw_text("Some Giant Text", (20, 100), font="giant", color='white')
     img.save("test_image_text.png", "png")
 
+def test_draw_dot():
+    img = py_gd.Image(100, 100, )
+
+    img.draw_dot( (10,10) )
+
+    img.draw_dot( (20,20), diameter=2, color='black' )
+
+    img.draw_dot( (30,30), diameter=3, color='red' )
+
+    img.draw_dot( (40,40), diameter=4, color='blue' )
+
+    img.draw_dot( (50,50), diameter=6, color='aqua' )
+
+    img.draw_dot( (60,60), diameter=8, color='lime' )
+
+    img.draw_dot( (70,70), diameter=10, color='fuchsia' )
+
+    img.draw_dot( (80,80), diameter=15, color='purple' )
+
+    img.save("test_image_dot.png", "png")
+
+
+def test_draw_dots():
+    img = py_gd.Image(20, 20)
+
+    img.draw_dots( ( (2, 2), 
+                       (2, 18),
+                       (10,10)
+                      )
+                    )
+
+    img.draw_dots( ( (18, 18), 
+                       (18, 2),
+                      ),
+                      diameter=2,
+                      color='red'    
+                    )
+
+    img.save("test_image_points.png", "png")
+
+def test_draw_dots3():
+    img = py_gd.Image(20, 20)
+
+    img.draw_dots( ( (2, 2), 
+                       (2, 18),
+                       (10,10)
+                      ),
+                      diameter = 3
+                    )
+
+    img.draw_dots( ( (18, 18), 
+                       (18, 2),
+                      ),
+                      diameter=4,
+                      color='red'    
+                    )
+
+    img.save("test_image_points3.png", "png")
+
+def test_draw_dots_large():
+    img = py_gd.Image(200, 200)
+
+    img.draw_dots( ((5, 5),),
+                      diameter = 3,
+                      color='red',    
+                    )
+
+    img.draw_dots( ((15, 15),),
+                      diameter = 4,
+                      color='red',    
+                    )
+
+    img.draw_dots( ((25, 25),),
+                      diameter = 5,
+                      color='red',    
+                    )
+
+    img.draw_dots( ((35, 35),),
+                      diameter = 6,
+                      color='red',    
+                    )
+
+    img.draw_dots( ((45, 45),),
+                      diameter = 7,
+                      color='red',    
+                    )
+
+    img.draw_dots( ((55, 55),),
+                      diameter = 9,
+                      color='red',    
+                    )
+
+    img.draw_dots( ((65, 65),),
+                      diameter = 12,
+                      color='red',    
+                    )
+
+    img.draw_dots( ((80, 80),),
+                      diameter = 15,
+                      color='red',    
+                    )
+
+    img.draw_dots( ((100, 100),),
+                      diameter = 20,
+                      color='red',    
+                    )
+
+    img.draw_dots( ((120, 120),),
+                      diameter = 30,
+                      color='red',    
+                    )
+
+    img.draw_dots( ((65, 65),),
+                      diameter = 12,
+                      color='red',    
+                    )
+
+    img.save("test_image_dots_large.png", "png")
+
+def test_draw_dots_lots():
+    """
+    test drawing a lot of dots
+    """
+    import random
+    w, h, = 1000, 500
+    img = py_gd.Image(w, h)
+
+    points = [ (random.randint(0,w), random.randint(0,w)) for i in range(10000) ]
+
+    img.draw_dots(points, diameter=2, color = 'red')
+
+    img.save("test_image_dots_lots.png")
+
+def test_draw_x_lots():
+    """
+    test drawing a lot of dots
+    """
+    import random
+    w, h, = 1000, 500
+    img = py_gd.Image(w, h)
+
+    points = [ (random.randint(0,w), random.randint(0,w)) for i in range(1000) ]
+
+    img.draw_xes(points, diameter=2, color = 'red')
+
+    img.save("test_image_x_lots.png")
+
+
+
+def test_draw_x_large():
+    img = py_gd.Image(200, 200)
+
+    img.draw_xes( ((5, 5),),
+                      diameter = 3,
+                      color='red',    
+                    )
+
+    img.draw_xes( ((15, 15),),
+                      diameter = 4,
+                      color='red',    
+                    )
+
+    img.draw_xes( ((25, 25),),
+                      diameter = 5,
+                      color='purple',    
+                    )
+
+    img.draw_xes( ((35, 35),),
+                      diameter = 6,
+                      color='red',    
+                    )
+
+    img.draw_xes( ((45, 45),),
+                      diameter = 7,
+                      color='red',    
+                    )
+
+    img.draw_xes( ((55, 55),),
+                      diameter = 9,
+                      color='green',    
+                    )
+
+    img.draw_xes( ((65, 65),),
+                  diameter = 12,
+                  color='red',    
+                  line_width=2,   
+                    )
+
+    img.draw_xes( ((80, 80),),
+                  diameter = 15,
+                  color='blue',    
+                  line_width=3,   
+                    )
+
+    img.draw_xes( ((100, 100),),
+                  diameter = 20,
+                  color='fuchsia',    
+                  line_width=4,   
+                    )
+
+    img.draw_xes( ((120, 120),),
+                  diameter = 30,
+                  color='red',    
+                  line_width=5,   
+                    )
+
+    img.draw_xes( ((160, 160),),
+                  diameter = 40,
+                  color='red', 
+                  line_width=10,   
+                  )
+
+
+    img.save("test_image_x_large.png", "png")
 
 
 def test_colors():
