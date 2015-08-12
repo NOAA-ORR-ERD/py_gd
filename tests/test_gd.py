@@ -72,7 +72,7 @@ def test_mem_limit():
     note that the 1GB max is arbitrary -- youc an change it iin the code.
 
     But my system, at least, will try to allocate much more memory that
-    you'd want, bringing the system to an almost halt, before raising 
+    you'd want, bringing the system to an almost halt, before raising
     a memory error, so I sete a limit.
     """
     img = py_gd.Image(32768, 32768) # 1 GB image
@@ -108,7 +108,7 @@ def test_add_colors_repeat():
     img = py_gd.Image(10, 10, preset_colors='BW')
 
     index_1 = img.add_color('blue', (0, 0, 255))
-    
+
     with pytest.raises(ValueError):
         # adding one with the same name should raise an exception
         img.add_color('blue', (0, 0, 200))
@@ -136,7 +136,7 @@ def test_save_image():
 
     img.draw_line( (0,   0), (399, 299), 'white', line_width=4)
     img.draw_line( (0, 299), (399, 0), 'green', line_width=4)
-    
+
     img.save("test_image_save.bmp")
 
     img.save("test_image_save.jpg", "jpeg")
@@ -147,6 +147,34 @@ def test_save_image():
 
     with pytest.raises(ValueError):
         img.save("test_image1.something", "random_string")
+
+def test_clear():
+    img = py_gd.Image(100,200)
+
+    # just to put something in there to clear.
+    img.draw_rectangle( (-10, -10), (50, 100), fill_color='red' )
+    img.draw_rectangle( (50, 100), (110, 210), fill_color='blue' )
+
+    img.save("test_image_clear_before.png", "png")
+    img.clear()
+    img.save("test_image_clear_after.png", "png")
+
+    assert np.all(np.asarray(img).flat == 0)
+
+def test_clear_color():
+    img = py_gd.Image(100,200)
+
+    # just to put something in there to clear.
+    img.draw_rectangle( (-10, -10), (50, 100), fill_color='red' )
+    img.draw_rectangle( (50, 100), (110, 210), fill_color='blue' )
+
+    img.save("test_image_clear_before2.png", "png")
+    img.clear(color='white')
+    img.save("test_image_clear_after2.png", "png")
+
+    assert np.all(np.asarray(img).flat == img.get_color_index('white'))
+
+
 
 def test_line():
     img = py_gd.Image(100,200)
@@ -186,7 +214,7 @@ def test_GetPixel():
     img.draw_pixel( (2, 2), 'green')
     img.draw_pixel( (3, 3), 'blue')
 
-    assert img.get_pixel_color( (0, 0) ) == 'white' 
+    assert img.get_pixel_color( (0, 0) ) == 'white'
     assert img.get_pixel_color( (1, 1) ) == 'red'
     assert img.get_pixel_color( (2, 2) ) == 'green'
     assert img.get_pixel_color( (3, 3) ) == 'blue'
@@ -252,14 +280,14 @@ def test_polyline():
                ( 50,  50),
               )
 
-    #img.draw_polyline( points, 'red', line_width=3)
+    img.draw_polyline( points, 'red', line_width=3)
 
     points = ( ( 50,  50),
                ( 90, 190),
                ( 10,  10),
               )
 
-    #img.draw_polyline( points, 'blue', line_width=5)
+    img.draw_polyline( points, 'blue', line_width=5)
 
     with pytest.raises(ValueError):
         # can't accept just one point
@@ -343,17 +371,17 @@ def test_draw_dot():
 def test_draw_dots():
     img = py_gd.Image(20, 20)
 
-    img.draw_dots( ( (2, 2), 
+    img.draw_dots( ( (2, 2),
                        (2, 18),
                        (10,10)
                       )
                     )
 
-    img.draw_dots( ( (18, 18), 
+    img.draw_dots( ( (18, 18),
                        (18, 2),
                       ),
                       diameter=2,
-                      color='red'    
+                      color='red'
                     )
 
     img.save("test_image_points.png", "png")
@@ -361,18 +389,18 @@ def test_draw_dots():
 def test_draw_dots3():
     img = py_gd.Image(20, 20)
 
-    img.draw_dots( ( (2, 2), 
+    img.draw_dots( ( (2, 2),
                        (2, 18),
                        (10,10)
                       ),
                       diameter = 3
                     )
 
-    img.draw_dots( ( (18, 18), 
+    img.draw_dots( ( (18, 18),
                        (18, 2),
                       ),
                       diameter=4,
-                      color='red'    
+                      color='red'
                     )
 
     img.save("test_image_points3.png", "png")
@@ -382,57 +410,57 @@ def test_draw_dots_large():
 
     img.draw_dots( ((5, 5),),
                       diameter = 3,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_dots( ((15, 15),),
                       diameter = 4,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_dots( ((25, 25),),
                       diameter = 5,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_dots( ((35, 35),),
                       diameter = 6,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_dots( ((45, 45),),
                       diameter = 7,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_dots( ((55, 55),),
                       diameter = 9,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_dots( ((65, 65),),
                       diameter = 12,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_dots( ((80, 80),),
                       diameter = 15,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_dots( ((100, 100),),
                       diameter = 20,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_dots( ((120, 120),),
                       diameter = 30,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_dots( ((65, 65),),
                       diameter = 12,
-                      color='red',    
+                      color='red',
                     )
 
     img.save("test_image_dots_large.png", "png")
@@ -472,62 +500,62 @@ def test_draw_x_large():
 
     img.draw_xes( ((5, 5),),
                       diameter = 3,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_xes( ((15, 15),),
                       diameter = 4,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_xes( ((25, 25),),
                       diameter = 5,
-                      color='purple',    
+                      color='purple',
                     )
 
     img.draw_xes( ((35, 35),),
                       diameter = 6,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_xes( ((45, 45),),
                       diameter = 7,
-                      color='red',    
+                      color='red',
                     )
 
     img.draw_xes( ((55, 55),),
                       diameter = 9,
-                      color='green',    
+                      color='green',
                     )
 
     img.draw_xes( ((65, 65),),
                   diameter = 12,
-                  color='red',    
-                  line_width=2,   
+                  color='red',
+                  line_width=2,
                     )
 
     img.draw_xes( ((80, 80),),
                   diameter = 15,
-                  color='blue',    
-                  line_width=3,   
+                  color='blue',
+                  line_width=3,
                     )
 
     img.draw_xes( ((100, 100),),
                   diameter = 20,
-                  color='fuchsia',    
-                  line_width=4,   
+                  color='fuchsia',
+                  line_width=4,
                     )
 
     img.draw_xes( ((120, 120),),
                   diameter = 30,
-                  color='red',    
-                  line_width=5,   
+                  color='red',
+                  line_width=5,
                     )
 
     img.draw_xes( ((160, 160),),
                   diameter = 40,
-                  color='red', 
-                  line_width=10,   
+                  color='red',
+                  line_width=10,
                   )
 
 
@@ -596,7 +624,7 @@ def test_set_pixel_value():
     for i in range(4):
         for j in range(5):
             assert img.get_pixel_value( (i,j) ) == i
-    
+
 
 def test_array_set():
     arr = np.array( [[ 0, 1, 2],
@@ -605,16 +633,16 @@ def test_array_set():
                      [ 9, 10, 11] ],
                      dtype=np.uint8,
                      order='f')
- 
+
     img = py_gd.Image(arr.shape[0], arr.shape[1], preset_colors='web')
     img.set_data(arr)
-    
+
     img.save('test_image_array1.png')
 
     print img.get_color_names()
     for i in range(4):
         for j in range(3):
-            print img.get_pixel_color( (i,j) ), 
+            print img.get_pixel_color( (i,j) ),
             print img.get_pixel_value( (i,j) )
 
 
@@ -630,9 +658,9 @@ def test_array_creation():
                      [ 9, 10, 11] ],
                      dtype=np.uint8,
                      order='c')
- 
+
     img = py_gd.from_array(arr)
-    
+
     img.save('test_image_array2.bmp')
 
     for y in range(img.height):

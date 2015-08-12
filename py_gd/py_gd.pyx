@@ -25,7 +25,7 @@ from cython cimport view
 
 transparent_colors = [('transparent', (  0,  0,  0, 127) ) ]
 
-BW_colors = transparent_colors + [('black',       (  0,  0,  0) ),  
+BW_colors = transparent_colors + [('black',       (  0,  0,  0) ),
                                   ('white',       (255, 255, 255) ),
                                  ]
 
@@ -61,7 +61,7 @@ cdef class Image:
 
     cdef list color_names
     cdef list color_rgb
-    cdef dict colors 
+    cdef dict colors
 
     def __cinit__(self,
                   int width,
@@ -71,7 +71,7 @@ cdef class Image:
         self.width  = width
         self.height = height
 
-        if width*height > MAX_IMAGE_SIZE: 
+        if width*height > MAX_IMAGE_SIZE:
             raise MemoryError("""Can't create a larger than %i byte image (arbitrary...)\n
 This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         self._image = gdImageCreatePalette(width, height)
@@ -96,14 +96,14 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         :type height: integer
 
         :param preset_colors=web_colors: which set of preset colors you want. options are:
-                                         
+
                                          'web' - the basic named colors for the web: transparent background
-                                         
+
                                          'BW' - transparent, black, and white: transparent background
-                                         
+
                                          'transparent' - transparent background, no other colors set
-                                         
-                                         None - no pre-allocated colors -- the first one you allocate will be the background color 
+
+                                         None - no pre-allocated colors -- the first one you allocate will be the background color
         :type preset_colors: string or None
 
         The Image is created as a 8-bit Paletted Image.
@@ -125,12 +125,26 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         else:
             raise ValueError("preset_colors needs to one of 'web', 'BW', 'transparent', or None")
 
+    def clear(self, color=None):
+        """
+        clear the image
+
+        :param color=None: color to set the image to if NOne, it will be set to the first
+                           color set (index 0)
+        """
+        # Note: is there a call in gd for this?
+        color = 0 if color is None else color
+        gdImageFilledRectangle(self._image,
+                                   0, 0, # upper left
+                                   self.width, self.height, # lower right
+                                   self.get_color_index(color)
+                                   )
     def add_color(self, name, color):
         """
         add a new color to the palette
 
         :param name: the name of the color
-        :type name: string 
+        :type name: string
 
         :param color: red, green, blue values for color - 0 to 255 or red, grenn, blue, alpha values (note: alpha is 0-127)
         :type color: 3-tuple of integers (r,g,b) or 4-tuple of integers (r, g, b, a)
@@ -142,7 +156,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         if name in self.colors:
             raise ValueError("%s already in the palette"%name)
 
-        cdef int color_index            
+        cdef int color_index
         if len(color) == 4:
             color_index = gdImageColorAllocateAlpha(self._image, color[0], color[1], color[2], color[3])
         elif len(color) == 3:
@@ -163,14 +177,14 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         Add a list of colors to the pallette
 
         :param color_list: list of colors - each elemnt of the list is a 2-tuple: ( 'color_name', (r,g,b) )
-        
+
         :returns indexes: list of color indexes.
         """
         indexes = []
         for name, color in color_list:
             indexes.append( self.add_color(name, color) )
         return indexes
-  
+
     @cython.boundscheck(False)
     def __array__(self):
         """
@@ -192,7 +206,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
             memcpy( &arr[0, col], self._image.pixels[col], self.width)
             #for row in range(self.width):
             #    arr[row, col] = self._image.pixels[col][row]
-        
+
         return arr
 
     #def set_data(self, cnp.ndarray[char, ndim=2, mode='c'] arr not None):
@@ -251,7 +265,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
     #     buffer.shape = &shape[0]
     #     buffer.strides =  NULL # NULL for c-contiguous
     #     buffer.suboffsets = NULL # NULL for C-contiguous
-    #     buffer.itemsize = 1 
+    #     buffer.itemsize = 1
     #     buffer.internal = NULL # NULL for the ordinary case
 
     # def __releasebuffer__(self, Py_buffer* buffer):
@@ -398,7 +412,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         :type diameter: integer
         """
         cdef cnp.uint8_t c
-        
+
         c = self.get_color_index(color)
         if diameter == 1:
             gdImageSetPixel (self._image,
@@ -425,7 +439,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         elif diameter > 2:
             gdImageFilledArc(self._image,
                              point[0], point[1],
-                             diameter, diameter, 
+                             diameter, diameter,
                              0, 360,
                              c,
                              gdArc,
@@ -452,7 +466,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         cdef cnp.uint8_t c
         cdef cnp.uint32_t i, n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
-        
+
         points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
         n = points_arr.shape[0]
 
@@ -485,7 +499,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
             for i in range(n):
                 gdImageFilledArc(self._image,
                              points_arr[i, 0], points_arr[i, 1],
-                             diameter, diameter, 
+                             diameter, diameter,
                              0, 360,
                              c,
                              gdArc,
@@ -516,7 +530,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         cdef cnp.uint8_t c
         cdef cnp.uint32_t i, n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
-        
+
         points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
         n = points_arr.shape[0]
 
@@ -551,12 +565,12 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
                             points_arr[i, 0]-r, points_arr[i, 1]-r,
                             points_arr[i, 0]+r, points_arr[i, 1]+r,
                             c
-                            )  
+                            )
                 gdImageLine(self._image,
                             points_arr[i, 0]-r, points_arr[i, 1]+r,
                             points_arr[i, 0]+r, points_arr[i, 1]-r,
                             c
-                            )  
+                            )
             gdImageSetThickness(self._image, 1)
         else:
             raise NotImplementedError("only diameters >= 2 are supported.")
@@ -581,7 +595,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         gdImageLine(self._image,
                     pt1[0], pt1[1], pt2[0], pt2[1],
                     self.get_color_index(color)
-                    )  
+                    )
         gdImageSetThickness(self._image, 1)
 
     def draw_polygon(self, points, line_color=None, fill_color=None, int line_width=1):
@@ -603,14 +617,14 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         """
         cdef int n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
-        
+
         points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
         n = points_arr.shape[0]
-        
+
         if n < 3:
             raise ValueError("There must be at least three points specified for a polygon")
 
-        
+
         if fill_color is not None:
             gdImageFilledPolygon(self._image,
                                  <gdPointPtr> &points_arr[0,0],
@@ -646,10 +660,10 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
 
         cdef int n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
-        
+
         points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
         n = points_arr.shape[0]
-        
+
         if n < 2:
             raise ValueError("There must be at least two points specified for a polyline")
 
@@ -670,7 +684,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         :param pt1: upper left corner of rectangle
         :type pt1: (x,y) tuple or sequence of integers
 
-        :param pt2: lower left corner of rectangle
+        :param pt2: lower right corner of rectangle
         :type pt2: (x,y) tuple or sequence of integers
 
         :param fill_color=None: the color of the filled rectangle
@@ -680,7 +694,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         :type line_width: integer
 
         """
-        
+
         if fill_color is not None:
             gdImageFilledRectangle(self._image,
                                    pt1[0], pt1[1],
@@ -760,19 +774,19 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         if fill_color is not None:
             gdImageFilledArc(self._image,
                              center[0], center[1],
-                             width, height, 
+                             width, height,
                              start, end,
                              self.get_color_index(fill_color),
                              flag,
                              )
         if line_color is not None:
             flag |= gdNoFill
-            if draw_wedge: 
+            if draw_wedge:
                 flag |= gdEdged
             gdImageSetThickness(self._image, line_width)
             gdImageFilledArc(self._image,
                              center[0], center[1],
-                             width, height, 
+                             width, height,
                              start, end,
                              self.get_color_index(line_color),
                              flag,
@@ -788,7 +802,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
 
         :param point: coordinates at which to draw the text. the point is the upper left corner of the text bounding box.
         :type point: 2-tuple of (x,y) integers
-        
+
         :param font: desired font -- gd built in fonts: "tiny", "small", "medium", "large", and "giant"
         :type font: string
 
@@ -828,7 +842,7 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         # if line_color is not None:
         #     gdImageArc(self._image,
         #                center[0], center[1],
-        #                width, height, 
+        #                width, height,
         #                start, end,
         #                self.get_color_index(line_color)
         #                )
