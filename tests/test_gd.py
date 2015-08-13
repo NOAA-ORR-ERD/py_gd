@@ -80,6 +80,24 @@ def test_mem_limit():
     with pytest.raises(MemoryError):
         img = py_gd.Image(32768, 32769) # > 1 GB image
 
+def test_set_size():
+    """
+    you should not be abel to set teh size or width or height
+    """
+    img = py_gd.Image(40, 30)
+
+    assert img.size == (40,30)
+    assert img.height == 30
+    assert img.width == 40
+
+    with pytest.raises(AttributeError):
+        img.size = (50, 60)
+    with pytest.raises(AttributeError):
+            img.height = 100
+    with pytest.raises(AttributeError):
+            img.width = 100
+
+
 
 def test_info():
     img = py_gd.Image(400, 300)
@@ -732,6 +750,16 @@ def test_copy_transparent():
     img2.copy(img1, (0,0), (7,7), (4,4))
 
     img2.save("image_copy_trans.png", file_type="png")
+
+def test_size():
+
+    """
+    test the size property
+    """
+    img = py_gd.Image(10, 15)
+
+    assert img.size == (10, 15)
+
 
 
 

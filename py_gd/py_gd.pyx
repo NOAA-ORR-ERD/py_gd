@@ -55,7 +55,8 @@ cdef class Image:
     """
     class wrapper  around a gdImage object
     """
-    cdef readonly unsigned int width, height
+#    cdef readonly unsigned int _width, _height
+
     cdef gdImagePtr _image
     cdef unsigned char* _buffer_array
 
@@ -68,12 +69,12 @@ cdef class Image:
                   int height,
                   preset_colors='web'):
 
-        self.width  = width
-        self.height = height
+#        self._width  = width
+#        self._height = height
 
         if width*height > MAX_IMAGE_SIZE:
-            raise MemoryError("""Can't create a larger than %i byte image (arbitrary...)\n
-This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
+            raise MemoryError("Can't create a larger than %i byte image (arbitrary...)\n"
+                              "This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
         self._image = gdImageCreatePalette(width, height)
         if self._image is NULL:
             raise MemoryError("could not create a gdImage")
@@ -124,6 +125,33 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
             self.add_colors(web_colors)
         else:
             raise ValueError("preset_colors needs to one of 'web', 'BW', 'transparent', or None")
+
+    def __str__(self):
+        return "py_gd.Image: width:%s and height:%s"%(self.width, self.height)
+
+    def __repr__(self):
+        return "Image(width=%i, height=%i)"%(self.width, self.height)
+
+    @property
+    def size(self):
+        return (gdImageSX(self._image), gdImageSY(self._image))
+
+    @property
+    def width(self):
+        return gdImageSX(self._image)
+
+    @property
+    def height(self):
+        return gdImageSY(self._image)
+
+
+    # @property
+    # def width(self):
+    #      return gdImageSX(self._image)
+
+    # @property
+    # def height(self):
+    #     return gdImageSY(self._image)
 
     def clear(self, color=None):
         """
@@ -299,12 +327,6 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
 
     #     free(self._buffer_array)
 
-
-    def __str__(self):
-        return "py_gd.Image: width:%s and height:%s"%(self.width, self.height)
-
-    def __repr__(self):
-        return "Image(width=%i, height=%i)"%(self.width, self.height)
 
     ## Saving images
     def save(self, file_name, file_type="bmp", compression=None):

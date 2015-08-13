@@ -63,6 +63,10 @@ cdef extern from "gd.h":
     void gdImageGif  (gdImagePtr im, FILE *outFile)
     void gdImagePng  (gdImagePtr im, FILE *outFile)
 
+    # query functions
+    int gdImageSX(gdImagePtr im) # MACRO
+    int gdImageSY(gdImagePtr im) # MACRO
+
     # constants (these are #define in gd.h)
     cpdef int gdArc
     cpdef int gdPie

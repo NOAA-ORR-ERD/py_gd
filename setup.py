@@ -25,7 +25,7 @@ library_dirs = []
 
 #library_dirs = ['./static_libs/lib']
 
-## This setup requires libgd 
+## This setup requires libgd
 ## It expects to find them in the "usual" locations
 
 ext_modules=[ Extension("py_gd.py_gd",
@@ -36,7 +36,7 @@ ext_modules=[ Extension("py_gd.py_gd",
                          )]
 setup(
     name = "py_gd",
-    version='0.1.1',
+    version='0.1.2',
     description = "python wrappers around libgd graphics lib",
     #long_description=read('README'),
     author = "Christopher H. Barker",
@@ -44,7 +44,7 @@ setup(
     url="https://github.com/NOAA-ORR-ERD/py_gd",
     license = "Public Domain",
     keywords = "graphics cython drawing",
-    ext_modules = cythonize(ext_modules), 
+    ext_modules = cythonize(ext_modules),
     packages = ["py_gd",],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
