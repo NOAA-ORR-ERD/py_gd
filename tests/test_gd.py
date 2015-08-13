@@ -667,6 +667,75 @@ def test_array_creation():
         for x in range(img.width):
             assert arr[x,y] == img.get_pixel_value( (x,y) )
 
+def test_copy1():
+    """
+    test copying a full image
+    """
+    img1 = py_gd.Image(5,5)
+
+    img2 = py_gd.Image(5,5)
+
+    img1.draw_pixel( (0, 0), 'white')
+    img1.draw_pixel( (1, 1), 'red')
+    img1.draw_pixel( (2, 2), 'green')
+    img1.draw_pixel( (3, 3), 'blue')
+    img1.draw_pixel( (4, 4), 'gray')
+
+    img2.copy(img1)
+
+    img2.save("image_copy.bmp")
+
+    assert np.array_equal(np.array(img1), np.array(img2))
+
+def test_copy2():
+    """
+    test copying parts of an image
+    """
+    img1 = py_gd.Image(10,10)
+    img2 = py_gd.Image(10,10)
+
+    img1.draw_rectangle( (1,1), (8,8), fill_color='red' )
+    img2.draw_rectangle( (0,0), (9,9), fill_color='blue' )
+
+    img2.copy(img1, (3,3), (3,3), (4,4))
+
+    img1.save("image_copy_middle1.bmp")
+    img2.save("image_copy_middle2.bmp")
+
+
+def test_copy_ul():
+    """
+    test copying parts of an image
+    """
+    img1 = py_gd.Image(10,10)
+    img2 = py_gd.Image(10,10)
+
+    img1.draw_rectangle( (1,1), (8,8), fill_color='red' )
+    img2.draw_rectangle( (0,0), (9,9), fill_color='blue' )
+
+    img2.copy(img1, (0,0), (7,7), (4,4))
+
+    img2.save("image_copy_upper_left.bmp")
+
+def test_copy_transparent():
+    """
+    test copying parts of an image that are transparent
+    """
+    img1 = py_gd.Image(10,10)
+    img2 = py_gd.Image(10,10)
+
+
+    img1.draw_rectangle( (0,0), (9,9), fill_color='red' )
+    img1.draw_rectangle( (2,2), (7,7), fill_color='transparent' )
+    img2.draw_rectangle( (0,0), (9,9), fill_color='blue' )
+
+    img2.copy(img1, (0,0), (7,7), (4,4))
+
+    img2.save("image_copy_trans.png", file_type="png")
+
+
+
+
 if __name__ == "__main__":
     # just run these tests..
     #test_init_default_palette()

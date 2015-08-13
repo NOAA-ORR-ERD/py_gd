@@ -235,6 +235,32 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
             for col in range(self.width):
                 self._image.pixels[row][col] = arr[col, row]
 
+    def copy(self, Image src_img, dst_corner=(0,0), src_corner=(0,0), size=None):
+        """
+        draw a rectangular section of another image on top of this one
+
+        default is to copy the whole image
+
+        :param src_img: image you want to copy from
+        :type src_img: Image
+
+        :param dst_corner: corner of rectangle to copy to
+        :type dst_corner: (x,y) tuple of integers
+
+        :param src_corner: corner of rectangle to copy from in source image
+        :type src_corner: (x,y) tuple of integers
+
+        :param size: size of recatngle to copy (width, height)
+        :type size: (w, h) tuple of integers
+        """
+        size = (self.width, self.height) if size is None else size
+
+        gdImageCopy(self._image,
+                    src_img._image,
+                    dst_corner[0], dst_corner[1],
+                    src_corner[0], src_corner[1],
+                    size[0], size[1])
+        pass
 
     # def __getbuffer__(self, Py_buffer* buffer, int flags):
     ## attempt to use buffer interface instaed of numpy arrays...
@@ -564,12 +590,12 @@ This limit can be changed by setting MAX_IMAGE_SIZE"""%MAX_IMAGE_SIZE)
                 gdImageLine(self._image,
                             points_arr[i, 0]-r, points_arr[i, 1]-r,
                             points_arr[i, 0]+r, points_arr[i, 1]+r,
-                            c
+                            c,
                             )
                 gdImageLine(self._image,
                             points_arr[i, 0]-r, points_arr[i, 1]+r,
                             points_arr[i, 0]+r, points_arr[i, 1]-r,
-                            c
+                            c,
                             )
             gdImageSetThickness(self._image, 1)
         else:

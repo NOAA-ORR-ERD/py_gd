@@ -13,7 +13,7 @@ cdef extern from "gd.h":
         unsigned char **pixels
         ## lots more we might want here, but for now...
     ctypedef gdImageStruct *gdImagePtr
-    
+
     cdef struct gdPoint:
         int x, y
     ctypedef gdPoint *gdPointPtr
@@ -25,9 +25,9 @@ cdef extern from "gd.h":
 
     # utilities for creating, etc, images
     gdImagePtr gdImageCreatePalette(int width, int height)
-    
+
     void gdImageDestroy (gdImagePtr im)
-    
+
     int gdImageColorAllocate (gdImagePtr im, int r, int g, int b)
     int gdImageColorAllocateAlpha(gdImagePtr im, int r, int g, int b, int a)
     int gdImageGetPixel(gdImagePtr im, int x, int y)
@@ -35,7 +35,7 @@ cdef extern from "gd.h":
     # drawing functions
     ## to set up line drawing
     void gdImageSetThickness(gdImagePtr im, int thickness)
-    
+
     void gdImageSetPixel (gdImagePtr im, int x, int y, int color)
 
     void gdImageLine (gdImagePtr im, int x1, int y1, int x2, int y2, int color)
@@ -51,21 +51,24 @@ cdef extern from "gd.h":
     void gdImageArc(gdImagePtr im, int cx, int cy, int w, int h, int s, int e, int color)
     void gdImageFilledArc(gdImagePtr im, int cx, int cy, int w, int h, int s, int e, int color, int style)
 
+    #copying, etc.
+    void gdImageCopy(gdImagePtr dst, gdImagePtr src, int dstX, int dstY, int srcX, int srcY, int w, int h)
+
     # text drawing, etc.
     void gdImageString(gdImagePtr im, gdFontPtr font, int x, int y, unsigned char *s, int color)
 
     # image saving functions
     void gdImageBmp  (gdImagePtr im, FILE *outFile,  int compression)
     void gdImageJpeg (gdImagePtr im, FILE * outFile, int quality)
-    void gdImageGif  (gdImagePtr im, FILE *outFile) 
+    void gdImageGif  (gdImagePtr im, FILE *outFile)
     void gdImagePng  (gdImagePtr im, FILE *outFile)
 
     # constants (these are #define in gd.h)
     cpdef int gdArc
     cpdef int gdPie
-    cpdef int gdChord 
+    cpdef int gdChord
     cpdef int gdNoFill
-    cpdef int gdEdged 
+    cpdef int gdEdged
 
 # fonts are in extra headers:
 cdef extern from "gdfontt.h":
