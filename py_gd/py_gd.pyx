@@ -338,7 +338,7 @@ cdef class Image:
         "png"
         "jpeg"
 
-        NOTE: these may not always we avalible, depending on how libgd was compiled.
+        NOTE: these may not always we availhible, depending on how libgd was compiled.
               But bmp and gif should always be there.
 
         :param file_name: full or relative path to file you want created

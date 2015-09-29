@@ -82,7 +82,7 @@ def test_mem_limit():
 
 def test_set_size():
     """
-    you should not be abel to set teh size or width or height
+    you should not be able to set the size or width or height
     """
     img = py_gd.Image(40, 30)
 
@@ -495,7 +495,7 @@ def test_draw_dots_lots():
 
     img.draw_dots(points, diameter=2, color = 'red')
 
-    img.save("test_image_dots_lots.png")
+    img.save("test_image_dots_lots.png", 'png')
 
 def test_draw_x_lots():
     """
@@ -509,7 +509,7 @@ def test_draw_x_lots():
 
     img.draw_xes(points, diameter=2, color = 'red')
 
-    img.save("test_image_x_lots.png")
+    img.save("test_image_x_lots.png", 'png')
 
 
 
@@ -575,7 +575,6 @@ def test_draw_x_large():
                   color='red',
                   line_width=10,
                   )
-
 
     img.save("test_image_x_large.png", "png")
 
@@ -655,7 +654,7 @@ def test_array_set():
     img = py_gd.Image(arr.shape[0], arr.shape[1], preset_colors='web')
     img.set_data(arr)
 
-    img.save('test_image_array1.png')
+    img.save('test_image_array1.bmp')
 
     print img.get_color_names()
     for i in range(4):

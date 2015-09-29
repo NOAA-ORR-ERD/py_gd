@@ -23,7 +23,6 @@ import numpy #for the include dirs...
 include_dirs = [numpy.get_include(),]
 library_dirs = []
 
-#library_dirs = ['./static_libs/lib']
 
 ## This setup requires libgd
 ## It expects to find them in the "usual" locations
