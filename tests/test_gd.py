@@ -10,11 +10,25 @@ py.test test_gd.py
 """
 
 
+
+def outfile(file_name):
+  # just to make it a little easier to type..
+  output_dir = "./test_images_output"
+  if not os.path.exists(output_dir):
+      os.mkdir(output_dir)
+  return os.path.join(output_dir, file_name)
+
+import os
 import pytest
-
 import numpy as np
-
 import py_gd
+
+# def test_filenames():
+#     """just to see what the output dir is.."""
+#     print "output dir:", outfile("")
+#     print "CWD:", os.getcwd()
+#     assert False
+
 
 def test_init_simple():
     """
@@ -23,6 +37,14 @@ def test_init_simple():
     img = py_gd.Image(width=400,
                       height=400,
                       preset_colors=None)
+
+def test_cant_save_file():
+    img = py_gd.Image(width=400,
+                      height=400
+                      )
+    with pytest.raises(IOError):
+        img.save("a/non_existant/file_path")
+
 
 def test_init_simple_add_rgb():
     """
@@ -116,11 +138,12 @@ def test_add_colors():
     assert img.get_color_index('light grey') == 3
 
     img.draw_rectangle((2,2), (7,7), fill_color='light grey')
-    img.save('test_image_grey.bmp')
+    img.save(outfile('test_image_grey.bmp'))
 
     with pytest.raises(ValueError):
         # color doesn't exist
         img.draw_rectangle((2,2), (7,7), fill_color='red')
+
 
 def test_add_colors_repeat():
     img = py_gd.Image(10, 10, preset_colors='BW')
@@ -149,22 +172,18 @@ def test_add_colors_max():
         img.add_color("color_max", (10, 100, 200) )
 
 
-def test_save_image():
+
+@pytest.mark.parametrize("filetype", ["bmp","jpeg","gif","png"])
+def test_save_image(filetype):
     img = py_gd.Image(400, 300)
 
     img.draw_line( (0,   0), (399, 299), 'white', line_width=4)
     img.draw_line( (0, 299), (399, 0), 'green', line_width=4)
 
-    img.save("test_image_save.bmp")
-
-    img.save("test_image_save.jpg", "jpeg")
-
-    img.save("test_image_save.gif", "gif")
-
-    img.save("test_image_save.png", "png")
+    img.save(outfile("test_image_save"+filetype), filetype)
 
     with pytest.raises(ValueError):
-        img.save("test_image1.something", "random_string")
+        img.save(outfile("test_image1.something"), "random_string")
 
 def test_clear():
     img = py_gd.Image(100,200)
@@ -173,9 +192,9 @@ def test_clear():
     img.draw_rectangle( (-10, -10), (50, 100), fill_color='red' )
     img.draw_rectangle( (50, 100), (110, 210), fill_color='blue' )
 
-    img.save("test_image_clear_before.png", "png")
+    img.save(outfile("test_image_clear_before.png"), "png")
     img.clear()
-    img.save("test_image_clear_after.png", "png")
+    img.save(outfile("test_image_clear_after.png"), "png")
 
     assert np.all(np.asarray(img).flat == 0)
 
@@ -186,9 +205,9 @@ def test_clear_color():
     img.draw_rectangle( (-10, -10), (50, 100), fill_color='red' )
     img.draw_rectangle( (50, 100), (110, 210), fill_color='blue' )
 
-    img.save("test_image_clear_before2.png", "png")
+    img.save(outfile("test_image_clear_before2.png"), "png")
     img.clear(color='white')
-    img.save("test_image_clear_after2.png", "png")
+    img.save(outfile("test_image_clear_after2.png"), "png")
 
     assert np.all(np.asarray(img).flat == img.get_color_index('white'))
 
@@ -201,7 +220,7 @@ def test_line():
     img.draw_line( (0, 199), (99, 0), 'red', line_width=2)
     img.draw_line( (0, 100), (99, 100), 'green', line_width=4)
     img.draw_line( (50, 0), (50, 199), 'blue', line_width=8)
-    img.save("test_image_line.bmp")
+    img.save(outfile("test_image_line.bmp"))
 
     with pytest.raises(TypeError):
         img.draw_line( (0, 0), (99, 199), 'white', line_width='fred')
@@ -211,7 +230,7 @@ def test_line_clip():
     img = py_gd.Image(100,200)
 
     img.draw_line( (-30, -10), (150, 250), 'white')
-    img.save("test_image_line_clip.bmp")
+    img.save(outfile("test_image_line_clip.bmp"))
 
 
 def test_SetPixel():
@@ -222,7 +241,7 @@ def test_SetPixel():
     img.draw_pixel( (2, 2), 'green')
     img.draw_pixel( (3, 3), 'blue')
 
-    img.save("test_image_pixel.bmp")
+    img.save(outfile("test_image_pixel.bmp"))
 
 def test_GetPixel():
     img = py_gd.Image(5,5)
@@ -247,7 +266,7 @@ def test_Polygon1():
               )
 
     img.draw_polygon( points, 'red')
-    img.save("test_image_poly1.bmp")
+    img.save(outfile("test_image_poly1.bmp"))
 
 def test_Polygon2():
     img = py_gd.Image(100,200)
@@ -261,7 +280,7 @@ def test_Polygon2():
     img.draw_polygon( points, fill_color='blue')
 
 
-    img.save("test_image_poly2.bmp")
+    img.save(outfile("test_image_poly2.bmp"))
 
 def test_Polygon3():
     img = py_gd.Image(100,200)
@@ -273,7 +292,7 @@ def test_Polygon3():
               )
 
     img.draw_polygon( points, fill_color='blue',line_color='red', line_width=4)
-    img.save("test_image_poly3.bmp")
+    img.save(outfile("test_image_poly3.bmp"))
 
 def test_polygon_clip():
     img = py_gd.Image(100,200)
@@ -287,7 +306,8 @@ def test_polygon_clip():
               )
 
     img.draw_polygon( points, fill_color='blue',line_color='red')
-    img.save("test_image_polygon_clip.bmp")
+    img.save(outfile("test_image_polygon_clip.bmp"))
+
 
 def test_polyline():
     img = py_gd.Image(100,200)
@@ -311,7 +331,7 @@ def test_polyline():
         # can't accept just one point
         img.draw_polyline( ((10,10),), 'blue')
 
-    img.save("test_image_polyline.bmp")
+    img.save(outfile("test_image_polyline.bmp"))
 
 
 def test_rectangles():
@@ -320,7 +340,7 @@ def test_rectangles():
     img.draw_rectangle( (10,10), (30,40), fill_color='blue')
     img.draw_rectangle( (20,50), (40,70), line_color='blue', line_width=5)
     img.draw_rectangle( (40,80), (90,220), fill_color='white',line_color='green', line_width=2)
-    img.save("test_image_rectangle.bmp")
+    img.save(outfile("test_image_rectangle.bmp"))
 
 def test_arc():
     img = py_gd.Image(400,600)
@@ -346,7 +366,7 @@ def test_arc():
     # img.draw_arc( center, 380, 280, start=210, end= 270, line_color='white', fill_color='purple', styles=['Chord','Edged', 'NoFill'])
     img.draw_arc( center, 380, 280, start=270, end= 330, line_color='blue', fill_color='red', line_width=3)
 
-    img.save("test_image_arc.bmp")
+    img.save(outfile("test_image_arc.bmp"))
 
     #errors
     with pytest.raises(ValueError):
@@ -362,7 +382,7 @@ def test_text():
     img.draw_text("Some Medium Text", (20, 60), font="medium", color='white')
     img.draw_text("Some Large Text", (20, 80), font="large", color='white')
     img.draw_text("Some Giant Text", (20, 100), font="giant", color='white')
-    img.save("test_image_text.png", "png")
+    img.save(outfile("test_image_text.png"), "png")
 
 def test_draw_dot():
     img = py_gd.Image(100, 100, )
@@ -383,7 +403,7 @@ def test_draw_dot():
 
     img.draw_dot( (80,80), diameter=15, color='purple' )
 
-    img.save("test_image_dot.png", "png")
+    img.save(outfile("test_image_dot.png"), "png")
 
 
 def test_draw_dots():
@@ -402,7 +422,7 @@ def test_draw_dots():
                       color='red'
                     )
 
-    img.save("test_image_points.png", "png")
+    img.save(outfile("test_image_points.png"), "png")
 
 def test_draw_dots3():
     img = py_gd.Image(20, 20)
@@ -421,7 +441,7 @@ def test_draw_dots3():
                       color='red'
                     )
 
-    img.save("test_image_points3.png", "png")
+    img.save(outfile("test_image_points3.png"), "png")
 
 def test_draw_dots_large():
     img = py_gd.Image(200, 200)
@@ -481,7 +501,7 @@ def test_draw_dots_large():
                       color='red',
                     )
 
-    img.save("test_image_dots_large.png", "png")
+    img.save(outfile("test_image_dots_large.png"), "png")
 
 def test_draw_dots_lots():
     """
@@ -495,7 +515,7 @@ def test_draw_dots_lots():
 
     img.draw_dots(points, diameter=2, color = 'red')
 
-    img.save("test_image_dots_lots.png", 'png')
+    img.save(outfile("test_image_dots_lots.png"), 'png')
 
 def test_draw_x_lots():
     """
@@ -509,7 +529,7 @@ def test_draw_x_lots():
 
     img.draw_xes(points, diameter=2, color = 'red')
 
-    img.save("test_image_x_lots.png", 'png')
+    img.save(outfile("test_image_x_lots.png"), 'png')
 
 
 
@@ -576,7 +596,7 @@ def test_draw_x_large():
                   line_width=10,
                   )
 
-    img.save("test_image_x_large.png", "png")
+    img.save(outfile("test_image_x_large.png"), "png")
 
 
 def test_colors():
@@ -654,7 +674,7 @@ def test_array_set():
     img = py_gd.Image(arr.shape[0], arr.shape[1], preset_colors='web')
     img.set_data(arr)
 
-    img.save('test_image_array1.bmp')
+    img.save(outfile('test_image_array1.bmp'))
 
     print img.get_color_names()
     for i in range(4):
@@ -678,7 +698,7 @@ def test_array_creation():
 
     img = py_gd.from_array(arr)
 
-    img.save('test_image_array2.bmp')
+    img.save(outfile('test_image_array2.bmp'))
 
     for y in range(img.height):
         for x in range(img.width):
@@ -700,7 +720,7 @@ def test_copy1():
 
     img2.copy(img1)
 
-    img2.save("image_copy.bmp")
+    img2.save(outfile("image_copy.bmp"))
 
     assert np.array_equal(np.array(img1), np.array(img2))
 
@@ -716,8 +736,8 @@ def test_copy2():
 
     img2.copy(img1, (3,3), (3,3), (4,4))
 
-    img1.save("image_copy_middle1.bmp")
-    img2.save("image_copy_middle2.bmp")
+    img1.save(outfile("image_copy_middle1.bmp"))
+    img2.save(outfile("image_copy_middle2.bmp"))
 
 
 def test_copy_ul():
@@ -732,7 +752,7 @@ def test_copy_ul():
 
     img2.copy(img1, (0,0), (7,7), (4,4))
 
-    img2.save("image_copy_upper_left.bmp")
+    img2.save(outfile("image_copy_upper_left.bmp"))
 
 def test_copy_transparent():
     """
@@ -748,7 +768,7 @@ def test_copy_transparent():
 
     img2.copy(img1, (0,0), (7,7), (4,4))
 
-    img2.save("image_copy_trans.png", file_type="png")
+    img2.save(outfile("image_copy_trans.png"), file_type="png")
 
 def test_size():
 

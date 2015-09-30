@@ -357,29 +357,33 @@ cdef class Image:
         except UnicodeEncodeError:
             raise ValueError("can only except ascii filenames")
 
+        file_type_codes = ["bmp", "jpg", "jpeg", "gif", "GIF", "png", "PNG"]
+        if file_type not in file_type_codes:
+            raise ValueError("file_type must be one of: %s"%file_type_codes)
+
+        #open the file here:
+        fp = fopen(file_path, "wb");
+        if fp is NULL:
+            raise IOError("could not open the file:%s"%file_path)
+
+        # then call the right writer:
         if file_type in ["bmp", "BMP"]:
-            fp = fopen(file_path, "wb");
             gdImageBmp(self._image, fp, 0)
-            fclose(fp)
         elif file_type in ("jpg","jpeg"):
             if compression is None:
                compression_level = 80
             else:
                 compression_level = compression
-
-            fp = fopen(file_path, "wb");
             gdImageJpeg(self._image, fp, compression_level)
-            fclose(fp)
         elif file_type in ("gif", "GIF"):
-            fp = fopen(file_path, "wb");
             gdImageGif(self._image, fp)
-            fclose(fp)
         elif file_type in ("png", "PNG"):
-            fp = fopen(file_path, "wb");
             gdImagePng(self._image, fp)
-            fclose(fp)
         else:
+            ## this should now be impossible to get to...
             raise ValueError('"bmp", "gif", "png", and "jpeg" are the only valid file_type')
+        fclose(fp)
+        return None
 
     def get_color_names(self):
         """
