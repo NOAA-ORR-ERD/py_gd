@@ -9,7 +9,10 @@ py.test test_gd.py
 
 """
 
-
+import os, hashlib
+import pytest
+import numpy as np
+import py_gd
 
 def outfile(file_name):
   # just to make it a little easier to type..
@@ -18,16 +21,21 @@ def outfile(file_name):
       os.mkdir(output_dir)
   return os.path.join(output_dir, file_name)
 
-import os
-import pytest
-import numpy as np
-import py_gd
-
-# def test_filenames():
-#     """just to see what the output dir is.."""
-#     print "output dir:", outfile("")
-#     print "CWD:", os.getcwd()
-#     assert False
+def check_file(name):
+    """
+    checks if the checksum of the passed in filename is the same as it was
+    the last time the checksums were generated...
+    """
+    ## checksums of all the images generated.
+    ## rebuild with the build_checksums.py script
+    ##  it would be nice if all images were checked, but only a few are now...
+    checksums = {'test_image_save.jpg': 'c71f74e1749f401f653e5a1ecd881451', 'test_image_save.png': '3067832d58ce76285b7e32d3f42e2659', 'test_image_clear_after.png': 'b6825be7e699ea19bd2571c3b4864dac', 'test_image_poly1.bmp': 'd4654eb592716d5fe73c0661b39b39a7', 'test_image_poly2.bmp': '066f46e0363d1c04b002ea1d6716a07f', 'image_copy_upper_left.bmp': '24f96fb535350df3cdcdc25bcb95a25a', 'test_image_dots_lots.png': 'bf51aa3155aa9a8ea528d24c1bc72430', 'image_copy_middle2.bmp': '09be326e5940e58dfdfa492e03d7e818', 'test_image_grey.bmp': '46f3b8773ac4d552944a2eb378ba27e8', 'test_image_line_clip.bmp': 'fe6e5505f60428d47a64124cbb86c68d', 'test_image_array2.bmp': 'e268130b61eaecdc9d809b771909f7b6', 'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076', 'test_image_clear_before2.png': 'd34a1e3576b2732321f32c4ee1117730', 'image_copy.bmp': 'a0e7ffb4ecada86965fcfc60a032cad4', 'test_image_points.png': 'd16cb5b8b309f570940db8c17bccd9a1', 'test_image_clear_after2.png': '30bc477928a84571e60925fd61013a94', 'test_image_arc.bmp': 'beadbe2b82054c0ff2394ea27f26ba69', 'test_image_x_lots.png': '2717090e57d19c278b42bfca04a68e12', 'test_image_points3.png': '37e447a1fb2fd9bd9b87fa37d6e8126c', 'test_image_line.bmp': 'd279707389a3bac62c4413839919b962', 'image_copy_trans.png': '8939012bbd494ec19c8afa639eedafb8', 'test_image_poly3.bmp': '4fa4411acb4aee16a1c6a2e15df44cc5', 'test_image_text.png': 'b4e67195c6b3c64e71541eac5ffc4b2b', 'test_image_clear_before.png': 'd34a1e3576b2732321f32c4ee1117730', 'test_image_dots_large.png': '8d5b98c17d1835a839ed0203bc007cc0', 'image_copy_middle1.bmp': '0ac48cdf5e2652999a33efa6c558a9b7', 'test_image_polygon_clip.bmp': 'fb8037129941fd6c9e2686f0c109496b', 'test_image_rectangle.bmp': '725e1bd5723064b4569455caf518f77a', 'test_image_polyline.bmp': '01d7d25972d69796af9fefc67a1e17af', 'test_image_array1.bmp': 'e268130b61eaecdc9d809b771909f7b6', 'test_image_dot.png': '97b4870286854db6bf4b7b2475a876ab', 'test_image_save.gif': '50f1d8d494edba646813b7e7ab830e64', 'test_image_save.bmp': '1facb71e1f6d0e21abfb8b07ae900a49', 'test_image_pixel.bmp': '1bf9f74b1122d8b3cc4a955c7216feb7'}
+    cs = hashlib.md5(open(outfile(name),'rb').read()).hexdigest()
+    if checksums[name] == cs:
+        return True
+    else:
+        print "Checksum did not match for file:", name
+        return False
 
 
 def test_init_simple():
@@ -172,15 +180,18 @@ def test_add_colors_max():
         img.add_color("color_max", (10, 100, 200) )
 
 
-
-@pytest.mark.parametrize("filetype", ["bmp","jpeg","gif","png"])
+@pytest.mark.parametrize("filetype", ["bmp","jpg","gif","png"])
 def test_save_image(filetype):
     img = py_gd.Image(400, 300)
 
     img.draw_line( (0,   0), (399, 299), 'white', line_width=4)
     img.draw_line( (0, 299), (399, 0), 'green', line_width=4)
 
-    img.save(outfile("test_image_save"+filetype), filetype)
+    fname = "test_image_save."+filetype
+    img.save(outfile(fname), filetype)
+
+    assert check_file(fname)
+
 
     with pytest.raises(ValueError):
         img.save(outfile("test_image1.something"), "random_string")
@@ -193,10 +204,12 @@ def test_clear():
     img.draw_rectangle( (50, 100), (110, 210), fill_color='blue' )
 
     img.save(outfile("test_image_clear_before.png"), "png")
-    img.clear()
-    img.save(outfile("test_image_clear_after.png"), "png")
 
+    img.clear()
     assert np.all(np.asarray(img).flat == 0)
+
+    img.save(outfile("test_image_clear_after.png"), "png")
+    assert check_file("test_image_clear_after.png")
 
 def test_clear_color():
     img = py_gd.Image(100,200)
@@ -221,6 +234,7 @@ def test_line():
     img.draw_line( (0, 100), (99, 100), 'green', line_width=4)
     img.draw_line( (50, 0), (50, 199), 'blue', line_width=8)
     img.save(outfile("test_image_line.bmp"))
+    assert check_file("test_image_line.bmp")
 
     with pytest.raises(TypeError):
         img.draw_line( (0, 0), (99, 199), 'white', line_width='fred')
@@ -242,6 +256,8 @@ def test_SetPixel():
     img.draw_pixel( (3, 3), 'blue')
 
     img.save(outfile("test_image_pixel.bmp"))
+    assert check_file("test_image_pixel.bmp")
+
 
 def test_GetPixel():
     img = py_gd.Image(5,5)
