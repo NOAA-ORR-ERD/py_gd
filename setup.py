@@ -3,18 +3,22 @@
 """
 setup.py script for the py_gd package
 
-Tested with Anaconda on OS_X only so far.
+Tested with:
+  Anaconda on OS_X
+  Anaconda on Win64
+
+  Python 2.7.10
 
 libgd is assumed to be installed (and its dependencies) already.
+The Anaconda package at:
+   http://anaconda.org/noaa-orr-erd/libgd
+is a good way to get it
 
 """
 
 import sys, os
 
 from setuptools import setup, Extension
-
-#from distutils.core import setup
-# from distutils.extension import Extension
 
 from Cython.Build import cythonize
 
@@ -30,6 +34,7 @@ if sys.platform.startswith('win'):
 
 ## This setup requires libgd
 ## It expects to find them in the "usual" locations
+##   or where Anaconda put it...
 
 ext_modules=[ Extension("py_gd.py_gd",
                         ["py_gd/py_gd.pyx"],
@@ -37,6 +42,7 @@ ext_modules=[ Extension("py_gd.py_gd",
                         library_dirs = library_dirs,
                         libraries=["gd"],
                          )]
+
 setup(
     name = "py_gd",
     version='0.1.2',
@@ -61,5 +67,4 @@ setup(
         "Topic :: Multimedia :: Graphics",
     ],
 )
-
 
