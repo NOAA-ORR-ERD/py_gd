@@ -23,6 +23,10 @@ import numpy #for the include dirs...
 include_dirs = [numpy.get_include(),]
 library_dirs = []
 
+if sys.platform.startswith('win'):
+    # need the library and include for Windows Anaconda... <PREFIX>/Library
+    include_dirs.append(os.path.join(sys.prefix, 'Library\\include'))
+    library_dirs.append(os.path.join(sys.prefix, 'Library\\libs'))
 
 ## This setup requires libgd
 ## It expects to find them in the "usual" locations

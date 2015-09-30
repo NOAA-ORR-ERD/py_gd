@@ -3,16 +3,19 @@ package:
   version: 2.1.1
 
 source:
-  fn: libgd-2.1.1.tar.gz
+  git_url: https://github.com/libgd/libgd # [win]
+  
+  fn: libgd-2.1.2.tar.gz # [not win]
+  url: https://bitbucket.org/libgd/gd-libgd/downloads/libgd-2.1.2.tar.gz # [not win]
   # NOTE: the tarball on github does not have a configure script
   #       if you install all the autotools deps, it shoudl work
   #       with the "bootstrap.sh" script, but this source version
   #       is easier, with a configure script ready to go
   #       the gd devs indicated that they will probably put
   #       configured source tarball on github at some point...
-  url: https://bitbucket.org/libgd/gd-libgd/downloads/libgd-2.1.1.tar.gz
+  
 
-extras:
+extra:
    recipe_maintainer : https://github.com/NOAA-ORR-ERD/py_gd
 
 about:
@@ -24,8 +27,11 @@ requirements:
     - libpng
     - jpeg
     - freetype
+    - zlib
+    
 
   run:
     - libpng
     - jpeg
     - freetype
+    - zlib
