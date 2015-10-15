@@ -29,8 +29,15 @@ library_dirs = []
 
 if sys.platform.startswith('win'):
     # need the library and include for Windows Anaconda... <PREFIX>/Library
-    include_dirs.append(os.path.join(sys.prefix, 'Library\\include'))
-    library_dirs.append(os.path.join(sys.prefix, 'Library\\libs'))
+    include_dirs.append(os.path.join(sys.prefix, r'Library\include'))
+    # dlls go in bin, rather than lib (??)
+    library_dirs.append(os.path.join(sys.prefix, r'Library\lib'))
+
+compile_args = ['EHsc']
+link_args = ['/MANIFEST']
+
+libraries = ['gd']
+
 
 ## This setup requires libgd
 ## It expects to find them in the "usual" locations
@@ -40,7 +47,9 @@ ext_modules=[ Extension("py_gd.py_gd",
                         ["py_gd/py_gd.pyx"],
                         include_dirs = include_dirs,
                         library_dirs = library_dirs,
-                        libraries=["gd"],
+                        libraries=libraries,
+                        extra_compile_args = compile_args,
+                        extra_link_args = link_args,
                          )]
 
 setup(
@@ -54,6 +63,7 @@ setup(
     license = "Public Domain",
     keywords = "graphics cython drawing",
     ext_modules = cythonize(ext_modules),
+    zip_safe = False, # dont want a compiled extension in a zipfile...
     packages = ["py_gd",],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
