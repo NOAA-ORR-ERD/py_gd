@@ -102,6 +102,7 @@ Linux Build Instructions (CentOS 7)
    export LD_LIBRARY_PATH='/usr/local/lib'
    ```
  * Download the libgd version 2.1.1 tar file from [bitbucket](https://bitbucket.org/libgd/gd-libgd/downloads)
+ * Build the tar file from source and install it
  * Clone the [py_gd repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
  * Create a virtualenv to scope your python installations to this project (<i>optional</i>)
  * pip install cython
@@ -116,5 +117,6 @@ Linux Build Instructions (CentOS 7)
     ./setup.py build
     ```
     ```bash
-    ./setup.py install
+    pip install -e ./
     ```
+  * pip install pytest and run py.test to see that everything is working
