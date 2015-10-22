@@ -26,6 +26,9 @@ import numpy #for the include dirs...
 
 include_dirs = [numpy.get_include(),]
 library_dirs = []
+libraries = ['gd']
+compile_args = []
+link_args = []
 
 if sys.platform.startswith('win'):
     # need the library and include for Windows Anaconda... <PREFIX>/Library
@@ -33,10 +36,8 @@ if sys.platform.startswith('win'):
     # dlls go in bin, rather than lib (??)
     library_dirs.append(os.path.join(sys.prefix, r'Library\lib'))
 
-compile_args = ['EHsc']
-link_args = ['/MANIFEST']
-
-libraries = ['gd']
+    compile_args.append('EHsc')
+    link_args.append('/MANIFEST')
 
 
 ## This setup requires libgd
