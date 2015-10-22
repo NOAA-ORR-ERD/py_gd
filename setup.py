@@ -38,7 +38,9 @@ if sys.platform.startswith('win'):
 
     compile_args.append('EHsc')
     link_args.append('/MANIFEST')
-
+elif sys.platform.startswith('linux'):
+    library_dirs.append('/usr/local/lib')
+    include_dirs.append('/usr/local/include')
 
 ## This setup requires libgd
 ## It expects to find them in the "usual" locations
