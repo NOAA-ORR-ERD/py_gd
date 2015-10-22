@@ -97,6 +97,7 @@ Linux Build Instructions (CentOS 7)
 -----------------------------------
 
  * Add this line to your bashrc
+
    ``` 
    export LD_LIBRARY_PATH='/usr/local/lib'
    ```
@@ -104,6 +105,9 @@ Linux Build Instructions (CentOS 7)
  * Clone the [py_gd repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
  * cd into the repo
  * run these commands:
+
+    ```
     chmod +x setup.py
     ./setup.py build
     ./setup.py install
+    ```
