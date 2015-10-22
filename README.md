@@ -98,7 +98,7 @@ Linux Build Instructions (CentOS 7)
 
  * Add this line to your bashrc
 
-   ``` 
+   ```bash 
    export LD_LIBRARY_PATH='/usr/local/lib'
    ```
  * Download the libgd version 2.1.1 tar file from [bitbucket](https://bitbucket.org/libgd/gd-libgd/downloads)
@@ -106,7 +106,7 @@ Linux Build Instructions (CentOS 7)
  * cd into the repo
  * run these commands:
 
-    ```
+    ```bash
     chmod +x setup.py
     ./setup.py build
     ./setup.py install
