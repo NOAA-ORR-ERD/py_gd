@@ -93,3 +93,19 @@ Here's what you need to do:
  * try out your test...
  * lather, rinse, repeat, 'till it all works
 
+Linux Build Instructions (CentOS 7)
+-----------------------------------
+
+ * Add this line to your bashrc
+   ```bash
+   export LD_LIBRARY_PATH='/usr/local/lib'
+   ```
+ * Download the libgd version 2.1.1 tar file from [bitbucket](https://bitbucket.org/libgd/gd-libgd/downloads)
+ * Clone the [py_gd repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
+ * cd into the repo
+ * run these commands:
+   ```bash
+   chmod +x setup.py
+   ./setup.py build
+   ./setup.py install
+   ```
