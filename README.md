@@ -1,5 +1,4 @@
-py_gd
-=====
+# py_gd
 
 Python wrappers for libgd graphics drawing lib.
 
@@ -9,8 +8,7 @@ py-gd aims to provide nice pythonic wrappers around libgd -- a nice, fast, and s
 
 http://libgd.bitbucket.org/
 
-Why gd?
----------
+## Why gd?
 
 For the project at hand we needed fast and simple drawing -- 8-bit color, no anti-aliasing.
 We also wanted a nice simple API to work with. There are a number of newer drawing libs (AGG, Skia)
@@ -18,8 +16,7 @@ that produce some pretty results, but are not as simple to use, and are focused 
 anti-aliased drawing. If  you want the prettiest rendering possible, I encourage you to check those out.
 If you want something fast and simple -- py_gd may be for you.
 
-Why a new python wrapper for gd?
-----------------------------------
+## Why a new python wrapper for gd?
 
 gdmodule (recently moved to gitHub: https://github.com/Solomoriah/gdmodule) is a wrapper
 for gd that has been aaround along time. However:
@@ -38,16 +35,14 @@ On the other hand:
 
 However, there is some nice stuff in gdmodule (like including a truetype font) that I we want to borrow.
 
-How is py_gd built?
-----------------------
+## How is py_gd built?
 
 py_gd is built using Cython: (www.cython.org). Cython allows us to both call into the existing gd C lib,
 and to also write wrapper code to make a nicer API in a very efficient way. You shouldn't need Cython
 to build and use py_gd, but you'll need it if you want to contribute to the wrappers.
 
 
-Dependencies:
----------------
+## Dependencies:
 
 py_gd currently requires the numpy package: http://www.numpy.org
 
@@ -57,8 +52,7 @@ as well as passing it back to py_gd.
 
 In order to build py_gd, the Cython package is also  required: http://cython.org/
 
-Is py_gd a complete wrapper around gd?
-----------------------------------------
+## Is py_gd a complete wrapper around gd?
 
 In a word: no.
 
@@ -78,8 +72,7 @@ Major Missing features:
  * freetype fonts
  * image manipulations: scaling, etc
 
-Can I contribute?
--------------------
+## Can I contribute?
 
 You sure you can -- fork the source, and hack away -- you can actually add features pretty easily by taking
 a look at what's there -- with just a little C and/or Cython knowledge (not much!) you should be able to
@@ -95,11 +88,9 @@ Here's what you need to do:
  * try out your test...
  * lather, rinse, repeat, 'till it all works
 
-Build/Install
-=============
+# Build/Install
 
-Windows
--------
+## Windows
 
 py_gd depends on libgd, which, in turn dpends on libpng, and others -- this makes it a major pain to build on Windows. Unless you are an expert, we sugget using Anaconda Python, and the conda packages found in the noaa-orr-erd Anaconda channel. It should be as easy as:
 
@@ -107,8 +98,7 @@ py_gd depends on libgd, which, in turn dpends on libpng, and others -- this make
 conda install -c NOA-ORR-ERD py_gd
 ```
 
-OS-X
-----
+## OS-X
 
 py_gd depends on libgd, which, in turn dpends on libpng, and others -- YOu can use macports or homebrew or roll your own to get these, but it's probably easier to use Anaconda Python, and the conda packages found in the noaa-orr-erd Anaconda channel. It should then be as easy as:
 
@@ -116,11 +106,9 @@ py_gd depends on libgd, which, in turn dpends on libpng, and others -- YOu can u
 conda install -c NOA-ORR-ERD py_gd
 ```
 
-Linux
-------
+## Linux
 
-libgd
-......
+### libgd
 
 py_gd requires libgd version 2.1.1 (or maybe greater?). If your Linux distro has an up to date version, you can probably simply install it (and the development headers) from the sytem repos. something like:
 
@@ -129,8 +117,7 @@ apt-get install libgd, libgd-dev
 ```
 or similar yum command (maybe just ``gd`` reather than ``ibgd``
 
-(CentOS 7)
-..........
+### (CentOS 7)
 
 centoOS 7 only has version 2.0 in it's standard repos, as of 10/22/2015, so you need to download the source and bulid it yourself.
 
@@ -148,8 +135,7 @@ dance. This will install into ``/usr/loca/`` if you use the defaults. If your ss
    ```
 (or set that globally)
 
-Building py_gd
-..............
+## Building py_gd
 
  * Clone the [py_gd repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
  * Create a virtualenv to scope your python installations to this project (<i>optional</i>)
