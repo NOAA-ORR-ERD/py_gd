@@ -108,6 +108,10 @@ Linux Build Instructions (CentOS 7)
 
     ```bash
     chmod +x setup.py
+    ```
+    ```bash
     ./setup.py build
+    ```
+    ```bash
     ./setup.py install
     ```
