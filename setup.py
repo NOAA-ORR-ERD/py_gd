@@ -7,6 +7,7 @@ Tested with:
   Anaconda on OS_X
   Anaconda on Win64
 
+  Python 2.7.5 on CentOS 7
   Python 2.7.10
 
 libgd is assumed to be installed (and its dependencies) already.
