@@ -103,6 +103,9 @@ Linux Build Instructions (CentOS 7)
    ```
  * Download the libgd version 2.1.1 tar file from [bitbucket](https://bitbucket.org/libgd/gd-libgd/downloads)
  * Clone the [py_gd repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
+ * Create a virtualenv to scope your python installations to this project (<i>optional</i>)
+ * pip install cython
+ * pip install numpy
  * cd into the repo
  * run these commands:
 
