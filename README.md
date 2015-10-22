@@ -119,4 +119,4 @@ Linux Build Instructions (CentOS 7)
     ```bash
     pip install -e ./
     ```
-  * pip install pytest and run py.test to see that everything is working
+ * pip install pytest and run py.test to see that everything is working
