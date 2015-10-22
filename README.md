@@ -97,7 +97,9 @@ Linux Build Instructions (CentOS 7)
 -----------------------------------
 
  * Add this line to your bashrc
-    export LD_LIBRARY_PATH='/usr/local/lib'
+   ``` 
+   export LD_LIBRARY_PATH='/usr/local/lib'
+   ```
  * Download the libgd version 2.1.1 tar file from [bitbucket](https://bitbucket.org/libgd/gd-libgd/downloads)
  * Clone the [py_gd repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
  * cd into the repo
