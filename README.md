@@ -128,7 +128,7 @@ $ ./configure
 $ make
 $ make install
 ```
-dance. This will install into ``/usr/loca/`` if you use the defaults. If your ssystem is not yet set up to find libraries in ``/usr/local``, then you need to:: 
+dance. This will install into ``/usr/local/`` if you use the defaults. If your ssystem is not yet set up to find libraries in ``/usr/local/``, then you need to:: 
  * Add this line to your bashrc
 
    ```bash 
