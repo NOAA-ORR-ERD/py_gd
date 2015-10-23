@@ -146,11 +146,11 @@ dance. This will install into ``/usr/loca/`` if you use the defaults. If your ss
  * run these commands:
 
     ```bash
-    python setup.py build
+    $ python setup.py build
     ```
 
     ```bash
-    pip install -e ./
+    $ pip install -e ./
     ```
 
  * pip install pytest and run py.test to see that everything is working:
