@@ -145,22 +145,16 @@ dance. This will install into ``/usr/local/`` if you use the defaults. If your s
  * cd into the repo
  * run these commands:
 
-    ```bash
-    $ python setup.py build
-    ```
-
-    ```bash
-    $ pip install -e ./
-    ```
+```bash
+$ python setup.py build
+$ pip install -e ./
+```
 
  * pip install pytest and run py.test to see that everything is working:
 
-    ```bash
-    $ cd test
-    ```
-
-    ```bash
-    $ py.test
-    ```
+```bash
+$ cd test
+$ py.test
+```
  
  
