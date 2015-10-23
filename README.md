@@ -95,7 +95,7 @@ Here's what you need to do:
 py_gd depends on libgd, which, in turn dpends on libpng, and others -- this makes it a major pain to build on Windows. Unless you are an expert, we sugget using Anaconda Python, and the conda packages found in the noaa-orr-erd Anaconda channel. It should be as easy as:
 
 ```
-conda install -c NOA-ORR-ERD py_gd
+conda install -c https://conda.anaconda.org/noaa-orr-erd py_gd
 ```
 
 ## OS-X
@@ -103,7 +103,7 @@ conda install -c NOA-ORR-ERD py_gd
 py_gd depends on libgd, which, in turn depends on libpng, and others -- You can use macports or homebrew or roll your own to get these, but it's probably easier to use Anaconda Python, and the conda packages found in the noaa-orr-erd Anaconda channel. It should then be as easy as:
 
 ```
-conda install -c NOA-ORR-ERD py_gd
+conda install -c https://conda.anaconda.org/noaa-orr-erd py_gd
 ```
 
 ## Linux
