@@ -100,7 +100,7 @@ conda install -c NOA-ORR-ERD py_gd
 
 ## OS-X
 
-py_gd depends on libgd, which, in turn dpends on libpng, and others -- YOu can use macports or homebrew or roll your own to get these, but it's probably easier to use Anaconda Python, and the conda packages found in the noaa-orr-erd Anaconda channel. It should then be as easy as:
+py_gd depends on libgd, which, in turn depends on libpng, and others -- You can use macports or homebrew or roll your own to get these, but it's probably easier to use Anaconda Python, and the conda packages found in the noaa-orr-erd Anaconda channel. It should then be as easy as:
 
 ```
 conda install -c NOA-ORR-ERD py_gd
@@ -110,7 +110,7 @@ conda install -c NOA-ORR-ERD py_gd
 
 ### libgd
 
-py_gd requires libgd version 2.1.1 (or maybe greater?). If your Linux distro has an up to date version, you can probably simply install it (and the development headers) from the sytem repos. something like:
+py_gd requires libgd version 2.1.1 (or maybe greater?). If your Linux distro has an up to date version, you can probably simply install it (and the development headers) from the system repos. something like:
 
 ```bash
 apt-get install libgd, libgd-dev
@@ -121,14 +121,14 @@ or similar yum command (maybe just ``gd`` reather than ``ibgd``
 
 centoOS 7 only has version 2.0 in it's standard repos, as of 10/22/2015, so you need to download the source and bulid it yourself.
 
- * Download the libgd version 2.1.1 tar file from [bitbucket](https://bitbucket.org/libgd/gd-libgd/downloads) (there are also tarballs on giHub, but these don't have a confugre script ready to go)
+ * Download the libgd version 2.1.1 tar file from [bitbucket](https://bitbucket.org/libgd/gd-libgd/downloads) (there are also tarballs on GitHub, but these don't have a configure script ready to go)
  * Build the tar file from source and install it: the usual:
 ```bash
 $ ./configure
 $ make
 $ make install
 ```
-dance. This will install into ``/usr/local/`` if you use the defaults. If your ssystem is not yet set up to find libraries in ``/usr/local/``, then you need to:: 
+dance. This will install into ``/usr/local/`` if you use the defaults. If your system is not yet set up to find libraries in ``/usr/local/``, then you need to:: 
  * Add this line to your bashrc
 
    ```bash 
