@@ -130,6 +130,7 @@ $ make install
 ```
 dance. This will install into ``/usr/loca/`` if you use the defaults. If your ssystem is not yet set up to find libraries in ``/usr/local``, then you need to:: 
  * Add this line to your bashrc
+
    ```bash 
    export LD_LIBRARY_PATH='/usr/local/lib'
    ```
@@ -143,15 +144,22 @@ dance. This will install into ``/usr/loca/`` if you use the defaults. If your ss
  * pip install numpy
  * cd into the repo
  * run these commands:
+
     ```bash
     python setup.py build
     ```
+
     ```bash
     pip install -e ./
     ```
+
  * pip install pytest and run py.test to see that everything is working:
+
     ```bash
     $ cd test
+    ```
+
+    ```bash
     $ py.test
     ```
  
