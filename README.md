@@ -136,6 +136,11 @@ dance. This will install into ``/usr/local/`` if you use the defaults. If your s
    ```
 (or set that globally)
 
+Note: If you determine that you lack jpeg support these libs are known to be compatible and can be installed through yum:
+
+* libjpeg-turbo-devel
+* libjpeg-turbo
+
 ## Building py_gd
 
  * Clone the [py_gd repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
@@ -156,8 +161,4 @@ $ pip install -e ./
 $ cd test
 $ py.test
 ```
-Note: If you determine that you lack jpeg support these libs are known to be compatible and are installable through yum:
-
-* libjpeg-turbo-devel
-* libjpeg-turbo
  
