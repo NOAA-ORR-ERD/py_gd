@@ -156,5 +156,8 @@ $ pip install -e ./
 $ cd test
 $ py.test
 ```
- 
+Note: If you determine that you lack jpeg support these libs are known to be compatible and are installable through yum:
+
+* libjpeg-turbo-devel
+* libjpeg-turbo
  
