@@ -8,7 +8,7 @@ from libc.stdio cimport FILE
 cdef extern from "gd.h":
 
     cdef struct gdImageStruct:
-        pass # for now, all I need is to know it exist to pass along...
+        pass # for now, all I need is to know it exists to pass along...
         # Palette-based image pixels
         unsigned char **pixels
         ## lots more we might want here, but for now...
@@ -31,6 +31,9 @@ cdef extern from "gd.h":
     int gdImageColorAllocate (gdImagePtr im, int r, int g, int b)
     int gdImageColorAllocateAlpha(gdImagePtr im, int r, int g, int b, int a)
     int gdImageGetPixel(gdImagePtr im, int x, int y)
+
+    void gdImageSetClip(gdImagePtr im, int x1, int y1, int x2, int y2)
+    void gdImageGetClip(gdImagePtr im, int *x1P, int *y1P, int *x2P, int *y2P)
 
     # drawing functions
     ## to set up line drawing

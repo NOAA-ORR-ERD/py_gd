@@ -81,6 +81,8 @@ cdef class Image:
         self._image = gdImageCreatePalette(width, height)
         if self._image is NULL:
             raise MemoryError("could not create a gdImage")
+        # set the default clipping to the image
+        gdImageSetClip(self._image, 0, 0, width-1, height-1)
 
     def __dealloc__(self):
         """
@@ -135,26 +137,18 @@ cdef class Image:
     def __repr__(self):
         return "Image(width=%i, height=%i)"%(self.width, self.height)
 
-    @property
-    def size(self):
-        return (gdImageSX(self._image), gdImageSY(self._image))
+    property size:
+        def __get__(self):
+            return (gdImageSX(self._image), gdImageSY(self._image))
 
-    @property
-    def width(self):
-        return gdImageSX(self._image)
+    property width:
+        def __get__(self):
+            return gdImageSX(self._image)
 
-    @property
-    def height(self):
-        return gdImageSY(self._image)
+    property height:
+        def __get__(self):
+            return gdImageSY(self._image)
 
-
-    # @property
-    # def width(self):
-    #      return gdImageSX(self._image)
-
-    # @property
-    # def height(self):
-    #     return gdImageSY(self._image)
 
     def clear(self, color=None):
         """
@@ -330,6 +324,38 @@ cdef class Image:
 
     #     free(self._buffer_array)
 
+    property clip_rect:
+
+        """
+        The clipping region for the image -- when set, Establishes a clipping
+        rectangle.Once set, all future drawing operations will remain within
+        the specified clipping area, until a new clip_rect is set.
+
+        a clip rect is defined by the two corners::
+
+                  ( (x1, y1)
+                    (x2, y2) )
+
+        For instance, if a clipping rectangle of ( (25, 25)  (75, 75) ) has been set
+        within a 100x100 image, a diagonal line from 0,0 to 99,99 will appear
+        only between 25,25 and 75,75.
+        """
+        def __get__(self):
+            cdef int x1, y1, x2, y2
+            gdImageGetClip(self._image, &x1, &y1, &x2, &y2)
+            return ((x1, y1), (x2, y2))
+
+        def __set__(self, value):
+            cdef int x1, y1, x2, y2
+            x1 = value[0][0]
+            y1 = value[0][1]
+            x2 = value[1][0]
+            y2 = value[1][1]
+
+            gdImageSetClip(self._image, x1, y1, x2, y2)
+
+        def __del__(self):
+            gdImageSetClip(self._image, 0, 0, gdImageSX(self._image)-1, gdImageSY(self._image)-1)
 
     ## Saving images
     def save(self, file_name, file_type="bmp", compression=None):

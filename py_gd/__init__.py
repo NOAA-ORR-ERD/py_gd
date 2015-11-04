@@ -6,8 +6,8 @@ py_gd package -- wrappers around the libgd graphics drawing package
 The "real" code is in the cython file: py_gd.pyx
 
 """
-__version__ = "0.1.2"
-__gd_version__ = "2.1.1" # note -- should do a rutntime check for version, yes???
+__version__ = "0.1.3"
+__gd_version__ = "2.1.1" # note -- should do a runtime check for version, yes???
 
 import sys, os
 if sys.platform.startswith('win'):
@@ -17,7 +17,7 @@ if sys.platform.startswith('win'):
 
     # ## UGLY kludge for Windows: load the libgd dll with ctypes so it can be used by the extension
     # import ctypes
-    # # note: need to load up the dependencies, too 
+    # # note: need to load up the dependencies, too
     # #       this is a serious kludge!
     # try:
     #     libpng = ctypes.cdll.LoadLibrary(os.path.join(libpath,'libpng16.dll'))
@@ -28,7 +28,7 @@ if sys.platform.startswith('win'):
     #                        "This kludge is only written to support Anaconda installs")
 
     # alternative ugly kludge: add lib dir to PATH:
-    if not (os.path.isfile(os.path.join(libpath,'libpng16.dll')) and 
+    if not (os.path.isfile(os.path.join(libpath,'libpng16.dll')) and
             os.path.isfile(os.path.join(libpath,'zlib.dll')) and
             os.path.isfile(os.path.join(libpath,'libgd.dll')) ):
         raise RuntimeError("Can't find dlls for libgd, libpng, and libz.\n"
@@ -38,9 +38,9 @@ if sys.platform.startswith('win'):
     os.environ['PATH'] = libpath + os.pathsep + os.environ['PATH']
 try:
     from py_gd import *
-except ImportError as err:    
+except ImportError as err:
     if err.message.startswith("DLL load failed:"):
-        if not (os.path.isfile(os.path.join(libpath,'libpng16.dll')) and 
+        if not (os.path.isfile(os.path.join(libpath,'libpng16.dll')) and
                 os.path.isfile(os.path.join(libpath,'zlib.dll')) and
                 os.path.isfile(os.path.join(libpath,'libgd.dll')) ):
             raise RuntimeError("Can't find dlls for libgd, libpng, and libz.\n"
