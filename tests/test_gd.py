@@ -796,9 +796,6 @@ def test_size():
     assert img.size == (10, 15)
 
 
-
-
-
 if __name__ == "__main__":
     # just run these tests..
     #test_init_default_palette()

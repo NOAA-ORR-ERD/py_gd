@@ -1,7 +1,10 @@
 """
 Cython wrapper around the gd drawing lib
 
-provides an OO interface -- at least to the limited functionality wrapped
+Provides an OO interface -- at least to the limited functionality wrapped
+
+NOTE: pixel coordinates are defined as c ints -- if you pass in values larger than a c int can take (usually +- 2**31 - 1), it will overflow, and who knows what you'll get.
+
 """
 
 import cython
@@ -49,7 +52,7 @@ web_colors = BW_colors + [ ('silver', (191, 191, 191) ),
 ## before initizing an Image. On my system going bigger than this brings
 ## the system to an almost halt before raising a memory error, so I set
 ## a limit here.
-MAX_IMAGE_SIZE = 1073741824 #1 GB limit
+MAX_IMAGE_SIZE = 2**30 #1 GB limit
 
 cdef class Image:
     """
