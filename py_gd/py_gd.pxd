@@ -77,6 +77,11 @@ cdef extern from "gd.h":
     cpdef int gdNoFill
     cpdef int gdEdged
 
+    # animation
+    void gdImageGifAnimBegin(gdImagePtr im, FILE *outFile, int GlobalCM, int Loops);
+    void gdImageGifAnimAdd(gdImagePtr im, FILE *outFile, int LocalCM, int LeftOfs, int TopOfs, int Delay, int Disposal, gdImagePtr previm);
+    void gdImageGifAnimEnd(FILE *outFile);
+
 # fonts are in extra headers:
 cdef extern from "gdfontt.h":
     gdFontPtr gdFontTiny

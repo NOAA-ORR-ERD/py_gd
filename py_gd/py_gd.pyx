@@ -357,6 +357,7 @@ cdef class Image:
         def __del__(self):
             gdImageSetClip(self._image, 0, 0, gdImageSX(self._image)-1, gdImageSY(self._image)-1)
 
+
     ## Saving images
     def save(self, file_name, file_type="bmp", compression=None):
         """
@@ -895,7 +896,7 @@ cdef class Image:
         try:
             text_bytes = text.encode('ascii')
         except UnicodeEncodeError:
-            raise ValueError("can only except ascii text")
+            raise ValueError("can only accept ascii text")
 
         cdef gdFontPtr gdfont
 
@@ -948,7 +949,167 @@ def from_array(char [:,:] arr not None, *args, **kwargs):
     return img
 
 
+cdef class Animation:
 
+    cdef gdImagePtr _image
+    cdef gdImagePtr _prev_image
+    cdef FILE* _fp
+    cdef str _file_path
+    cdef int _base_delay
+    cdef int _has_begun
+    cdef int _has_closed
+    cdef int _frames_written
+
+    cdef list color_names
+    cdef list color_rgb
+    cdef dict colors
+
+    def __cinit__(self, file_name, int delay=50, Image first=None, preset_colors='web'):
+        try:
+            self._file_path = file_name.encode('ascii')
+        except UnicodeEncodeError:
+            raise ValueError("can only except ascii filenames")
+        if first is not None:
+            self._image = first._image
+        else:
+             self._image = NULL
+        self._fp = NULL
+        self._base_delay = delay
+        self._prev_image = NULL
+        self._has_begun = 0
+        self._has_closed = 0
+        self._frames_written = 0
+        
+
+    def __init__(self,  file_name, delay=50, first=None, preset_colors='web'):
+        self.colors = {}
+        self.color_names = []
+        if preset_colors is None:
+            pass
+        elif preset_colors == 'transparent':
+            self.add_colors(transparent_colors)
+        elif preset_colors == 'BW':
+            self.add_colors(BW_colors)
+        elif preset_colors == 'web':
+            self.add_colors(web_colors)
+        else:
+            raise ValueError("preset_colors needs to one of 'web', 'BW', 'transparent', or None")
+        pass
+
+    def add_color(self, name, color):
+        """
+        add a new color to the palette
+
+        :param name: the name of the color
+        :type name: string
+
+        :param color: red, green, blue values for color - 0 to 255 or red, grenn, blue, alpha values (note: alpha is 0-127)
+        :type color: 3-tuple of integers (r,g,b) or 4-tuple of integers (r, g, b, a)
+
+        :returns color_index: the index of that new color
+        """
+        ##fixme: should it check if the same color is already in the palette?
+        ##       not just the name?
+        if name in self.colors:
+            raise ValueError("%s already in the palette"%name)
+
+        cdef int color_index
+        cdef gdImagePtr img
+        img = self._image
+        if len(color) == 4:
+            color_index = gdImageColorAllocateAlpha(self._image, color[0], color[1], color[2], color[3])
+        elif len(color) == 3:
+            color_index = gdImageColorAllocate(self._image, color[0], color[1], color[2])
+        else:
+            raise ValueError("color must be an (r,g,b) triple or (r,g,b,a) quad")
+
+        if color_index == -1:
+            raise ValueError("there are no more colors available to allocate")
+
+        self.colors[name] = color_index
+        self.color_names.append(name)
+
+        return color_index
+
+    def add_colors(self, color_list):
+        """
+        Add a list of colors to the pallette
+
+        :param color_list: list of colors - each elemnt of the list is a 2-tuple: ( 'color_name', (r,g,b) )
+
+        :returns indexes: list of color indexes.
+        """
+        indexes = []
+        for name, color in color_list:
+            indexes.append( self.add_color(name, color) )
+        return indexes
+
+    def begin_anim(self, int loops=-1):
+        self._fp = fopen(self._file_path, "wb");
+        if self._fp is NULL:
+            raise IOError("could not open the file:%s"%self._file_path)
+        if self._image is NULL:
+            raise RuntimeError("Could not begin animation, no image ")
+
+        gdImageGifAnimBegin(self._image, self._fp, -1, loops);
+        self._has_begun = 1
+
+    def add_frame(self, Image image, int delay=-1, int left_offset=0, int top_offset=0, ):
+        if self._has_begun is 0:
+            raise IOError("Cannot add frame to non-started animation")
+        if self._has_closed is 1:
+            raise IOError("Cannot add frame to closed animation")
+        if self._image is NULL and image is None:
+            raise IOError("Cannot add NULL image to animation")
+        self._image = image._image
+        if delay is -1:
+            delay = self._base_delay
+        
+        cdef gdImagePtr prev 
+        prev = NULL 
+        if self._prev_image is not NULL:
+            prev = self._prev_image
+
+#         im          - The image to add.
+#         outfile     - The output FILE* being written.
+#         LocalCM     - Flag.  If 1, use a local color map for this frame.
+#         LeftOfs     - Left offset of image in frame.
+#         TopOfs      - Top offset of image in frame.
+#         Delay       - Delay before next frame (in 1/100 seconds)
+#         Disposal    - MODE: How to treat this frame when the next one loads.
+#         previm      - NULL or a pointer to the previous image written.
+
+        # TODO: get the previm parameter working. possibly need to copy and save the previous image
+        gdImageGifAnimAdd(self._image, self._fp, 0, left_offset, top_offset, delay, 1, NULL);
+        
+        self._frames_written += 1
+    
+    def close_anim(self):
+        if self._has_begun is 0:
+            raise RuntimeError("Cannot close animation that hasn't been opened")
+        if self._fp is NULL:
+            raise IOError("Cannot close NULL file pointer")
+        
+        gdImageGifAnimEnd(self._fp);
+        fclose(self._fp)
+        self._has_closed = 1
+
+    def set_delay(self, int delay):
+        self._base_delay = delay
+
+    def reset(self):
+        self._image=NULL
+        self._prev_image=NULL
+        self._fp = NULL
+        self._base_delay=50
+        self._has_begun = 0
+        self._has_closed = 0
+        self._frames_written = 0
+
+    @property
+    def frames_written(self):
+        return self._frames_written
+        
 
 
 

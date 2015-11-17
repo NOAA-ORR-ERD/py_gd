@@ -833,7 +833,27 @@ def test_clip_draw():
     img.save(outfile(fname))
     assert check_file(fname)
 
-
+def test_animation():
+    img = py_gd.Image(200,200)
+    endpoints = np.array(((-100,0),(100,0)))
+    offset = np.array((100,100))
+    
+    fname= "test_animation.gif"
+    anim = py_gd.Animation(fname, first=img)
+    anim.begin_anim(1)
+    
+    for ang in range(0,180,10):
+        ang = np.deg2rad(ang)
+        rot_matrix = [(np.cos(ang), np.sin(ang)),(-np.sin(ang),np.cos(ang))]
+        points = np.dot(endpoints, rot_matrix).astype(np.int32) + offset
+#         print points
+        img.draw_line(points[0], points[1],'red')
+        anim.add_frame(img)
+        
+    anim.close_anim()
+    print anim.frames_written
+        
+        
 
 if __name__ == "__main__":
     # just run these tests..
