@@ -14,6 +14,7 @@ from py_gd cimport *
 from libc.stdio cimport FILE, fopen, fclose
 from libc.string cimport memcpy
 from libc.stdlib cimport malloc, free
+import os
 #from libc.stdint cimport uint8_t, uint32_t
 
 import operator
@@ -951,8 +952,8 @@ def from_array(char [:,:] arr not None, *args, **kwargs):
 
 cdef class Animation:
 
-    cdef gdImagePtr _image
-    cdef gdImagePtr _prev_image
+    cdef Image cur_frame
+    cdef Image prev_frame
     cdef FILE* _fp
     cdef str _file_path
     cdef int _base_delay
@@ -969,19 +970,16 @@ cdef class Animation:
             self._file_path = file_name.encode('ascii')
         except UnicodeEncodeError:
             raise ValueError("can only except ascii filenames")
-        if first is not None:
-            self._image = first._image
-        else:
-             self._image = NULL
         self._fp = NULL
         self._base_delay = delay
-        self._prev_image = NULL
         self._has_begun = 0
         self._has_closed = 0
         self._frames_written = 0
         
 
     def __init__(self,  file_name, delay=50, first=None, preset_colors='web'):
+        self.cur_frame=first
+        self.prev_frame = None
         self.colors = {}
         self.color_names = []
         if preset_colors is None:
@@ -994,7 +992,14 @@ cdef class Animation:
             self.add_colors(web_colors)
         else:
             raise ValueError("preset_colors needs to one of 'web', 'BW', 'transparent', or None")
-        pass
+
+    def __dealloc__(self):
+        if (self._fp is not NULL 
+            and self._has_closed != 1
+            and self._has_begun == 1):
+            fclose(self._fp)
+            os.remove(self._file_path)
+            
 
     def add_color(self, name, color):
         """
@@ -1014,12 +1019,10 @@ cdef class Animation:
             raise ValueError("%s already in the palette"%name)
 
         cdef int color_index
-        cdef gdImagePtr img
-        img = self._image
         if len(color) == 4:
-            color_index = gdImageColorAllocateAlpha(self._image, color[0], color[1], color[2], color[3])
+            color_index = gdImageColorAllocateAlpha(self.cur_frame._image, color[0], color[1], color[2], color[3])
         elif len(color) == 3:
-            color_index = gdImageColorAllocate(self._image, color[0], color[1], color[2])
+            color_index = gdImageColorAllocate(self.cur_frame._image, color[0], color[1], color[2])
         else:
             raise ValueError("color must be an (r,g,b) triple or (r,g,b,a) quad")
 
@@ -1044,14 +1047,16 @@ cdef class Animation:
             indexes.append( self.add_color(name, color) )
         return indexes
 
-    def begin_anim(self, int loops=-1):
+    def begin_anim(self, int loops=0):
         self._fp = fopen(self._file_path, "wb");
         if self._fp is NULL:
             raise IOError("could not open the file:%s"%self._file_path)
-        if self._image is NULL:
+        if self.cur_frame is None:
             raise RuntimeError("Could not begin animation, no image ")
+        if self._has_closed is 1:
+            raise RuntimeError("Cannot re-begin closed animation")
 
-        gdImageGifAnimBegin(self._image, self._fp, -1, loops);
+        gdImageGifAnimBegin(self.cur_frame._image, self._fp, -1, loops);
         self._has_begun = 1
 
     def add_frame(self, Image image, int delay=-1, int left_offset=0, int top_offset=0, ):
@@ -1059,16 +1064,16 @@ cdef class Animation:
             raise IOError("Cannot add frame to non-started animation")
         if self._has_closed is 1:
             raise IOError("Cannot add frame to closed animation")
-        if self._image is NULL and image is None:
+        if self.cur_frame is None or image is None:
             raise IOError("Cannot add NULL image to animation")
-        self._image = image._image
+        self.cur_frame = image
         if delay is -1:
             delay = self._base_delay
         
         cdef gdImagePtr prev 
         prev = NULL 
-        if self._prev_image is not NULL:
-            prev = self._prev_image
+        if self.prev_frame is not None:
+            prev = self.prev_frame._image
 
 #         im          - The image to add.
 #         outfile     - The output FILE* being written.
@@ -1080,7 +1085,9 @@ cdef class Animation:
 #         previm      - NULL or a pointer to the previous image written.
 
         # TODO: get the previm parameter working. possibly need to copy and save the previous image
-        gdImageGifAnimAdd(self._image, self._fp, 0, left_offset, top_offset, delay, 1, NULL);
+        gdImageGifAnimAdd(self.cur_frame._image, self._fp, 0, left_offset, top_offset, delay, 1, prev);
+        self.prev_frame = Image(self.cur_frame.width, self.cur_frame.height)
+        self.prev_frame.copy(self.cur_frame)
         
         self._frames_written += 1
     
@@ -1094,12 +1101,24 @@ cdef class Animation:
         fclose(self._fp)
         self._has_closed = 1
 
+    def set_initial_frame(self, Image img):
+        if self._has_begun == 1 or self._has_closed == 1:
+            raise RuntimeError("Cannot set initial frame after animation has begun or closed")
+        else:
+            self.cur_frame = img
+        
+
     def set_delay(self, int delay):
         self._base_delay = delay
 
-    def reset(self):
-        self._image=NULL
-        self._prev_image=NULL
+    def reset(self, Image img, str file_path):
+        self.cur_frame=img
+        self.prev_frame=None
+        try:
+            self._file_path = file_path.encode('ascii')
+        except UnicodeEncodeError:
+            raise ValueError("can only except ascii filenames")
+        self._file_path = file_path
         self._fp = NULL
         self._base_delay=50
         self._has_begun = 0

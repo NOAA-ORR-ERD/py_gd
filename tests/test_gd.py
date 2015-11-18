@@ -839,17 +839,24 @@ def test_animation():
     offset = np.array((100,100))
     
     fname= "test_animation.gif"
-    anim = py_gd.Animation(fname, first=img)
-    anim.begin_anim(1)
+    anim = py_gd.Animation(outfile(fname), first=img)
+    anim.begin_anim(0)
     
-    for ang in range(0,180,10):
-        ang = np.deg2rad(ang)
-        rot_matrix = [(np.cos(ang), np.sin(ang)),(-np.sin(ang),np.cos(ang))]
+    for ang in range(0,360,10):
+        rad = np.deg2rad(ang)
+        rot_matrix = [(np.cos(rad), np.sin(rad)),(-np.sin(rad),np.cos(rad))]
         points = np.dot(endpoints, rot_matrix).astype(np.int32) + offset
-#         print points
-        img.draw_line(points[0], points[1],'red')
+        print points
+        if (ang < 180):
+            img.draw_line(points[0], points[1],'red')
+        else:
+            img.draw_line(points[0], points[1],'black')
         anim.add_frame(img)
         
+    img.draw_line(np.array((200,100)),np.array((0,100)), 'green')
+    img.draw_line(np.array((200,100)),np.array((0,100)), 'green')
+    img.draw_line(np.array((0,100)),np.array((200,100)), 'green')
+    anim.add_frame(img)
     anim.close_anim()
     print anim.frames_written
         
@@ -860,7 +867,8 @@ if __name__ == "__main__":
     #test_init_default_palette()
     #test_init_BW()
     #test_init_simple_add_rgb()
-    test_init_simple_add_rgba()
+#     test_init_simple_add_rgba()
+    test_animation()
 
 
 
