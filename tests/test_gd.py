@@ -792,12 +792,16 @@ def test_equality():
     """
     img1 = py_gd.Image(10,10)
     img2 = py_gd.Image(10,10)
+    img3 = py_gd.Image(10,11)
 
     img1.draw_rectangle( (1,1), (8,8), fill_color='red' )
     img2.draw_rectangle( (1,1), (8,8), fill_color='red' )
+    img3.draw_rectangle( (1,1), (8,8), fill_color='blue' )
     
     assert img1 == img1
     assert img1 == img2
+    assert img1 != img3
+    assert (img1 == img3) is False
 
 def test_size():
 
@@ -852,14 +856,14 @@ def test_animation():
     offset = np.array((100,100))
     
     fname= "test_animation.gif"
-    anim = py_gd.Animation(outfile(fname), first=img)
-    anim.begin_anim(0)
+    anim = py_gd.Animation(outfile(fname))
+    anim.begin_anim(img,0)
     
     for ang in range(0,360,10):
         rad = np.deg2rad(ang)
         rot_matrix = [(np.cos(rad), np.sin(rad)),(-np.sin(rad),np.cos(rad))]
         points = np.dot(endpoints, rot_matrix).astype(np.int32) + offset
-        print points
+#         print points
         if (ang < 180):
             img.draw_line(points[0], points[1],'red')
         else:

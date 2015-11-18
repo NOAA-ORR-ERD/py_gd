@@ -150,11 +150,16 @@ cdef class Image:
         def __get__(self):
             return gdImageSY(self._image)
 
-    def __eq__(self, other):
-        return gdImageCompare(self._image, other._image) == 0
-    
-    def __neq__(self, other):
-        return gdImageCompare(self._image, other._image) > 0
+    def __richcmp__(Image self, Image other not None, int op):
+        # Thanks for this madness, cython!
+        cdef int retval = -1
+        retval = gdImageCompare(self._image, other._image)
+        if op == 2: # ==
+            return retval == 0
+        elif op == 3: # !=
+            return retval > 0
+        else:
+            return NotImplemented
 
     def clear(self, color=None):
         """
@@ -958,11 +963,9 @@ def from_array(char [:,:] arr not None, *args, **kwargs):
 cdef class Animation:
 
     cdef Image cur_frame
+    cdef int _cur_delay
     cdef Image prev_frame
     cdef Image frame_queue
-    cdef int _fq_delay
-    cdef int _fq_top_off
-    cdef int _fq_left_off
     cdef FILE* _fp
     cdef str _file_path
     cdef int _base_delay
@@ -974,7 +977,7 @@ cdef class Animation:
     cdef list color_rgb
     cdef dict colors
 
-    def __cinit__(self, file_name, int delay=50, Image first=None, preset_colors='web'):
+    def __cinit__(self, file_name, int delay=50):
         try:
             self._file_path = file_name.encode('ascii')
         except UnicodeEncodeError:
@@ -984,13 +987,12 @@ cdef class Animation:
         self._has_begun = 0
         self._has_closed = 0
         self._frames_written = 0
-        self._fq_delay = 0
+        self._cur_delay = delay
         
 
-    def __init__(self,  file_name, delay=50, first=None):
-        self.cur_frame=first
+    def __init__(self,  file_name, delay=50):
+        self.cur_frame = None
         self.prev_frame = None
-        self.frame_queue = None
         self.colors = {}
         self.color_names = []
 
@@ -1001,15 +1003,17 @@ cdef class Animation:
             fclose(self._fp)
             os.remove(self._file_path)
 
-    def begin_anim(self, int loops=0):
+    def begin_anim(self, Image first, int loops=0):
         self._fp = fopen(self._file_path, "wb");
         if self._fp is NULL:
             raise IOError("could not open the file:%s"%self._file_path)
-        if self.cur_frame is None:
-            raise RuntimeError("Could not begin animation, no image ")
+        if self._has_begun is 1:
+            raise RuntimeError("Animation has already been started")
         if self._has_closed is 1:
             raise RuntimeError("Cannot re-begin closed animation")
-
+        
+        self.cur_frame = Image(first.width, first.height)
+        self.cur_frame.copy(first)
         gdImageGifAnimBegin(self.cur_frame._image, self._fp, -1, loops);
         self._has_begun = 1
 
@@ -1020,52 +1024,36 @@ cdef class Animation:
             raise IOError("Cannot add frame to closed animation")
         if self.cur_frame is None or image is None:
             raise IOError("Cannot add NULL image to animation")
-        self.cur_frame = image
         if delay is -1:
             delay = self._base_delay
         
         cdef gdImagePtr prev 
-        prev = NULL 
-        
-        if self.frame_queue is not None:
-            if self.frame_queue == image:
-                # if next image is the same as the image in the queue, just add to the delay
-                self._fq_delay += delay
-                return
-            else:
-                gdImageGifAnimAdd(self.frame_queue._image, self._fp, 0, 0, 0, self._fq_delay, 1, prev);
-                self.prev_frame = self.frame_queue
-                self.frame_queue = None
-                self._fq_delay = 0
-        else 
-        self.prev_frame = Image(self.cur_frame.width, self.cur_frame.height)
-        self.prev_frame.copy(self.cur_frame)
-        
-        self._frames_written += 1
-        
+        prev = NULL
 
-#         im          - The image to add.
-#         outfile     - The output FILE* being written.
-#         LocalCM     - Flag.  If 1, use a local color map for this frame.
-#         LeftOfs     - Left offset of image in frame.
-#         TopOfs      - Top offset of image in frame.
-#         Delay       - Delay before next frame (in 1/100 seconds)
-#         Disposal    - MODE: How to treat this frame when the next one loads.
-#         previm      - NULL or a pointer to the previous image written.
-
-        # TODO: get the previm parameter working. possibly need to copy and save the previous image
-        gdImageGifAnimAdd(self.cur_frame._image, self._fp, 0, left_offset, top_offset, delay, 1, prev);
-        self.prev_frame = Image(self.cur_frame.width, self.cur_frame.height)
-        self.prev_frame.copy(self.cur_frame)
-        
-        self._frames_written += 1
+        if self.cur_frame == image:
+            # if next image is the same as the image in the queue, just add to the delay and leave
+            self._cur_delay += delay
+            return
+        else:
+            if self.prev_frame is not None:
+                prev = self.prev_frame._image
+            gdImageGifAnimAdd(self.cur_frame._image, self._fp, 0, 0, 0, self._cur_delay, 1, prev);
+            self.prev_frame = self.cur_frame
+            self.cur_frame = Image(self.cur_frame.width, self.cur_frame.height)
+            self.cur_frame.copy(image)
+            self._cur_delay = delay
+            self._frames_written += 1
     
     def close_anim(self):
         if self._has_begun is 0:
             raise RuntimeError("Cannot close animation that hasn't been opened")
         if self._fp is NULL:
             raise IOError("Cannot close NULL file pointer")
-        
+        cdef gdImagePtr prev 
+        prev = NULL
+        if self.prev_frame is not None:
+                prev = self.prev_frame._image
+        gdImageGifAnimAdd(self.cur_frame._image,self._fp, 0, 0, 0, self._cur_delay, 1, prev)
         gdImageGifAnimEnd(self._fp);
         fclose(self._fp)
         self._has_closed = 1
