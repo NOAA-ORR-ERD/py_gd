@@ -786,6 +786,19 @@ def test_copy_transparent():
 
     img2.save(outfile("image_copy_trans.png"), file_type="png")
 
+def test_equality():
+    """
+    test that an image is equal to itself and an identical image
+    """
+    img1 = py_gd.Image(10,10)
+    img2 = py_gd.Image(10,10)
+
+    img1.draw_rectangle( (1,1), (8,8), fill_color='red' )
+    img2.draw_rectangle( (1,1), (8,8), fill_color='red' )
+    
+    assert img1 == img1
+    assert img1 == img2
+
 def test_size():
 
     """
@@ -850,11 +863,11 @@ def test_animation():
         if (ang < 180):
             img.draw_line(points[0], points[1],'red')
         else:
-            img.draw_line(points[0], points[1],'black')
+            img.draw_line(points[0], points[1],'red')
         anim.add_frame(img)
         
-    img.draw_line(np.array((200,100)),np.array((0,100)), 'green')
-    img.draw_line(np.array((200,100)),np.array((0,100)), 'green')
+#     img.draw_line(np.array((200,100)),np.array((0,100)), 'green')
+#     anim.add_frame(img)
     img.draw_line(np.array((0,100)),np.array((200,100)), 'green')
     anim.add_frame(img)
     anim.close_anim()

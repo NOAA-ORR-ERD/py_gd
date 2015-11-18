@@ -150,6 +150,11 @@ cdef class Image:
         def __get__(self):
             return gdImageSY(self._image)
 
+    def __eq__(self, other):
+        return gdImageCompare(self._image, other._image) == 0
+    
+    def __neq__(self, other):
+        return gdImageCompare(self._image, other._image) > 0
 
     def clear(self, color=None):
         """
@@ -954,6 +959,10 @@ cdef class Animation:
 
     cdef Image cur_frame
     cdef Image prev_frame
+    cdef Image frame_queue
+    cdef int _fq_delay
+    cdef int _fq_top_off
+    cdef int _fq_left_off
     cdef FILE* _fp
     cdef str _file_path
     cdef int _base_delay
@@ -975,23 +984,15 @@ cdef class Animation:
         self._has_begun = 0
         self._has_closed = 0
         self._frames_written = 0
+        self._fq_delay = 0
         
 
-    def __init__(self,  file_name, delay=50, first=None, preset_colors='web'):
+    def __init__(self,  file_name, delay=50, first=None):
         self.cur_frame=first
         self.prev_frame = None
+        self.frame_queue = None
         self.colors = {}
         self.color_names = []
-        if preset_colors is None:
-            pass
-        elif preset_colors == 'transparent':
-            self.add_colors(transparent_colors)
-        elif preset_colors == 'BW':
-            self.add_colors(BW_colors)
-        elif preset_colors == 'web':
-            self.add_colors(web_colors)
-        else:
-            raise ValueError("preset_colors needs to one of 'web', 'BW', 'transparent', or None")
 
     def __dealloc__(self):
         if (self._fp is not NULL 
@@ -999,53 +1000,6 @@ cdef class Animation:
             and self._has_begun == 1):
             fclose(self._fp)
             os.remove(self._file_path)
-            
-
-    def add_color(self, name, color):
-        """
-        add a new color to the palette
-
-        :param name: the name of the color
-        :type name: string
-
-        :param color: red, green, blue values for color - 0 to 255 or red, grenn, blue, alpha values (note: alpha is 0-127)
-        :type color: 3-tuple of integers (r,g,b) or 4-tuple of integers (r, g, b, a)
-
-        :returns color_index: the index of that new color
-        """
-        ##fixme: should it check if the same color is already in the palette?
-        ##       not just the name?
-        if name in self.colors:
-            raise ValueError("%s already in the palette"%name)
-
-        cdef int color_index
-        if len(color) == 4:
-            color_index = gdImageColorAllocateAlpha(self.cur_frame._image, color[0], color[1], color[2], color[3])
-        elif len(color) == 3:
-            color_index = gdImageColorAllocate(self.cur_frame._image, color[0], color[1], color[2])
-        else:
-            raise ValueError("color must be an (r,g,b) triple or (r,g,b,a) quad")
-
-        if color_index == -1:
-            raise ValueError("there are no more colors available to allocate")
-
-        self.colors[name] = color_index
-        self.color_names.append(name)
-
-        return color_index
-
-    def add_colors(self, color_list):
-        """
-        Add a list of colors to the pallette
-
-        :param color_list: list of colors - each elemnt of the list is a 2-tuple: ( 'color_name', (r,g,b) )
-
-        :returns indexes: list of color indexes.
-        """
-        indexes = []
-        for name, color in color_list:
-            indexes.append( self.add_color(name, color) )
-        return indexes
 
     def begin_anim(self, int loops=0):
         self._fp = fopen(self._file_path, "wb");
@@ -1059,7 +1013,7 @@ cdef class Animation:
         gdImageGifAnimBegin(self.cur_frame._image, self._fp, -1, loops);
         self._has_begun = 1
 
-    def add_frame(self, Image image, int delay=-1, int left_offset=0, int top_offset=0, ):
+    def add_frame(self, Image image, int delay=-1):
         if self._has_begun is 0:
             raise IOError("Cannot add frame to non-started animation")
         if self._has_closed is 1:
@@ -1072,8 +1026,23 @@ cdef class Animation:
         
         cdef gdImagePtr prev 
         prev = NULL 
-        if self.prev_frame is not None:
-            prev = self.prev_frame._image
+        
+        if self.frame_queue is not None:
+            if self.frame_queue == image:
+                # if next image is the same as the image in the queue, just add to the delay
+                self._fq_delay += delay
+                return
+            else:
+                gdImageGifAnimAdd(self.frame_queue._image, self._fp, 0, 0, 0, self._fq_delay, 1, prev);
+                self.prev_frame = self.frame_queue
+                self.frame_queue = None
+                self._fq_delay = 0
+        else 
+        self.prev_frame = Image(self.cur_frame.width, self.cur_frame.height)
+        self.prev_frame.copy(self.cur_frame)
+        
+        self._frames_written += 1
+        
 
 #         im          - The image to add.
 #         outfile     - The output FILE* being written.
