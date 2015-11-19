@@ -12,7 +12,7 @@ import cython
 from py_gd cimport *
 
 from libc.stdio cimport FILE, fopen, fclose
-from libc.string cimport memcpy
+from libc.string cimport memcpy, strlen
 from libc.stdlib cimport malloc, free
 import os
 #from libc.stdint cimport uint8_t, uint32_t
@@ -886,7 +886,7 @@ cdef class Image:
                              )
             gdImageSetThickness(self._image, 1)
 
-    def draw_text(self, text, point, font="medium", color='black'):
+    def draw_text(self, text, point, font="medium", color='black', align='lt'):
         """
         draw some text
 
@@ -901,13 +901,20 @@ cdef class Image:
 
         :param color: color of text
         :type  color=None: color name or index
+        
+        :param align: the principal point that the text box references
+        :type align: one of the following strings 'lt', 'ct', 'rt', 'r', 'rb', 'cb', 'lb', 'l'
 
         """
+        
+        if align not in {'lt', 'ct', 'rt', 'r', 'rb', 'cb', 'lb', 'l'}:
+            raise ValueError("invalid text alignment flag")
+        
         cdef text_bytes
         try:
             text_bytes = text.encode('ascii')
         except UnicodeEncodeError:
-            raise ValueError("can only accept ascii text")
+            raise ValueError("can only accept ascii text")        
 
         cdef gdFontPtr gdfont
 
@@ -924,9 +931,28 @@ cdef class Image:
         else:
             raise ValueError('font must be one of: "tiny", "small", "medium", "large", and "giant"')
 
+        cdef int text_width, text_height, l
+        l = len(text)
+        text_width = l * gdfont.w
+        text_height = gdfont.h
+        
+        offsets = {'lt':(0, 0), 
+                   'ct':(text_width/2, 0), 
+                   'rt':(text_width, 0),
+                   'r': (text_width, text_height/2),
+                   'rb':(text_width, text_height),
+                   'cb':(text_width/2, text_height),
+                   'lb':(0,text_height),
+                   'l': (0,text_height/2)
+                   }
+        if align not in offsets.keys():
+            raise ValueError("invalid text alignment flag")
+
+        print (offsets[align][0], offsets[align][1])
         gdImageString(self._image,
                       gdfont,
-                      point[0], point[1],
+                      point[0] - offsets[align][0],
+                      point[1] - offsets[align][1],
                       text_bytes,
                       self.get_color_index(color),
                       )

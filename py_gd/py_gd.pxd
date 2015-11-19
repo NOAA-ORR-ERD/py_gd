@@ -18,7 +18,9 @@ cdef extern from "gd.h":
         int x, y
     ctypedef gdPoint *gdPointPtr
 
-    cdef struct gdFont
+    cdef struct gdFont:
+        int w
+        int h
     ctypedef gdFont *gdFontPtr
 
     ## The functions we want to wrap
