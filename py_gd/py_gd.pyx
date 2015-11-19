@@ -906,10 +906,7 @@ cdef class Image:
         :type align: one of the following strings 'lt', 'ct', 'rt', 'r', 'rb', 'cb', 'lb', 'l'
 
         """
-        
-        if align not in {'lt', 'ct', 'rt', 'r', 'rb', 'cb', 'lb', 'l'}:
-            raise ValueError("invalid text alignment flag")
-        
+
         cdef text_bytes
         try:
             text_bytes = text.encode('ascii')
@@ -935,7 +932,7 @@ cdef class Image:
         l = len(text)
         text_width = l * gdfont.w
         text_height = gdfont.h
-        
+
         offsets = {'lt':(0, 0), 
                    'ct':(text_width/2, 0), 
                    'rt':(text_width, 0),
@@ -946,7 +943,7 @@ cdef class Image:
                    'l': (0,text_height/2)
                    }
         if align not in offsets.keys():
-            raise ValueError("invalid text alignment flag")
+            raise ValueError("invalid text alignment flag. Valid ones are: %s" % offsets.keys())
 
         print (offsets[align][0], offsets[align][1])
         gdImageString(self._image,
