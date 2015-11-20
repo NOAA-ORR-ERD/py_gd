@@ -886,7 +886,7 @@ cdef class Image:
                              )
             gdImageSetThickness(self._image, 1)
 
-    def draw_text(self, text, point, font="medium", color='black', align='lt'):
+    def draw_text(self, text, point, font="medium", color='black', align='lt', background='none'):
         """
         draw some text
 
@@ -904,6 +904,9 @@ cdef class Image:
         
         :param align: the principal point that the text box references
         :type align: one of the following strings 'lt', 'ct', 'rt', 'r', 'rb', 'cb', 'lb', 'l'
+        
+        :param background: the background color of the text box, default is 'none' (nothing is drawn)
+        :type background: name of the color, or 'none'.
 
         """
 
@@ -944,6 +947,11 @@ cdef class Image:
                    }
         if align not in offsets.keys():
             raise ValueError("invalid text alignment flag. Valid ones are: %s" % offsets.keys())
+
+        if background is not 'none':
+            pt1 = (point[0] - offsets[align][0], point[1] - offsets[align][1])
+            pt2 = (pt1[0] + text_width, pt1[1] + text_height)
+            self.draw_rectangle(pt1, pt2, fill_color=background)
 
         gdImageString(self._image,
                       gdfont,

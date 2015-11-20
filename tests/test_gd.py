@@ -412,6 +412,26 @@ def test_text_align():
     img.draw_text("abcd", (0, 100), font="large", color='white', align='l')
     img.save(outfile("test_text_align.bmp"), "bmp")
 
+def test_text_background():
+    img = py_gd.Image(200,200)
+    img.draw_text("abcd", (0, 0), font="tiny", color='white')
+    img.draw_text("abcd", (100, 0), font="small", color='white', align='ct')
+    img.draw_text("abcd", (200, 0), font="medium", color='white', align='rt', background='red')
+    img.draw_text("abcd", (200, 100), font="large", color='white', align='r')
+    img.draw_text("abcd", (200, 200), font="tiny", color='white', align='rb')
+    img.draw_text("abcd", (100, 200), font="small", color='white', align='cb', background='green')
+    img.draw_text("abcd", (0, 200), font="medium", color='white', align='lb')
+    img.draw_text("abcd", (0, 100), font="large", color='white', align='l')
+    img.draw_text("9999", (0, 0), font="tiny", color='white')
+    img.draw_text("9999", (100, 0), font="small", color='red', align='ct')
+    img.draw_text("9999", (200, 0), font="medium", color='white', align='rt', background='red')
+    img.draw_text("9999", (200, 100), font="large", color='blue', align='r')
+    img.draw_text("9999", (200, 200), font="tiny", color='white', align='rb')
+    img.draw_text("9999", (100, 200), font="small", color='white', align='cb', background='green')
+    img.draw_text("9999", (0, 200), font="medium", color='white', align='lb')
+    img.draw_text("9999", (0, 100), font="large", color='white', align='l')
+    img.save(outfile("test_text_background.bmp"), "bmp")
+
 def test_draw_dot():
     img = py_gd.Image(100, 100, )
 
