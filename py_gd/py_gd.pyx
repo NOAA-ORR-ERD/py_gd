@@ -945,7 +945,6 @@ cdef class Image:
         if align not in offsets.keys():
             raise ValueError("invalid text alignment flag. Valid ones are: %s" % offsets.keys())
 
-        print (offsets[align][0], offsets[align][1])
         gdImageString(self._image,
                       gdfont,
                       point[0] - offsets[align][0],
@@ -988,25 +987,27 @@ cdef class Animation:
     cdef Image cur_frame
     cdef int _cur_delay
     cdef Image prev_frame
-    cdef Image frame_queue
+    cdef int base_delay
     cdef FILE* _fp
     cdef str _file_path
-    cdef int _base_delay
     cdef int _has_begun
     cdef int _has_closed
     cdef int _frames_written
 
-    cdef list color_names
-    cdef list color_rgb
-    cdef dict colors
-
     def __cinit__(self, file_name, int delay=50):
+        """
+        :param file_name: the name/file path of the animation that will be saved
+        :type file_name: string
+        
+        :param delay: the default delay between frames
+        :type delay: int
+        """
         try:
             self._file_path = file_name.encode('ascii')
         except UnicodeEncodeError:
-            raise ValueError("can only except ascii filenames")
+            raise ValueError("can only accept ascii filenames")
         self._fp = NULL
-        self._base_delay = delay
+        self.base_delay = delay
         self._has_begun = 0
         self._has_closed = 0
         self._frames_written = 0
@@ -1014,12 +1015,20 @@ cdef class Animation:
         
 
     def __init__(self,  file_name, delay=50):
+        """
+        :param file_name: the name/file path of the animation that will be saved
+        :type file_name: string
+        
+        :param delay: the default delay between frames
+        :type delay: int
+        """
         self.cur_frame = None
         self.prev_frame = None
-        self.colors = {}
-        self.color_names = []
 
     def __dealloc__(self):
+        """
+        cleans up the file and file pointer if animation was started and not closed
+        """
         if (self._fp is not NULL 
             and self._has_closed != 1
             and self._has_begun == 1):
@@ -1027,6 +1036,16 @@ cdef class Animation:
             os.remove(self._file_path)
 
     def begin_anim(self, Image first, int loops=0):
+        """
+        Begins the animation. This creates the file pointer and infers size and
+        palette information from the initial Image
+        
+        :param first: First frame of the animation. Also determines palette and size
+        :type first: Image
+        
+        :param loops: specifies the looping behavior of the animation. (0 -> loop, -1 -> no loop, n > 0 -> loop n times)
+        :type loops: int
+        """
         self._fp = fopen(self._file_path, "wb");
         if self._fp is NULL:
             raise IOError("could not open the file:%s"%self._file_path)
@@ -1041,14 +1060,23 @@ cdef class Animation:
         self._has_begun = 1
 
     def add_frame(self, Image image, int delay=-1):
+        """
+        Adds the image to the animation with the specified delay
+        
+        :param image: The image to be added.
+        :type image: Image
+        
+        :param delay: The delay between the current frame and the next. <1 reverts to default delay
+        :type delay: int
+        """
         if self._has_begun is 0:
             raise IOError("Cannot add frame to non-started animation")
         if self._has_closed is 1:
             raise IOError("Cannot add frame to closed animation")
         if self.cur_frame is None or image is None:
             raise IOError("Cannot add NULL image to animation")
-        if delay is -1:
-            delay = self._base_delay
+        if delay < 1:
+            delay = self.base_delay
         
         cdef gdImagePtr prev 
         prev = NULL
@@ -1081,17 +1109,16 @@ cdef class Animation:
         fclose(self._fp)
         self._has_closed = 1
 
-    def set_initial_frame(self, Image img):
-        if self._has_begun == 1 or self._has_closed == 1:
-            raise RuntimeError("Cannot set initial frame after animation has begun or closed")
-        else:
-            self.cur_frame = img
+    def reset(self, Image img not None, str file_path not None):
+        """
+        Resets the object state so it can be used again to create another animation
         
-
-    def set_delay(self, int delay):
-        self._base_delay = delay
-
-    def reset(self, Image img, str file_path):
+        :param img: new first frame
+        :type img: Image
+        
+        :param file_path: path and filename of new animation
+        :param file_path: str
+        """
         self.cur_frame=img
         self.prev_frame=None
         try:
@@ -1100,7 +1127,7 @@ cdef class Animation:
             raise ValueError("can only except ascii filenames")
         self._file_path = file_path
         self._fp = NULL
-        self._base_delay=50
+        self.base_delay=50
         self._has_begun = 0
         self._has_closed = 0
         self._frames_written = 0
@@ -1110,5 +1137,12 @@ cdef class Animation:
         return self._frames_written
         
 
+def animation_from_images(images, file_name, delay=50):
+    a = Animation(file_name, delay)
+    a.begin_anim(images[0])
+    for img in images[1:]:
+        a.add_frame(img)
+    a.close_anim()
+    
 
 
