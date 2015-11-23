@@ -12,8 +12,9 @@ import cython
 from py_gd cimport *
 
 from libc.stdio cimport FILE, fopen, fclose
-from libc.string cimport memcpy
+from libc.string cimport memcpy, strlen
 from libc.stdlib cimport malloc, free
+import os
 #from libc.stdint cimport uint8_t, uint32_t
 
 import operator
@@ -149,6 +150,16 @@ cdef class Image:
         def __get__(self):
             return gdImageSY(self._image)
 
+    def __richcmp__(Image self, Image other not None, int op):
+        # Thanks for this madness, cython!
+        cdef int retval = -1
+        retval = gdImageCompare(self._image, other._image)
+        if op == 2: # ==
+            return retval == 0
+        elif op == 3: # !=
+            return retval > 0
+        else:
+            return NotImplemented
 
     def clear(self, color=None):
         """
@@ -356,6 +367,7 @@ cdef class Image:
 
         def __del__(self):
             gdImageSetClip(self._image, 0, 0, gdImageSX(self._image)-1, gdImageSY(self._image)-1)
+
 
     ## Saving images
     def save(self, file_name, file_type="bmp", compression=None):
@@ -874,7 +886,7 @@ cdef class Image:
                              )
             gdImageSetThickness(self._image, 1)
 
-    def draw_text(self, text, point, font="medium", color='black'):
+    def draw_text(self, text, point, font="medium", color='black', align='lt', background='none'):
         """
         draw some text
 
@@ -889,13 +901,20 @@ cdef class Image:
 
         :param color: color of text
         :type  color=None: color name or index
+        
+        :param align: the principal point that the text box references
+        :type align: one of the following strings 'lt', 'ct', 'rt', 'r', 'rb', 'cb', 'lb', 'l'
+        
+        :param background: the background color of the text box, default is 'none' (nothing is drawn)
+        :type background: name of the color, or 'none'.
 
         """
+
         cdef text_bytes
         try:
             text_bytes = text.encode('ascii')
         except UnicodeEncodeError:
-            raise ValueError("can only except ascii text")
+            raise ValueError("can only accept ascii text")        
 
         cdef gdFontPtr gdfont
 
@@ -912,9 +931,32 @@ cdef class Image:
         else:
             raise ValueError('font must be one of: "tiny", "small", "medium", "large", and "giant"')
 
+        cdef int text_width, text_height, l
+        l = len(text)
+        text_width = l * gdfont.w
+        text_height = gdfont.h
+
+        offsets = {'lt':(0, 0), 
+                   'ct':(text_width/2, 0), 
+                   'rt':(text_width, 0),
+                   'r': (text_width, text_height/2),
+                   'rb':(text_width, text_height),
+                   'cb':(text_width/2, text_height),
+                   'lb':(0,text_height),
+                   'l': (0,text_height/2)
+                   }
+        if align not in offsets.keys():
+            raise ValueError("invalid text alignment flag. Valid ones are: %s" % offsets.keys())
+
+        if background is not 'none':
+            pt1 = (point[0] - offsets[align][0], point[1] - offsets[align][1])
+            pt2 = (pt1[0] + text_width, pt1[1] + text_height)
+            self.draw_rectangle(pt1, pt2, fill_color=background)
+
         gdImageString(self._image,
                       gdfont,
-                      point[0], point[1],
+                      point[0] - offsets[align][0],
+                      point[1] - offsets[align][1],
                       text_bytes,
                       self.get_color_index(color),
                       )
@@ -948,7 +990,167 @@ def from_array(char [:,:] arr not None, *args, **kwargs):
     return img
 
 
+cdef class Animation:
 
+    cdef Image cur_frame
+    cdef int _cur_delay
+    cdef Image prev_frame
+    cdef int base_delay
+    cdef FILE* _fp
+    cdef str _file_path
+    cdef int _has_begun
+    cdef int _has_closed
+    cdef int _frames_written
 
+    def __cinit__(self, file_name, int delay=50):
+        """
+        :param file_name: the name/file path of the animation that will be saved
+        :type file_name: string
+        
+        :param delay: the default delay between frames
+        :type delay: int
+        """
+        try:
+            self._file_path = file_name.encode('ascii')
+        except UnicodeEncodeError:
+            raise ValueError("can only accept ascii filenames")
+        self._fp = NULL
+        self.base_delay = delay
+        self._has_begun = 0
+        self._has_closed = 0
+        self._frames_written = 0
+        self._cur_delay = delay
+        
+
+    def __init__(self,  file_name, delay=50):
+        """
+        :param file_name: the name/file path of the animation that will be saved
+        :type file_name: string
+        
+        :param delay: the default delay between frames
+        :type delay: int
+        """
+        self.cur_frame = None
+        self.prev_frame = None
+
+    def __dealloc__(self):
+        """
+        cleans up the file and file pointer if animation was started and not closed
+        """
+        if (self._fp is not NULL 
+            and self._has_closed != 1
+            and self._has_begun == 1):
+            fclose(self._fp)
+            os.remove(self._file_path)
+
+    def begin_anim(self, Image first, int loops=0):
+        """
+        Begins the animation. This creates the file pointer and infers size and
+        palette information from the initial Image
+        
+        :param first: First frame of the animation. Also determines palette and size
+        :type first: Image
+        
+        :param loops: specifies the looping behavior of the animation. (0 -> loop, -1 -> no loop, n > 0 -> loop n times)
+        :type loops: int
+        """
+        self._fp = fopen(self._file_path, "wb");
+        if self._fp is NULL:
+            raise IOError("could not open the file:%s"%self._file_path)
+        if self._has_begun is 1:
+            raise RuntimeError("Animation has already been started")
+        if self._has_closed is 1:
+            raise RuntimeError("Cannot re-begin closed animation")
+        
+        self.cur_frame = Image(first.width, first.height)
+        self.cur_frame.copy(first)
+        gdImageGifAnimBegin(self.cur_frame._image, self._fp, -1, loops);
+        self._has_begun = 1
+
+    def add_frame(self, Image image, int delay=-1):
+        """
+        Adds the image to the animation with the specified delay
+        
+        :param image: The image to be added.
+        :type image: Image
+        
+        :param delay: The delay between the current frame and the next. <1 reverts to default delay
+        :type delay: int
+        """
+        if self._has_begun is 0:
+            raise IOError("Cannot add frame to non-started animation")
+        if self._has_closed is 1:
+            raise IOError("Cannot add frame to closed animation")
+        if self.cur_frame is None or image is None:
+            raise IOError("Cannot add NULL image to animation")
+        if delay < 1:
+            delay = self.base_delay
+        
+        cdef gdImagePtr prev 
+        prev = NULL
+
+        if self.cur_frame == image:
+            # if next image is the same as the image in the queue, just add to the delay and leave
+            self._cur_delay += delay
+            return
+        else:
+            if self.prev_frame is not None:
+                prev = self.prev_frame._image
+            gdImageGifAnimAdd(self.cur_frame._image, self._fp, 0, 0, 0, self._cur_delay, 1, prev);
+            self.prev_frame = self.cur_frame
+            self.cur_frame = Image(self.cur_frame.width, self.cur_frame.height)
+            self.cur_frame.copy(image)
+            self._cur_delay = delay
+            self._frames_written += 1
+    
+    def close_anim(self):
+        if self._has_begun is 0:
+            raise RuntimeError("Cannot close animation that hasn't been opened")
+        if self._fp is NULL:
+            raise IOError("Cannot close NULL file pointer")
+        cdef gdImagePtr prev 
+        prev = NULL
+        if self.prev_frame is not None:
+                prev = self.prev_frame._image
+        gdImageGifAnimAdd(self.cur_frame._image,self._fp, 0, 0, 0, self._cur_delay, 1, prev)
+        gdImageGifAnimEnd(self._fp);
+        fclose(self._fp)
+        self._has_closed = 1
+
+    def reset(self, Image img not None, str file_path not None):
+        """
+        Resets the object state so it can be used again to create another animation
+        
+        :param img: new first frame
+        :type img: Image
+        
+        :param file_path: path and filename of new animation
+        :param file_path: str
+        """
+        self.cur_frame=img
+        self.prev_frame=None
+        try:
+            self._file_path = file_path.encode('ascii')
+        except UnicodeEncodeError:
+            raise ValueError("can only except ascii filenames")
+        self._file_path = file_path
+        self._fp = NULL
+        self.base_delay=50
+        self._has_begun = 0
+        self._has_closed = 0
+        self._frames_written = 0
+
+    @property
+    def frames_written(self):
+        return self._frames_written
+        
+
+def animation_from_images(images, file_name, delay=50):
+    a = Animation(file_name, delay)
+    a.begin_anim(images[0])
+    for img in images[1:]:
+        a.add_frame(img)
+    a.close_anim()
+    
 
 

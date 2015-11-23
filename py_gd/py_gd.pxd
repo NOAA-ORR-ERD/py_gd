@@ -18,7 +18,9 @@ cdef extern from "gd.h":
         int x, y
     ctypedef gdPoint *gdPointPtr
 
-    cdef struct gdFont
+    cdef struct gdFont:
+        int w
+        int h
     ctypedef gdFont *gdFontPtr
 
     ## The functions we want to wrap
@@ -69,6 +71,7 @@ cdef extern from "gd.h":
     # query functions
     int gdImageSX(gdImagePtr im) # MACRO
     int gdImageSY(gdImagePtr im) # MACRO
+    int gdImageCompare (gdImagePtr im1, gdImagePtr im2);
 
     # constants (these are #define in gd.h)
     cpdef int gdArc
@@ -76,6 +79,22 @@ cdef extern from "gd.h":
     cpdef int gdChord
     cpdef int gdNoFill
     cpdef int gdEdged
+    
+    #comparison constants (return values of gdImageCompare)
+    cpdef int GD_CMP_IMAGE          # 1 Actual image IS different
+    cpdef int GD_CMP_NUM_COLORS     # 2 Number of Colours in pallette differ
+    cpdef int GD_CMP_COLOR          # 4 Image colours differ
+    cpdef int GD_CMP_SIZE_X         # 8 Image width differs
+    cpdef int GD_CMP_SIZE_Y         # 16 Image heights differ
+    cpdef int GD_CMP_TRANSPARENT    # 32 Transparent colour
+    cpdef int GD_CMP_BACKGROUND     # 64 Background colour
+    cpdef int GD_CMP_INTERLACE      # 128 Interlaced setting
+    cpdef int GD_CMP_TRUECOLOR      # 256 Truecolor vs palette differs
+
+    # animation
+    void gdImageGifAnimBegin(gdImagePtr im, FILE *outFile, int GlobalCM, int Loops);
+    void gdImageGifAnimAdd(gdImagePtr im, FILE *outFile, int LocalCM, int LeftOfs, int TopOfs, int Delay, int Disposal, gdImagePtr previm);
+    void gdImageGifAnimEnd(FILE *outFile);
 
 # fonts are in extra headers:
 cdef extern from "gdfontt.h":

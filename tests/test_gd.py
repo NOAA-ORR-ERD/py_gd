@@ -398,7 +398,39 @@ def test_text():
     img.draw_text("Some Medium Text", (20, 60), font="medium", color='white')
     img.draw_text("Some Large Text", (20, 80), font="large", color='white')
     img.draw_text("Some Giant Text", (20, 100), font="giant", color='white')
-    img.save(outfile("test_image_text.png"), "png")
+    img.save(outfile("test_image_text.bmp"), "bmp")
+
+def test_text_align():
+    img = py_gd.Image(200,200)
+    img.draw_text("abcd", (0, 0), font="tiny", color='white')
+    img.draw_text("abcd", (100, 0), font="small", color='white', align='ct')
+    img.draw_text("abcd", (200, 0), font="medium", color='white', align='rt')
+    img.draw_text("abcd", (200, 100), font="large", color='white', align='r')
+    img.draw_text("abcd", (200, 200), font="tiny", color='white', align='rb')
+    img.draw_text("abcd", (100, 200), font="small", color='white', align='cb')
+    img.draw_text("abcd", (0, 200), font="medium", color='white', align='lb')
+    img.draw_text("abcd", (0, 100), font="large", color='white', align='l')
+    img.save(outfile("test_text_align.bmp"), "bmp")
+
+def test_text_background():
+    img = py_gd.Image(200,200)
+    img.draw_text("abcd", (0, 0), font="tiny", color='white')
+    img.draw_text("abcd", (100, 0), font="small", color='white', align='ct')
+    img.draw_text("abcd", (200, 0), font="medium", color='white', align='rt', background='red')
+    img.draw_text("abcd", (200, 100), font="large", color='white', align='r')
+    img.draw_text("abcd", (200, 200), font="tiny", color='white', align='rb')
+    img.draw_text("abcd", (100, 200), font="small", color='white', align='cb', background='green')
+    img.draw_text("abcd", (0, 200), font="medium", color='white', align='lb')
+    img.draw_text("abcd", (0, 100), font="large", color='white', align='l')
+    img.draw_text("9999", (0, 0), font="tiny", color='white')
+    img.draw_text("9999", (100, 0), font="small", color='red', align='ct')
+    img.draw_text("9999", (200, 0), font="medium", color='white', align='rt', background='red')
+    img.draw_text("9999", (200, 100), font="large", color='blue', align='r')
+    img.draw_text("9999", (200, 200), font="tiny", color='white', align='rb')
+    img.draw_text("9999", (100, 200), font="small", color='white', align='cb', background='green')
+    img.draw_text("9999", (0, 200), font="medium", color='white', align='lb')
+    img.draw_text("9999", (0, 100), font="large", color='white', align='l')
+    img.save(outfile("test_text_background.bmp"), "bmp")
 
 def test_draw_dot():
     img = py_gd.Image(100, 100, )
@@ -786,6 +818,23 @@ def test_copy_transparent():
 
     img2.save(outfile("image_copy_trans.png"), file_type="png")
 
+def test_equality():
+    """
+    test that an image is equal to itself and an identical image
+    """
+    img1 = py_gd.Image(10,10)
+    img2 = py_gd.Image(10,10)
+    img3 = py_gd.Image(10,11)
+
+    img1.draw_rectangle( (1,1), (8,8), fill_color='red' )
+    img2.draw_rectangle( (1,1), (8,8), fill_color='red' )
+    img3.draw_rectangle( (1,1), (8,8), fill_color='blue' )
+    
+    assert img1 == img1
+    assert img1 == img2
+    assert img1 != img3
+    assert (img1 == img3) is False
+
 def test_size():
 
     """
@@ -833,14 +882,66 @@ def test_clip_draw():
     img.save(outfile(fname))
     assert check_file(fname)
 
+def test_animation():
+    img = py_gd.Image(200,200)
+    endpoints = np.array(((-100,0),(100,0)))
+    offset = np.array((100,100))
+    
+    fname= "test_animation.gif"
+    anim = py_gd.Animation(outfile(fname))
+    anim.begin_anim(img,0)
+    
+    for ang in range(0,360,10):
+        rad = np.deg2rad(ang)
+        rot_matrix = [(np.cos(rad), np.sin(rad)),(-np.sin(rad),np.cos(rad))]
+        points = np.dot(endpoints, rot_matrix).astype(np.int32) + offset
+#         print points
+        if (ang < 180):
+            img.draw_line(points[0], points[1],'red')
+        else:
+            img.draw_line(points[0], points[1],'red')
+        anim.add_frame(img)
+        
+#     img.draw_line(np.array((200,100)),np.array((0,100)), 'green')
+#     anim.add_frame(img)
+    img.draw_line(np.array((0,100)),np.array((200,100)), 'green')
+    anim.add_frame(img)
+    anim.close_anim()
+    print anim.frames_written
 
+def test_static_animation():
+    img1 = py_gd.Image(200,200)
+    img2 = py_gd.Image(200,200)
+    endpoints = np.array(((-100,0),(100,0)))
+    offset = np.array((100,100))
+    
+    fname= "test_animation.gif"
+    anim = py_gd.Animation(outfile(fname))
+    anim.begin_anim(img1,0)
+    
+    for ang in range(0,360,10):
+        rad = np.deg2rad(ang)
+        rot_matrix = [(np.cos(rad), np.sin(rad)),(-np.sin(rad),np.cos(rad))]
+        points = np.dot(endpoints, rot_matrix).astype(np.int32) + offset
+#         print points
+        img1.draw_line(points[0], points[1],'red')
+        img2.draw_line(points[0], points[1],'red')
+        assert img1 == img2
+        anim.add_frame(img1)
+        anim.add_frame(img2)
+        
+#     img.draw_line(np.array((200,100)),np.array((0,100)), 'green')
+#     anim.add_frame(img)
+    anim.close_anim()
+    print anim.frames_written
 
 if __name__ == "__main__":
     # just run these tests..
     #test_init_default_palette()
     #test_init_BW()
     #test_init_simple_add_rgb()
-    test_init_simple_add_rgba()
+#     test_init_simple_add_rgba()
+    test_animation()
 
 
 
