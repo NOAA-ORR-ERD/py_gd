@@ -1041,7 +1041,10 @@ cdef class Animation:
             and self._has_closed != 1
             and self._has_begun == 1):
             fclose(self._fp)
-            os.remove(self._file_path)
+            try:
+                os.remove(self._file_path)
+            except OSError
+                pass
 
     def begin_anim(self, Image first, int loops=0):
         """
