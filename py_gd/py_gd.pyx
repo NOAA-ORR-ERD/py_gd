@@ -1043,7 +1043,7 @@ cdef class Animation:
             fclose(self._fp)
             try:
                 os.remove(self._file_path)
-            except OSError
+            except OSError:
                 pass
 
     def begin_anim(self, Image first, int loops=0):
