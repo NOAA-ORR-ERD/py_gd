@@ -58,7 +58,7 @@ ext_modules=[ Extension("py_gd.py_gd",
 
 setup(
     name = "py_gd",
-    version='0.1.2',
+    version='0.1.4',
     description = "python wrappers around libgd graphics lib",
     #long_description=read('README'),
     author = "Christopher H. Barker",
