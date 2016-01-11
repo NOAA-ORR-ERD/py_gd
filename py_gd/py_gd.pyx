@@ -55,6 +55,24 @@ web_colors = BW_colors + [ ('silver', (191, 191, 191) ),
 ## a limit here.
 MAX_IMAGE_SIZE = 2**30 #1 GB limit
 
+cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
+    """
+    converts the input object to an Nx2 array.
+
+    returns the input if it is already an array,
+    returns a new array if not.
+
+    raises ValueError if the array is the wrong shape
+    
+    :param a: input obj -- should be somethign that can be converted to a Nx2 array
+    
+    :param dtype: the numpy data type you want the returned array to be
+    """
+    arr = np.asarray(obj, dtype)
+    if arr.ndim != 2 or arr.shape[1] != 2:
+        raise ValueError("input  must be convertable to a Nx2 array")
+    return arr
+
 cdef class Image:
     """
     class wrapper  around a gdImage object
@@ -555,12 +573,12 @@ cdef class Image:
         :param color='black': color of points
         :type  color: color name or index
         """
-
+        print "running draw_dots"
         cdef cnp.uint8_t c
         cdef cnp.uint32_t i, n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
 
-        points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
+        points_arr = asn2array(points, dtype=np.intc)
         n = points_arr.shape[0]
 
         c = self.get_color_index(color)
@@ -624,7 +642,7 @@ cdef class Image:
         cdef cnp.uint32_t i, n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
 
-        points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
+        points_arr = asn2array(points, dtype=np.intc)
         n = points_arr.shape[0]
 
         c = self.get_color_index(color)
@@ -711,7 +729,7 @@ cdef class Image:
         cdef int n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
 
-        points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
+        points_arr = asn2array(points, dtype=np.intc)
         n = points_arr.shape[0]
 
         if n < 3:
@@ -754,7 +772,7 @@ cdef class Image:
         cdef int n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
 
-        points_arr = np.asarray(points, dtype=np.intc).reshape( (-1,2) )
+        points_arr = asn2array(points, dtype=np.intc)
         n = points_arr.shape[0]
 
         if n < 2:

@@ -247,6 +247,28 @@ class TestPolyFill():
         ## this is expected to not be equal -- we've found a too-big value
         assert not np.array_equal(arr, self.arr)
 
+    def test_multi_segment(self):
+        '''
+        what if we break it down into smaller segments?
+        '''
+        img = py_gd.Image(10, 10)
+        val = int(2**30)# should work
+
+        coords = np.linspace(-val, val, 100000)
+        rev_coords = np.flipud(coords)
+        diag = np.c_[coords, coords]
+        bottom = np.c_[rev_coords, np.ones_like(coords) * val]
+        side = np.c_[np.ones_like(coords) * -val, rev_coords, ]
+        points = np.r_[diag, bottom, side]
+
+        img.draw_polygon(points, line_color='black', fill_color='red', line_width=1)
+        # save this one as an array
+        arr = np.array(img)
+        print arr
+        print self.arr
+        ## this is expected to not be equal -- we've found a too-big value
+        assert np.array_equal(arr, self.arr)
+
 
     def test_overflow(self):
         '''
