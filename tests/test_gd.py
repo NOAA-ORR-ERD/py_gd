@@ -46,6 +46,29 @@ def test_init_simple():
                       height=400,
                       preset_colors=None)
 
+def test_asn2array():
+    """
+    check if it works when the right input is used
+    """
+    arr = py_gd.asn2array( [(1,2),(3,4),(5,6)], dtype=np.intc)
+
+    assert type(arr) == np.ndarray
+    assert arr.shape == (3,2)
+    assert arr.dtype == np.intc
+
+def test_asn2array():
+    """
+    check if it fails when wrong imput is used
+    """
+    with pytest.raises(ValueError):
+        arr = py_gd.asn2array( [(1,2,3),(3,4,5),(5,6,7)], dtype=np.intc)
+
+    with pytest.raises(ValueError):
+        arr = py_gd.asn2array( (1,2,3,3,4,5,5,6,7), dtype=np.intc)
+
+    assert True
+
+
 def test_cant_save_file():
     img = py_gd.Image(width=400,
                       height=400
@@ -564,6 +587,24 @@ def test_draw_dots_lots():
     img.draw_dots(points, diameter=2, color = 'red')
 
     img.save(outfile("test_image_dots_lots.png"), 'png')
+
+def test_draw_dots_wrong_shape():
+    """
+    test passing in a wrong-shaped points
+    """
+    w, h, = 1000, 500
+    img = py_gd.Image(w, h)
+
+    points = [ (1,2,3),
+               (4,5,6),
+               (7,8,9),
+               (10,11,12),
+               ]
+    with pytest.raises(ValueError):
+        img.draw_dots(points, diameter=2, color = 'red')
+
+    assert True
+
 
 def test_draw_x_lots():
     """
