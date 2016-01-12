@@ -573,7 +573,6 @@ cdef class Image:
         :param color='black': color of points
         :type  color: color name or index
         """
-        print "running draw_dots"
         cdef cnp.uint8_t c
         cdef cnp.uint32_t i, n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
