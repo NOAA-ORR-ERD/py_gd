@@ -1,3 +1,7 @@
+#specific to this repo:
+
+py_gd/py_gd.c
+
 # mac files
 .DS_Store
 
@@ -5,6 +9,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.cache
 
 # C extensions
 *.so
