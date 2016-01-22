@@ -43,6 +43,17 @@ elif sys.platform.startswith('linux'):
     library_dirs.append('/usr/local/lib')
     include_dirs.append('/usr/local/include')
 
+## crazy kludge to find include dir in a conda build:
+# check if we are running conda build:
+if 'CONDA_BUILD' in os.environ:
+    print "running in conda build, adding include dir"
+    prefix = os.environ['PREFIX']
+    include_dirs.append(os.path.join(prefix,'include'))
+    print "added:", include_dirs[-1]    
+else:
+    print "not running in conda build"
+
+
 ## This setup requires libgd
 ## It expects to find them in the "usual" locations
 ##   or where Anaconda put it...
