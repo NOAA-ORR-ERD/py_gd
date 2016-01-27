@@ -79,7 +79,7 @@ setup(
     keywords = "graphics cython drawing",
     ext_modules = cythonize(ext_modules),
     zip_safe = False, # dont want a compiled extension in a zipfile...
-    packages = ["py_gd",],
+    packages = ['py_gd', 'py_gd.test'],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Topic :: Utilities",
