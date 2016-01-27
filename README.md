@@ -29,26 +29,21 @@ On the other hand:
  - py_gd is being actively worked on now. While only supporting Py2 at the moment,
    it should be pretty easy to make a Py3k version.
  - py_gd is a "thick" wrapper -- we're trying to provide a nice object oriented, pythonic inteface.
- - py_gd uses numpy (and the PEP3118 buffer interface) to allow efficient transfer of data back and
-   forth between Python and gd.
+ - py_gd uses numpy (and the PEP3118 buffer interface) to allow efficient transfer of data back and forth between Python and gd.
  - py_gd is written in cython, which is likely to be more robust and error free and easier to maintain.
 
 However, there is some nice stuff in gdmodule (like including a truetype font) that I we want to borrow.
 
 ## How is py_gd built?
 
-py_gd is built using Cython: (www.cython.org). Cython allows us to both call into the existing gd C lib,
-and to also write wrapper code to make a nicer API in a very efficient way. You shouldn't need Cython
-to build and use py_gd, but you'll need it if you want to contribute to the wrappers.
+py_gd is built using Cython: (www.cython.org). Cython allows us to both call into the existing gd C lib, and to also write wrapper code to make a nicer API in a very efficient way. You shouldn't need Cython to use py_gd, but you'll need it if you want to contribute to the wrappers.
 
 
 ## Dependencies:
 
 py_gd currently requires the numpy package: http://www.numpy.org
 
-numpy is used to allow you to very efficiently pass in data structures for things like vertexes of large
-polygons, etc, and can be used to get a copy of the image buffer, and manipulate it in various ways,
-as well as passing it back to py_gd.
+numpy is used to allow you to very efficiently pass in data structures for things like vertexes of large polygons, etc, and can be used to get a copy of the image buffer, and manipulate it in various ways, as well as passing it back to py_gd.
 
 In order to build py_gd, the Cython package is also  required: http://cython.org/
 
@@ -63,6 +58,7 @@ Major Working features:
  * transparent background
  * built-in fonts for text
  * lines, polygons, arcs
+ * copying between images
  * saving as gif, bmp, png, jpeg
  * numpy arrays for input and image buffer exchange.
 
@@ -74,16 +70,14 @@ Major Missing features:
 
 ## Can I contribute?
 
-You sure you can -- fork the source, and hack away -- you can actually add features pretty easily by taking
-a look at what's there -- with just a little C and/or Cython knowledge (not much!) you should be able to
-get stuff working.
+You sure you can -- fork the source, and hack away -- you can actually add features pretty easily by taking a look at what's there -- with just a little C and/or Cython knowledge (not much!) you should be able to get stuff working.
 
 Here's what you need to do:
 
  * find the function you want to wrap in gd.h
- * copy the prototype to py_gd.pxd, and edit to to make it Cython-compatible (copy what's done for the ones already there)
+ * copy the prototype to py_gd.pxd, and edit it to make it Cython-compatible (copy what's done for the ones already there)
  * add a method to the Image class in py_gd.pyx -- look for similar methods already, and try to keep the API similar.
- * add a test to test_gd.py that tests your new method
+ * add a test to test_gd.py (Or a new test file) that tests your new method
  * re-build (``pip install -e ./``   or   ``setup.py build_ext --inplace``)
  * try out your test...
  * lather, rinse, repeat, 'till it all works
@@ -92,7 +86,7 @@ Here's what you need to do:
 
 ## Windows
 
-py_gd depends on libgd, which, in turn dpends on libpng, and others -- this makes it a major pain to build on Windows. Unless you are an expert, we sugget using Anaconda Python, and the conda packages found in the noaa-orr-erd Anaconda channel. It should be as easy as:
+py_gd depends on libgd which, in turn, depends on libpng, and others -- this makes it a major pain to build on Windows. Unless you are an expert, we suggest using Anaconda Python [https://www.continuum.io/why-anaconda], and the conda packages found in the noaa-orr-erd Anaconda channel. It should be as easy as:
 
 ```
 conda install -c https://conda.anaconda.org/noaa-orr-erd py_gd
@@ -100,7 +94,7 @@ conda install -c https://conda.anaconda.org/noaa-orr-erd py_gd
 
 ## OS-X
 
-py_gd depends on libgd, which, in turn depends on libpng, and others -- You can use macports or homebrew or roll your own to get these, but it's probably easier to use Anaconda Python, and the conda packages found in the noaa-orr-erd Anaconda channel. It should then be as easy as:
+py_gd depends on libgd which, in turn, depends on libpng, and others -- You can use macports or homebrew or roll your own to get these, but it's probably easier to use Anaconda Python [https://www.continuum.io/why-anaconda], and the conda packages found in the noaa-orr-erd Anaconda channel. It should then be as easy as:
 
 ```
 conda install -c https://conda.anaconda.org/noaa-orr-erd py_gd
@@ -108,33 +102,44 @@ conda install -c https://conda.anaconda.org/noaa-orr-erd py_gd
 
 ## Linux
 
-### libgd
+py_gd depends on libgd, which may be available in your distro's repo (it's used heavily by PHP). However your distro's version may be too old for py_gd, so you may have to built it yourself
+
+### Anaconda
+
+We've put up pacakges for the Anaconda python distribution [https://www.continuum.io/why-anaconda] in our channel. So if yo'pve got Anaconda (or miniconda) installed, it should be as easy as:
+
+```
+conda install -c https://conda.anaconda.org/noaa-orr-erd py_gd
+```
+
+### building libgd
 
 py_gd requires libgd version 2.1.1 (or maybe greater?). If your Linux distro has an up to date version, you can probably simply install it (and the development headers) from the system repos. something like:
 
 ```bash
 apt-get install libgd, libgd-dev
 ```
-or similar yum command (maybe just ``gd`` reather than ``ibgd``
+or similar yum command (maybe just ``gd`` rather than ``libgd``
 
 ### (CentOS 7)
 
-centoOS 7 only has version 2.0 in it's standard repos, as of 10/22/2015, so you need to download the source and bulid it yourself.
+centoOS 7 only has version 2.0 in it's standard repos, as of 10/22/2015, so you need to download the source and build it yourself.
 
  * Download the libgd version 2.1.1 tar file from [bitbucket](https://bitbucket.org/libgd/gd-libgd/downloads) (there are also tarballs on GitHub, but these don't have a configure script ready to go)
- * Build the tar file from source and install it: the usual:
+ * Build the tar file from source and install it. The usual:
+
 ```bash
 $ ./configure
 $ make
 $ make install
 ```
-dance. This will install into ``/usr/local/`` if you use the defaults. If your system is not yet set up to find libraries in ``/usr/local/``, then you need to:: 
- * Add this line to your bashrc
 
-   ```bash 
-   export LD_LIBRARY_PATH='/usr/local/lib'
-   ```
-(or set that globally)
+dance. This will install into ``/usr/local/`` if you use the defaults. If your system is not yet set up to find libraries in ``/usr/local/``, then you need to add this line to your bashrc:
+
+```bash 
+export LD_LIBRARY_PATH='/usr/local/lib'
+```
+(or set that globally) It needs to be set whenever you are running py_gd.
 
 Note: If you determine that you lack jpeg support these libs are known to be compatible and can be installed through yum:
 
@@ -144,7 +149,7 @@ Note: If you determine that you lack jpeg support these libs are known to be com
 ## Building py_gd
 
  * Clone the [py_gd repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
- * Create a virtualenv to scope your python installations to this project (<i>optional</i>)
+ * Create a virtualenv or conda environemnt to scope your python installations to this project (<i>optional</i>)
  * pip install cython
  * pip install numpy
  * cd into the repo
@@ -158,7 +163,6 @@ $ pip install -e ./
  * pip install pytest and run py.test to see that everything is working:
 
 ```bash
-$ cd test
-$ py.test
+$ py.test --pyargs py_gd 
 ```
  
