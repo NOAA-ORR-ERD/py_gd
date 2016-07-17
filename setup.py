@@ -4,16 +4,22 @@
 setup.py script for the py_gd package
 
 Tested with:
-  Anaconda on OS_X
+  Anaconda on OS-X
+    - libgd from conda-forge
   Anaconda on Win64
 
   Python 2.7.5 on CentOS 7
   Python 2.7.10
+  Python 2.7.12
+
+NOT py3 compatible
 
 libgd is assumed to be installed (and its dependencies) already.
 The Anaconda package at:
    http://anaconda.org/noaa-orr-erd/libgd
 is a good way to get it
+
+or (now) from conda-forge channel
 
 """
 
@@ -110,8 +116,14 @@ ext_modules=[ Extension("py_gd.py_gd",
                         extra_link_args = link_args,
                          )]
 
+def get_version():
+    """returns the version string in __init__.py"""
+    for line in open('py_gd/__init__.py'):
+        if "__version__" in line:
+            return line.split("__version__")[1].replace('=','').strip().strip('"')
+
 setup(name = "py_gd",
-      version='0.1.5',
+      version=get_version(),
       description = "python wrappers around libgd graphics lib",
       #long_description=read('README'),
       author = "Christopher H. Barker",
