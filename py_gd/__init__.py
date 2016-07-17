@@ -6,8 +6,8 @@ py_gd package -- wrappers around the libgd graphics drawing package
 The "real" code is in the cython file: py_gd.pyx
 
 """
-__version__ = "0.1.5"
-__gd_version__ = "2.1.1" # note -- should do a runtime check for version, yes???
+__version__ = "0.1.6"
+__gd_version__ = "2.2.2" # note -- should do a runtime check for version, yes???
 
 import sys, os
 if sys.platform.startswith('win'):
