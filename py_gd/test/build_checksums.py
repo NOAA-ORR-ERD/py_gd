@@ -9,13 +9,14 @@ and updated when neccessary.
 
 """
 
-import sys, os, hashlib
+import os
+import hashlib
+from pprint import pprint
 
 images_dir = "test_images_output"
 checksums = {}
 for name in os.listdir("test_images_output"):
     n = os.path.join("test_images_output", name)
-    checksums[name] = hashlib.md5(open(n,'rb').read()).hexdigest()
+    checksums[name] = hashlib.md5(open(n, 'rb').read()).hexdigest()
 
-print str(checksums)
-
+pprint(checksums)
