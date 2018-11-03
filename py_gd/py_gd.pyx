@@ -63,9 +63,9 @@ cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
     returns a new array if not.
 
     raises ValueError if the array is the wrong shape
-    
+
     :param a: input obj -- should be somethign that can be converted to a Nx2 array
-    
+
     :param dtype: the numpy data type you want the returned array to be
     """
     arr = np.asarray(obj, dtype)
@@ -136,7 +136,7 @@ cdef class Image:
         NOTE: the initilization of the C structs is happening in the __cinit__
         """
         # set first color (background) to transparent
-        ## initilize the colors
+        # initilize the colors
         self.colors = {}
         self.color_names = []
         if preset_colors is None:
@@ -228,7 +228,7 @@ cdef class Image:
 
     def add_colors(self, color_list):
         """
-        Add a list of colors to the pallette
+        Add a list of colors to the palette
 
         :param color_list: list of colors - each elemnt of the list is a 2-tuple: ( 'color_name', (r,g,b) )
 
@@ -918,10 +918,10 @@ cdef class Image:
 
         :param color: color of text
         :type  color=None: color name or index
-        
+
         :param align: the principal point that the text box references
         :type align: one of the following strings 'lt', 'ct', 'rt', 'r', 'rb', 'cb', 'lb', 'l'
-        
+
         :param background: the background color of the text box, default is 'none' (nothing is drawn)
         :type background: name of the color, or 'none'.
 
@@ -931,7 +931,7 @@ cdef class Image:
         try:
             text_bytes = text.encode('ascii')
         except UnicodeEncodeError:
-            raise ValueError("can only accept ascii text")        
+            raise ValueError("can only accept ascii text")
 
         cdef gdFontPtr gdfont
 
@@ -953,8 +953,8 @@ cdef class Image:
         text_width = l * gdfont.w
         text_height = gdfont.h
 
-        offsets = {'lt':(0, 0), 
-                   'ct':(text_width/2, 0), 
+        offsets = {'lt':(0, 0),
+                   'ct':(text_width/2, 0),
                    'rt':(text_width, 0),
                    'r': (text_width, text_height/2),
                    'rb':(text_width, text_height),
@@ -996,7 +996,8 @@ def from_array(char [:,:] arr not None, *args, **kwargs):
     The image is the same size as the input array, with the contents copied.
 
     :param arr: the input array, shape (width, height)
-    :type arr: an array, or other PEP 3118 buffer compliant object. Should be 2-d, and of type np.unit8 ('B')
+    :type arr: an array or other PEP 3118 buffer compliant object.
+               Should be 2-d, and of type np.uint8 ('B')
 
     Other parameters are passed on to the Image() constructor.
 
@@ -1023,7 +1024,7 @@ cdef class Animation:
         """
         :param file_name: the name/file path of the animation that will be saved
         :type file_name: string
-        
+
         :param delay: the default delay between frames
         :type delay: int
         """
@@ -1037,13 +1038,13 @@ cdef class Animation:
         self._has_closed = 0
         self._frames_written = 0
         self._cur_delay = delay
-        
+
 
     def __init__(self,  file_name, delay=50):
         """
         :param file_name: the name/file path of the animation that will be saved
         :type file_name: string
-        
+
         :param delay: the default delay between frames
         :type delay: int
         """
@@ -1054,7 +1055,7 @@ cdef class Animation:
         """
         cleans up the file and file pointer if animation was started and not closed
         """
-        if (self._fp is not NULL 
+        if (self._fp is not NULL
             and self._has_closed != 1
             and self._has_begun == 1):
             fclose(self._fp)
@@ -1067,10 +1068,10 @@ cdef class Animation:
         """
         Begins the animation. This creates the file pointer and infers size and
         palette information from the initial Image
-        
+
         :param first: First frame of the animation. Also determines palette and size
         :type first: Image
-        
+
         :param loops: specifies the looping behavior of the animation. (0 -> loop, -1 -> no loop, n > 0 -> loop n times)
         :type loops: int
         """
@@ -1081,7 +1082,7 @@ cdef class Animation:
             raise RuntimeError("Animation has already been started")
         if self._has_closed is 1:
             raise RuntimeError("Cannot re-begin closed animation")
-        
+
         self.cur_frame = Image(first.width, first.height)
         self.cur_frame.copy(first)
         gdImageGifAnimBegin(self.cur_frame._image, self._fp, -1, loops);
@@ -1090,10 +1091,10 @@ cdef class Animation:
     def add_frame(self, Image image, int delay=-1):
         """
         Adds the image to the animation with the specified delay
-        
+
         :param image: The image to be added.
         :type image: Image
-        
+
         :param delay: The delay between the current frame and the next. <1 reverts to default delay
         :type delay: int
         """
@@ -1105,8 +1106,8 @@ cdef class Animation:
             raise IOError("Cannot add NULL image to animation")
         if delay < 1:
             delay = self.base_delay
-        
-        cdef gdImagePtr prev 
+
+        cdef gdImagePtr prev
         prev = NULL
 
         if self.cur_frame == image:
@@ -1122,13 +1123,13 @@ cdef class Animation:
             self.cur_frame.copy(image)
             self._cur_delay = delay
             self._frames_written += 1
-    
+
     def close_anim(self):
         if self._has_begun is 0:
             raise RuntimeError("Cannot close animation that hasn't been opened")
         if self._fp is NULL:
             raise IOError("Cannot close NULL file pointer")
-        cdef gdImagePtr prev 
+        cdef gdImagePtr prev
         prev = NULL
         if self.prev_frame is not None:
                 prev = self.prev_frame._image
@@ -1140,10 +1141,10 @@ cdef class Animation:
     def reset(self, Image img not None, str file_path not None):
         """
         Resets the object state so it can be used again to create another animation
-        
+
         :param img: new first frame
         :type img: Image
-        
+
         :param file_path: path and filename of new animation
         :param file_path: str
         """
@@ -1163,7 +1164,7 @@ cdef class Animation:
     @property
     def frames_written(self):
         return self._frames_written
-        
+
 
 def animation_from_images(images, file_name, delay=50):
     a = Animation(file_name, delay)
@@ -1171,6 +1172,6 @@ def animation_from_images(images, file_name, delay=50):
     for img in images[1:]:
         a.add_frame(img)
     a.close_anim()
-    
+
 
 
