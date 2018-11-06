@@ -113,8 +113,21 @@ ext_modules = [Extension("py_gd.py_gd",
                          extra_link_args=link_args,
                          )]
 
+
+def get_version():
+    """
+    get version from __init__.py
+    """
+    with open(os.path.join("py_gd", "__init__.py")) as initfile:
+        for line in initfile:
+            line = line.strip()
+            if line.startswith("__version__"):
+                version = line.split("=")[1].strip(' "')
+                return version
+
+
 setup(name="py_gd",
-      version='0.1.5',
+      version=get_version(),
       description="python wrappers around libgd graphics lib",
       # long_description=read('README'),
       author="Christopher H. Barker",

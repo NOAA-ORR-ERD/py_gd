@@ -14,7 +14,7 @@ import *
 import sys
 import os
 
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 __gd_version__ = "2.2.2"
 # fixme: should do a runtime check for version, yes???
 # better yet, this should be set at build time.

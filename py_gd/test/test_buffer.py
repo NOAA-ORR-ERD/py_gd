@@ -3,24 +3,24 @@
 """
 tests for buffer access to py_gd Image
 """
-
-import py_gd
-
 import pytest
 
-## skip this until we get it working...
+from py_gd import Image
+
+
+# skip this until we get it working...
 @pytest.mark.skipif('True')
 def test_mem_view():
-    img = py_gd.Image(5,10)
+    img = Image(5, 10)
 
     print img
 
-    #get a memoryview of it:
+    # get a memory view of it:
     m = memoryview(img)
     print m
     print m.format
-    print m.ndim    
-    print m.shape  
+    print m.ndim
+    print m.shape
     print m.suboffsets
     print m.itemsize
     print m.readonly
