@@ -1,4 +1,8 @@
+python
 cython
 numpy
 libgd
+
+# for development
+pytest
 

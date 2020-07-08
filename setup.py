@@ -113,6 +113,11 @@ ext_modules = [Extension("py_gd.py_gd",
                          extra_link_args=link_args,
                          )]
 
+py_ver = sys.version_info[0]
+ext_modules = cythonize(
+                  ext_modules,
+                  compiler_directives={'language_level': py_ver})
+
 
 def get_version():
     """

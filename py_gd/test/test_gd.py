@@ -6,6 +6,9 @@ designed to be run with pytest:
 
 py.test test_gd.py
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
 import os
 import hashlib
 import pytest
@@ -74,7 +77,7 @@ def check_file(name):
     if checksums[name] == cs:
         return True
     else:
-        print "Checksum did not match for file:", name
+        print("Checksum did not match for file:", name)
         return False
 
 
@@ -762,7 +765,7 @@ def test_array():
     img = Image(10, 5)
 
     img.draw_line((0, 0), (9, 4), 'black', line_width=1)
-    print "result from __array__", img.__array__()
+    print("result from __array__", img.__array__())
 
     arr = np.asarray(img)
     assert np.array_equal(arr, [[1, 0, 0, 0, 0],
@@ -807,12 +810,12 @@ def test_array_set():
 
     img.save(outfile('test_image_array1.bmp'))
 
-    print img.get_color_names()
+    print(img.get_color_names())
 
     for i in range(4):
         for j in range(3):
-            print img.get_pixel_color((i, j)),
-            print img.get_pixel_value((i, j))
+            print(img.get_pixel_color((i, j)), end=' ')
+            print(img.get_pixel_value((i, j)))
 
     for y in range(img.height):
         for x in range(img.width):
@@ -1001,7 +1004,7 @@ def test_animation():
     anim.add_frame(img)
     anim.close_anim()
 
-    print anim.frames_written
+    print(anim.frames_written)
 
 
 def test_static_animation():
@@ -1030,7 +1033,7 @@ def test_static_animation():
         anim.add_frame(img2)
 
     anim.close_anim()
-    print anim.frames_written
+    print(anim.frames_written)
 
 
 if __name__ == "__main__":

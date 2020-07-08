@@ -11,13 +11,15 @@ import *
 
 """
 
+from __future__ import (print_function,
+                        unicode_literals,
+                        absolute_import)
+from __future__ import division
+
 import sys
 import os
 
-__version__ = "0.1.8"
-__gd_version__ = "2.2.2"
-# fixme: should do a runtime check for version, yes???
-# better yet, this should be set at build time.
+__version__ = "1.0.0"
 
 
 if sys.platform.startswith('win'):
@@ -47,7 +49,7 @@ if sys.platform.startswith('win'):
                            )
     os.environ['PATH'] = libpath + os.pathsep + os.environ['PATH']
 try:
-    from py_gd import *
+    from .py_gd import *
 except ImportError as err:
     if err.message.startswith("DLL load failed:"):
         if not (os.path.isfile(os.path.join(libpath, 'libpng16.dll')) and
@@ -61,4 +63,6 @@ except ImportError as err:
             raise
     else:
         raise
-    print err.args
+    print(err.args)
+
+# __gd_version__ = __gd_version__

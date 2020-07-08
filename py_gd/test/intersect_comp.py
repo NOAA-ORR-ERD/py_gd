@@ -1,6 +1,16 @@
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 
 # test of scanline:
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import range
+from builtins import *
+from past.utils import old_div
 import numpy as np # to get an actual 32 bit int
 
 def ip1(y, y1, y2, x1, x2):
@@ -11,21 +21,21 @@ def ip1(y, y1, y2, x1, x2):
     # print ((y - y1) * (x2 - x1)).dtype
     # print
     # print "end ip1"
-    return    ( ((y - y1) * (x2 - x1)).astype(np.float32) /
-                  ( (y2 - y1) ).astype(np.float32) + 0.5 + x1
+    return    ( old_div(((y - y1) * (x2 - x1)).astype(np.float32),
+                  ( (y2 - y1) ).astype(np.float32)) + 0.5 + x1
                   ).astype(np.int32)
 
 def ip2(y, y1, y2, x1, x2):
     # refactored to minimize the overflow
     #this one fails at max value of 4234524 (about 2**22)
-    return  (((y-y1).astype(np.float32) /
-              (y2 - y1).astype(np.float32) *
+    return  ((old_div((y-y1).astype(np.float32),
+              (y2 - y1).astype(np.float32)) *
               (x2 - x1).astype(np.float32)) + 0.5 + x1).astype(np.int32)
 
 def ip3(y, y1, y2, x1, x2):
     # refactored to minimize the overflow
-    return  (((y-y1).astype(np.float64) /
-              (y2 - y1).astype(np.float64) *
+    return  ((old_div((y-y1).astype(np.float64),
+              (y2 - y1).astype(np.float64)) *
               (x2 - x1).astype(np.float64)) + 0.5 + x1).astype(np.int32)
 
 
@@ -44,7 +54,7 @@ largest = 2**31 - 1
 fail_orig = None
 fail_float = None
 fail_double = None
-for max in xrange(32000, largest, 10):
+for max in range(32000, largest, 10):
     #put it in a numpy array to force int32
     max = np.array((max,), dtype=np.int32)
 
@@ -55,25 +65,27 @@ for max in xrange(32000, largest, 10):
     ip_1 = ip1(y, y1, y2, x1, x2)[0]
     ip_2 = ip2(y, y1, y2, x1, x2)[0]
     ip_3 = ip3(y, y1, y2, x1, x2)[0]
-    print "intersecting points for max: %i, y: %i"%(max,y) , ip_1, ip_2, ip_3
+
+#    print("intersecting points for max: {}, y: {}".format(max, y) , ip_1, ip_2, ip_3)
+
     if y != ip_1:
         if fail_orig is None:
           fail_orig = max
-        print "original failed"
+        print("original failed")
     if y != ip_2:
         if fail_float is None:
           fail_float = max
-        print "new with float failed"
+        print("new with float failed")
         break
     if y != ip_3:
         if fail_double is None:
           fail_double = max
-        print "new with double failed"
+        print("new with double failed")
         break
 
-print "Original version failed at:", fail_orig
-print "New float version failed at:", fail_float
-print "New double version failed at:", fail_double
+print("Original version failed at:", fail_orig)
+print("New float version failed at:", fail_float)
+print("New double version failed at:", fail_double)
 
 
 

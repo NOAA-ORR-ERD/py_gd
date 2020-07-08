@@ -2,16 +2,20 @@
 declarations for the cython wrapper around the gd drawing lib
 """
 
+#cython: language_level=3
+
+import cython
+
 from libc.stdio cimport FILE
 
 ## access the gd header files:
 cdef extern from "gd.h":
 
     cdef struct gdImageStruct:
-        pass # for now, all I need is to know it exists to pass along...
+        pass  # for now, all I need is to know it exists to pass along...
         # Palette-based image pixels
         unsigned char **pixels
-        ## lots more we might want here, but for now...
+        # lots more we might want here, but for now...
     ctypedef gdImageStruct *gdImagePtr
 
     cdef struct gdPoint:
@@ -24,6 +28,9 @@ cdef extern from "gd.h":
     ctypedef gdFont *gdFontPtr
 
     ## The functions we want to wrap
+
+    # get the version
+    char * gdVersionString()
 
     # utilities for creating, etc, images
     gdImagePtr gdImageCreatePalette(int width, int height)
@@ -79,7 +86,7 @@ cdef extern from "gd.h":
     cpdef int gdChord
     cpdef int gdNoFill
     cpdef int gdEdged
-    
+
     #comparison constants (return values of gdImageCompare)
     cpdef int GD_CMP_IMAGE          # 1 Actual image IS different
     cpdef int GD_CMP_NUM_COLORS     # 2 Number of Colours in pallette differ

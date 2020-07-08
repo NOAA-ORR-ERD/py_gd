@@ -8,6 +8,8 @@ NOTE: pixel coordinates are defined as c ints -- if you pass in values
       and who knows what you'll get.
 """
 
+#cython: language_level=3
+
 import cython
 from cython cimport view
 
@@ -24,6 +26,7 @@ import operator
 import numpy as np
 cimport numpy as cnp
 
+__gd_version__ = gdVersionString()
 
 # basic named color set
 # http://en.wikipedia.org/wiki/Web_colors#HTML_color_names
@@ -669,7 +672,7 @@ cdef class Image:
         elif diameter > 2:
             gdImageSetThickness(self._image, line_width)
 
-            r = diameter / 2
+            r = diameter // 2
 
             for i in range(n):
                 gdImageLine(self._image,

@@ -8,6 +8,9 @@ It fails to properly fill polygons even when teh coords are well less than what
 can fit in a 32 bit int. -- it seems as thoough there is a multiplication in
 play -- the limit is around the square root of a max int.
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
 import pytest
 
 import numpy as np
@@ -324,8 +327,8 @@ class TestPolyFill():
 
         # save this one as an array
         arr = np.array(img)
-        print arr
-        print self.arr
+        print(arr)
+        print(self.arr)
 
         # this is expected to not be equal -- we've found a too-big value
         assert np.array_equal(arr, self.arr)
