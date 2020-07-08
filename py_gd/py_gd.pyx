@@ -26,7 +26,7 @@ import operator
 import numpy as np
 cimport numpy as cnp
 
-__gd_version__ = gdVersionString()
+__gd_version__ = gdVersionString().decode('ascii')
 
 # basic named color set
 # http://en.wikipedia.org/wiki/Web_colors#HTML_color_names
@@ -489,11 +489,14 @@ cdef class Image:
         try:
             c = self.colors[color]
         except KeyError:
-            if (color < 0) or (color > 255):
+            try:
+                if 0 <= color <= 255:
+                    c = color
+                else:
+                    raise ValueError('you must provide an integer between 0 and 255')
+            except TypeError:  # not an int
                 raise ValueError('you must provide an existing named color '
-                                 'or an integer between 0 and 255')
-            c = color
-
+                                 )
         return c
 
     def get_pixel_color(self, point):
@@ -1030,13 +1033,13 @@ cdef class Animation:
     cdef Image prev_frame
     cdef int base_delay
     cdef FILE *_fp
-    cdef str _file_path
+    cdef bytes _file_path
     cdef int _has_begun
     cdef int _has_closed
     cdef int _frames_written
     cdef int _global_colormap
 
-    def __cinit__(self, file_name, int delay=50, int global_colormap=1):
+    def __cinit__(self, str file_name, int delay=50, int global_colormap=1):
         """
         :param file_name: The name/file path of the animation that will be
                           saved
