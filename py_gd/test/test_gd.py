@@ -264,7 +264,7 @@ def test_save_image(filetype):
     fname = "test_image_save." + filetype
     img.save(outfile(fname), filetype)
 
-    if filetype is not "jpg":  # jpeg is lossy and thus inconsistent
+    if filetype != "jpg":  # jpeg is lossy and thus inconsistent
         assert check_file(fname)
 
     with pytest.raises(ValueError):
