@@ -30,7 +30,7 @@ cdef extern from "gd.h":
     ## The functions we want to wrap
 
     # get the version
-    char * gdVersionString()
+    const char * gdVersionString()
 
     # utilities for creating, etc, images
     gdImagePtr gdImageCreatePalette(int width, int height)

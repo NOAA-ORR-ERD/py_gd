@@ -942,7 +942,7 @@ cdef class Image:
 
         :param background: The background color of the text box.
                            Default is 'none' (nothing is drawn)
-        :type background: name of the color, or 'none'.
+        :type background: str: name of the color, or 'none'.
         """
         cdef text_bytes
 
@@ -986,7 +986,7 @@ cdef class Image:
             raise ValueError('invalid text alignment indicator. '
                              'Valid ones are: {}'.format(offsets.keys()))
 
-        if background is not 'none':
+        if background != 'none':
             pt1 = (point[0] - offsets[align][0], point[1] - offsets[align][1])
             pt2 = (pt1[0] + text_width, pt1[1] + text_height)
 
