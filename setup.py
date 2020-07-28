@@ -47,7 +47,7 @@ if sys.platform.startswith('win'):
     # dlls go in bin, rather than lib (??)
     library_dirs.append(os.path.join(sys.prefix, r'Library\lib'))
 
-    compile_args.append('EHsc')
+    compile_args.append('-EHsc')
     link_args.append('/MANIFEST')
 elif sys.platform.startswith('linux'):
     library_dirs.append('/usr/local/lib')
