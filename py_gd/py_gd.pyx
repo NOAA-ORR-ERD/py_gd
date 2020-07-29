@@ -25,31 +25,30 @@ import operator
 
 import numpy as np
 cimport numpy as cnp
+from py_gd.colors import colorschemes
 
 __gd_version__ = gdVersionString().decode('ascii')
 
-# basic named color set
-# http://en.wikipedia.org/wiki/Web_colors#HTML_color_names
 
-transparent_colors = [('transparent', (0, 0, 0, 127))]
+# transparent_colors = [('transparent', (0, 0, 0, 127))]
 
-BW_colors = transparent_colors + [('black', (0,     0,  0)),
-                                  ('white', (255, 255, 255))]
+# BW_colors = transparent_colors + [('black', (0,     0,  0)),
+#                                   ('white', (255, 255, 255))]
 
-web_colors = BW_colors + [('silver',  (191, 191, 191)),
-                          ('gray',    (127, 127, 127)),
-                          ('red',     (255,   0,   0)),
-                          ('maroon',  (127,   0,   0)),
-                          ('yellow',  (255, 255,   0)),
-                          ('olive',   (127, 127,   0)),
-                          ('lime',    (0,   255,   0)),
-                          ('green',   (0,   127,   0)),
-                          ('aqua',    (0,   255, 255)),
-                          ('teal',    (0,   127, 127)),
-                          ('blue',    (0,     0, 255)),
-                          ('navy',    (0,     0, 127)),
-                          ('fuchsia', (255,   0, 255)),
-                          ('purple',  (127,   0, 127))]
+# web_colors = BW_colors + [('silver',  (191, 191, 191)),
+#                           ('gray',    (127, 127, 127)),
+#                           ('red',     (255,   0,   0)),
+#                           ('maroon',  (127,   0,   0)),
+#                           ('yellow',  (255, 255,   0)),
+#                           ('olive',   (127, 127,   0)),
+#                           ('lime',    (0,   255,   0)),
+#                           ('green',   (0,   127,   0)),
+#                           ('aqua',    (0,   255, 255)),
+#                           ('teal',    (0,   127, 127)),
+#                           ('blue',    (0,     0, 255)),
+#                           ('navy',    (0,     0, 127)),
+#                           ('fuchsia', (255,   0, 255)),
+#                           ('purple',  (127,   0, 127))]
 
 # note that the 1GB max is arbitrary -- you can change it after import,
 # before initizing an Image. On my system going bigger than this brings
@@ -144,28 +143,36 @@ cdef class Image:
                                          None - no pre-allocated colors -- the
                                                 first one you allocate will be
                                                 the background color
+                                        or any of the colors in py_gd.colors
         :type preset_colors: string or None
 
         The Image is created as a 8-bit Paletted Image.
 
-        NOTE: the initilization of the C structs is happening in the __cinit__
         """
+        # NOTE: the initilization of the C structs is happening in the __cinit__
+
         # set first color (background) to transparent
         # initialize the colors
         self.colors = {}
         self.color_names = []
 
-        if preset_colors is None:
-            pass
-        elif preset_colors == 'transparent':
-            self.add_colors(transparent_colors)
-        elif preset_colors == 'BW':
-            self.add_colors(BW_colors)
-        elif preset_colors == 'web':
-            self.add_colors(web_colors)
-        else:
-            raise ValueError("preset_colors needs to one of 'web', 'BW', "
-                             "'transparent', or None")
+        if preset_colors is not None:
+            try:
+                self.add_colors(colorschemes[preset_colors])
+            except KeyError:
+                raise ValueError("preset_colors needs to one of None, 'web', "
+                                 "'BW', 'transparent', or any of the colors in "
+                                 "py_gd.colors")
+
+        # elif preset_colors == 'transparent':
+        #     self.add_colors(transparent_colors)
+        # elif preset_colors == 'BW':
+        #     self.add_colors(BW_colors)
+        # elif preset_colors == 'web':
+        #     self.add_colors(web_colors)
+        # else:
+        #     raise ValueError("preset_colors needs to one of 'web', 'BW', "
+        #                      "'transparent', or None")
 
     def __str__(self):
         return ('py_gd.Image: width: {}, height: {}'
