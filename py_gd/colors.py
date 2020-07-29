@@ -42,7 +42,6 @@ def hex_to_rgb(hex_value):
 
 
 def build_from_named_colors(named_colors):
-    print(named_colors)
     return [(name, hex_to_rgb(hex_color)) for name, hex_color in named_colors.items()]
 
 
@@ -86,11 +85,6 @@ colorschemes['xkcd'] = build_from_named_colors(XKCD)
 for dataname in dir(_cm_listed):
     if dataname.endswith("_data"):
         name = dataname[:-5].lstrip("_")
-        print("building colormap:", name)
         scheme = getattr(_cm_listed, dataname)
-        scheme = (np.array(scheme) * 255).round().astype(np.uint).tolist()
+        scheme = (np.array(scheme) * 255).round().astype(np.uint8).tolist()
         colorschemes[name] = [(str(i), tuple(c)) for i, c in enumerate(scheme)]
-
-# build named colorschemes
-
-
