@@ -19,7 +19,7 @@ from __future__ import division
 import sys
 import os
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 
 
 if sys.platform.startswith('win'):
