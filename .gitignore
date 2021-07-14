@@ -1,6 +1,8 @@
 #specific to this repo:
 
 py_gd/py_gd.c
+docs/examples/Mandelbrot.png
+
 
 # mac files
 .DS_Store
