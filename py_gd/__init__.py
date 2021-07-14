@@ -19,7 +19,7 @@ from __future__ import division
 import sys
 import os
 
-__version__ = "1.1.1"
+__version__ = "1.1.2.dev0"
 
 
 if sys.platform.startswith('win'):
@@ -50,8 +50,9 @@ if sys.platform.startswith('win'):
     os.environ['PATH'] = libpath + os.pathsep + os.environ['PATH']
 try:
     from .py_gd import *
+
 except ImportError as err:
-    if err.message.startswith("DLL load failed:"):
+    if str(err).startswith("DLL load failed:"):
         if not (os.path.isfile(os.path.join(libpath, 'libpng16.dll')) and
                 os.path.isfile(os.path.join(libpath, 'zlib.dll')) and
                 os.path.isfile(os.path.join(libpath, 'libgd.dll'))):
@@ -64,5 +65,3 @@ except ImportError as err:
     else:
         raise
     print(err.args)
-
-# __gd_version__ = __gd_version__

@@ -81,22 +81,22 @@ cdef extern from "gd.h":
     int gdImageCompare (gdImagePtr im1, gdImagePtr im2);
 
     # constants (these are #define in gd.h)
-    cpdef int gdArc
-    cpdef int gdPie
-    cpdef int gdChord
-    cpdef int gdNoFill
-    cpdef int gdEdged
+    cdef int gdArc
+    cdef int gdPie
+    cdef int gdChord
+    cdef int gdNoFill
+    cdef int gdEdged
 
     #comparison constants (return values of gdImageCompare)
-    cpdef int GD_CMP_IMAGE          # 1 Actual image IS different
-    cpdef int GD_CMP_NUM_COLORS     # 2 Number of Colours in pallette differ
-    cpdef int GD_CMP_COLOR          # 4 Image colours differ
-    cpdef int GD_CMP_SIZE_X         # 8 Image width differs
-    cpdef int GD_CMP_SIZE_Y         # 16 Image heights differ
-    cpdef int GD_CMP_TRANSPARENT    # 32 Transparent colour
-    cpdef int GD_CMP_BACKGROUND     # 64 Background colour
-    cpdef int GD_CMP_INTERLACE      # 128 Interlaced setting
-    cpdef int GD_CMP_TRUECOLOR      # 256 Truecolor vs palette differs
+    cdef int GD_CMP_IMAGE          # 1 Actual image IS different
+    cdef int GD_CMP_NUM_COLORS     # 2 Number of Colours in pallette differ
+    cdef int GD_CMP_COLOR          # 4 Image colours differ
+    cdef int GD_CMP_SIZE_X         # 8 Image width differs
+    cdef int GD_CMP_SIZE_Y         # 16 Image heights differ
+    cdef int GD_CMP_TRANSPARENT    # 32 Transparent colour
+    cdef int GD_CMP_BACKGROUND     # 64 Background colour
+    cdef int GD_CMP_INTERLACE      # 128 Interlaced setting
+    cdef int GD_CMP_TRUECOLOR      # 256 Truecolor vs palette differs
 
     # animation
     void gdImageGifAnimBegin(gdImagePtr im, FILE *outFile, int GlobalCM, int Loops);

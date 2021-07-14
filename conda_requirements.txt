@@ -1,4 +1,4 @@
-python
+python>=3.6
 cython
 numpy
 libgd
