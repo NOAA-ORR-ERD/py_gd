@@ -11,9 +11,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 import sys, os
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -28,7 +25,12 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.pngmath', 'sphinx.ext.mathjax']
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.todo',
+              'sphinx.ext.coverage',
+              # 'sphinx.ext.pngmath',
+              # 'sphinx.ext.mathjax',
+              ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

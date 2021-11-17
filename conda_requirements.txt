@@ -6,3 +6,6 @@ libgd
 # for development
 pytest
 
+# to build the docs
+sphinx
+

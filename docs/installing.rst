@@ -27,7 +27,9 @@ Ideally, it is as simple as::
 
     $ python setup.py build
     $ python setup.py install
+
 or::
+
     $ python setup.py develop
 
 (develop mode installs links to the code, rather than copying the code into python's site-packages -- it is helpful if you want to be updating the code, and have the new version run right away.)

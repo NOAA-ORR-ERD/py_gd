@@ -8,12 +8,9 @@ It fails to properly fill polygons even when teh coords are well less than what
 can fit in a 32 bit int. -- it seems as thoough there is a multiplication in
 play -- the limit is around the square root of a max int.
 """
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-import pytest
-
 import numpy as np
+
+import pytest
 
 from py_gd import Image
 

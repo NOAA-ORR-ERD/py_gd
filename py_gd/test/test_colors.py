@@ -1,6 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import division
-from __future__ import absolute_import
 
 import pytest
 
@@ -61,13 +58,13 @@ def test_drawing_with_colors(color_name):
                 break
             # im.draw_text(self, text, point, font="medium", color='black', align='lt',
             #              background='none')
-            print('drawing a rectagle in:', color)
+            print('drawing a rectangle in:', color)
             x = i * dx
             y = j * dy
             im.draw_rectangle((x, y), (x + w, y + h),
                               fill_color=color,
                               )
-    im.save(outfile("sample_{}.png").format(color_name), 'png')
+    im.save(outfile(f"sample_{color_name}.png"), 'png')
 
 
 

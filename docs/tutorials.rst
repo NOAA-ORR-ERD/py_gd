@@ -1,6 +1,7 @@
 .. _tutorials:
+
 Tutorials
-=====================
+=========
 
 A collection of tutorials and example scripts to get you up and running.
 
