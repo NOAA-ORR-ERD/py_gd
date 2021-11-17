@@ -1101,19 +1101,12 @@ cdef class Animation:
 
         also calls gdImageGifAnimEnd to hopefully result in a valid file.
         """
-        if (self._fp is not NULL
-                and self._has_closed == 0
-                and self._has_begun == 1):
+        if self._has_begun > 0:
+            self.close_anim()
 
-            gdImageGifAnimEnd(self._fp)
+        if self._fp is not NULL:
             fclose(self._fp)
             self._fp = NULL
-
-            # try:
-            #     os.remove(self._file_path)
-            # except OSError as err:
-            #     raise OSError('file {} could not be removed'
-            #                   .format(self._file_path)) from err
 
     def begin_anim(self, Image first, int loops=0):
         """
@@ -1210,7 +1203,7 @@ cdef class Animation:
         if self._has_begun == 0:
 
             raise RuntimeError("Cannot close animation that hasn't been "
-                               "opened")
+                               "opened (begun)")
 
         cdef gdImagePtr prev
 

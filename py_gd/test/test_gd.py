@@ -1162,3 +1162,48 @@ def test_animation_reset_same_filename():
     # not much to auto-check here
     print(f"{anim.frames_written} frames were written")
     assert anim.frames_written == 21
+
+
+def test_animation_delete_before_use():
+    """
+    make sure the dealloc doesn't barf if the file hasn't
+    been opened yet
+    """
+
+    filename = outfile("nothing.gif")
+
+    filename.unlink(missing_ok=True)
+    assert not filename.exists()
+
+    anim = Animation(filename)
+    del anim
+    assert not filename.exists()
+
+    # note: this creates a broken gif
+    anim = Animation(filename)
+    img = Image(200, 200)
+    anim.begin_anim(img, 0)
+    del anim
+    assert filename.exists()
+
+
+def test_animation_delete_one_frame():
+    """
+    make sure the dealloc creates a valid gif with only one frame added
+    """
+    filename = outfile("one_frame_delete.gif")
+    anim = Animation(filename)
+    img = Image(200, 200)
+    anim.begin_anim(img, 0)
+    img.draw_line((0, 0), (200, 200), color="white", line_width=4)
+    anim.add_frame(img)
+    del anim
+
+    assert filename.exists()
+
+
+
+
+
+
+
