@@ -18,9 +18,10 @@ from py_gd cimport *
 from libc.stdio cimport FILE, fopen, fclose
 from libc.string cimport memcpy, strlen
 from libc.stdlib cimport malloc, free
-import os
 # from libc.stdint cimport uint8_t, uint32_t
 
+import os
+import sys
 import operator
 
 import numpy as np
@@ -77,6 +78,32 @@ cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
         raise ValueError("input  must be convertible to a Nx2 array")
 
     return arr
+
+
+cdef bytes path_to_bytes(path):
+    """
+    converts a "path like" object to bytes, suitable for passing to
+
+    the C fopen().
+
+    currently only supports ascii on non-utf-8 systems.
+
+    Itwould be good to figure how to do this on Windows
+      - UTF-16 and _wfopen(), I think
+    """
+    # make it a string
+    cdef bytes bpath
+
+    path = os.fspath(path)
+    if sys.getfilesystemencoding() == 'utf-8':
+        bpath = path.encode('utf-8')
+    else:
+        try:
+            bpath = path.encode('ascii')
+        except UnicodeEncodeError:
+            raise ValueError("Can only accept ASCII filenames on this platform: "
+                             f"{path}\n is not legal.")
+    return bpath
 
 
 cdef class Image:
@@ -448,13 +475,14 @@ cdef class Image:
         cdef FILE *fp
         cdef int compression_level
 
-        file_name = os.fspath(file_name)
-        try:
-            file_path = file_name.encode('ascii')
-        except UnicodeEncodeError:
-            raise ValueError('can only accept ascii filenames')
+        file_path =path_to_bytes(file_name)
+        # file_name = os.fspath(file_name)
+        # try:
+        #     file_path = file_name.encode('ascii')
+        # except UnicodeEncodeError:
+        #     raise ValueError('can only accept ascii filenames')
 
-        file_type_codes = ["bmp", "jpg", "jpeg", "gif", "GIF", "png", "PNG"]
+        file_type_codes = {"bmp", "jpg", "jpeg", "gif", "GIF", "png", "PNG"}
 
         if file_type not in file_type_codes:
             raise ValueError('file_type must be one of: {}'
@@ -1062,11 +1090,13 @@ cdef class Animation:
                                   all images in the animation. If 0,
                                   a new colormap is used for each frame.
         """
-        file_name = os.fspath(file_name)
-        try:
-            self._file_path = file_name.encode('ascii')
-        except UnicodeEncodeError as err:
-            raise ValueError("can only accept ascii filenames") from err
+        self._file_path =path_to_bytes(file_name)
+
+        # file_name = os.fspath(file_name)
+        # try:
+        #     self._file_path = file_name.encode('ascii')
+        # except UnicodeEncodeError as err:
+        #     raise ValueError("can only accept ascii filenames") from err
 
         self._fp = NULL
         self.base_delay = delay
@@ -1230,18 +1260,14 @@ cdef class Animation:
 
         NOTE: begin_anim needs to be called again
 
-        :param file_path: path and filename of new animation
-        :param file_path: str
+        :param file_path=None: filename of new animation. Will reuse existing
+                               name if not specified
+        :param file_path: pathlike
         """
-        #fixme: should this use the existing file path by default?
         self.prev_frame = None
 
         if file_path is not None:
-            file_path = os.fspath(file_path)
-            try:
-                self._file_path = file_path.encode('ascii')
-            except UnicodeEncodeError:
-                raise ValueError('can only except ascii filenames')
+            self._file_path = path_to_bytes(file_path)
 
         if self._fp is not NULL:
             fclose(self._fp)

@@ -8,6 +8,7 @@ py.test test_gd.py
 """
 
 import os
+import sys
 import hashlib
 from pathlib import Path
 import numpy as np
@@ -120,6 +121,26 @@ def test_cant_save_file():
 
     with pytest.raises(IOError):
         img.save("a/non_existant/file_path")
+
+
+def test_non_ascii_file_name():
+    """
+    Can use full Unicode on utf-8 filesystems only
+    e.g. OS-X and most Linux
+
+    Windows only supports ASCII at this point
+    """
+    img = Image(width=400, height=400)
+
+    filename = outfile("file\u2014name_with_unicode.png")  # u2014 is an EmDash
+    if sys.getfilesystemencoding() == 'utf-8':
+        # this should work
+        img.save(filename)
+        assert filename.exists()
+    else:
+        # other filesystem encodings raise an Exception
+        with pytest.raises(ValueError):
+            img.save(filename)
 
 
 def test_init_simple_add_rgb():
