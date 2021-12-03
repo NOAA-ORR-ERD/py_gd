@@ -18,7 +18,6 @@ from py_gd cimport *
 from libc.stdio cimport FILE, fopen, fclose
 from libc.string cimport memcpy, strlen
 from libc.stdlib cimport malloc, free
-# from libc.stdint cimport uint8_t, uint32_t
 
 import os
 import sys
@@ -489,7 +488,10 @@ cdef class Image:
                              .format(file_type_codes))
 
         # open the file here:
-        fp = fopen(file_path, "wb")
+        IF UNAME_SYSNAME == 'Windows':
+            fp = _wfopen(file_path.decode('utf-8'), u"wb")
+        ELSE:
+            fp = fopen(file_path, 'wb')
         if fp is NULL:
             raise IOError('could not open the file: {}'.format(file_path))
 
@@ -1158,11 +1160,10 @@ cdef class Animation:
         if self._has_closed == 1:
             raise RuntimeError('Cannot re-begin closed animation')
 
-        self._fp = fopen(self._file_path, "wb")
-
-        if self._fp is NULL:
-            raise IOError('could not open the file: {}'
-                          .format(self._file_path))
+        IF UNAME_SYSNAME == 'Windows':
+            self._fp = _wfopen(self._file_path.decode('utf-8'), u"wb")
+        ELSE:
+            self._fp = fopen(self._file_path, 'wb')
 
         self.cur_frame = Image(first.width, first.height)
         self.cur_frame.copy(first)
