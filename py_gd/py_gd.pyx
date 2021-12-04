@@ -81,42 +81,48 @@ cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
 cdef FILE* open_file(file_path):
     """
     opens a file
-    :param path: python string
+    :param path: python PathLike
     """
     cdef FILE* fp
+
+    file_path = os.fspath(file_path)
+
     fp = NULL
+
     IF UNAME_SYSNAME == 'Windows':
-        fp = _wfopen(file_path, u"wb")
+        fp = _wfopen(file_path, "wb")
     ELSE:
         fp = fopen(file_path.encode('utf-8'), 'wb')
+
     if fp is NULL:
         raise IOError('could not open the file: {}'.format(file_path))
+
     return fp
 
-cdef bytes path_to_bytes(path):
-    """
-    converts a "path like" object to bytes, suitable for passing to
+# cdef bytes path_to_bytes(path):
+#     """
+#     converts a "path like" object to bytes, suitable for passing to
 
-    the C fopen().
+#     the C fopen().
 
-    currently only supports ascii on non-utf-8 systems.
+#     currently only supports ascii on non-utf-8 systems.
 
-    Itwould be good to figure how to do this on Windows
-      - UTF-16 and _wfopen(), I think
-    """
-    # make it a string
-    cdef bytes bpath
+#     Itwould be good to figure how to do this on Windows
+#       - UTF-16 and _wfopen(), I think
+#     """
+#     # make it a string
+#     cdef bytes bpath
 
-    path = os.fspath(path)
-    if sys.getfilesystemencoding() == 'utf-8':
-        bpath = path.encode('utf-8')
-    else:
-        try:
-            bpath = path.encode('ascii')
-        except UnicodeEncodeError:
-            raise ValueError("Can only accept ASCII filenames on this platform: "
-                             f"{path}\n is not legal.")
-    return bpath
+#     path = os.fspath(path)
+#     if sys.getfilesystemencoding() == 'utf-8':
+#         bpath = path.encode('utf-8')
+#     else:
+#         try:
+#             bpath = path.encode('ascii')
+#         except UnicodeEncodeError:
+#             raise ValueError("Can only accept ASCII filenames on this platform: "
+#                              f"{path}\n is not legal.")
+#     return bpath
 
 
 cdef class Image:
@@ -1083,6 +1089,7 @@ cdef class Animation:
     cdef int _has_closed
     cdef int _frames_written
     cdef int _global_colormap
+    cdef object _file_path
 
     def __cinit__(self, file_name, int delay=50, int global_colormap=1):
         """
@@ -1098,7 +1105,7 @@ cdef class Animation:
                                   all images in the animation. If 0,
                                   a new colormap is used for each frame.
         """
-        self._file_path = file_name
+        # self._file_path = file_name
 
         # file_name = os.fspath(file_name)
         # try:
@@ -1129,6 +1136,7 @@ cdef class Animation:
                                   all images in the animation. If 0,
                                   a new colormap is used for each frame.
         """
+        self._file_path = file_name
         self.cur_frame = None
         self.prev_frame = None
 
@@ -1270,7 +1278,7 @@ cdef class Animation:
         self.prev_frame = None
 
         if file_path is not None:
-            self._file_path = path_to_bytes(file_path)
+            self._file_path = file_path
 
         if self._fp is not NULL:
             fclose(self._fp)
