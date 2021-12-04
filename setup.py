@@ -4,21 +4,16 @@
 setup.py script for the py_gd package
 
 Tested with:
-  Anaconda on OS_X
-  Anaconda on Win64
+  conda (with conda-forge libgd) on OS_X
 
-  Python 2.7.5 on CentOS 7
-  Python 2.7.10
+On Windows, MacOS and Linux (CentoOS 7)
 
 libgd is assumed to be installed (and its dependencies) already.
-The Anaconda package at:
-   http://anaconda.org/noaa-orr-erd/libgd
-is a good way to get it
+The conda package on conda-forge is a good way to get it:
+
+https://anaconda.org/conda-forge/libgd
 
 """
-
-# it seems some build systems may run this wtih py3, even for a py2 build
-from __future__ import print_function
 
 import sys
 import os
@@ -102,7 +97,7 @@ class cleanall(clean):
 
 # This setup requires libgd and its dependent libs
 # It expects to find them in the "usual" locations
-#   or where Anaconda put it...
+#   or where conda puts it...
 
 ext_modules = [Extension("py_gd.py_gd",
                          ["py_gd/py_gd.pyx"],
@@ -113,15 +108,9 @@ ext_modules = [Extension("py_gd.py_gd",
                          extra_link_args=link_args,
                          )]
 
-# py_ver = sys.version_info[0]
-# ext_modules = cythonize(
-#                   ext_modules,
-#                   compiler_directives={'language_level': py_ver})
-
 ext_modules = cythonize(
                   ext_modules,
                   compiler_directives={'language_level': 3})
-
 
 def get_version():
     """
@@ -148,13 +137,14 @@ setup(name="py_gd",
       ext_modules=cythonize(ext_modules),
       zip_safe=False,  # dont want a compiled extension in a zipfile...
       packages=['py_gd', 'py_gd.test'],
+      python_requires='>=3.8',
       classifiers=["Development Status :: 2 - Pre-Alpha",
                    "Topic :: Utilities",
                    "License :: Public Domain",
                    "Intended Audience :: Developers",
                    "Operating System :: OS Independent",
                    "Programming Language :: Cython",
-                   "Programming Language :: Python :: 2 :: Only",
+                   "Programming Language :: Python :: 3 :: Only",
                    "Programming Language :: Python :: Implementation :: CPython",
                    "Topic :: Multimedia :: Graphics",
                    ],

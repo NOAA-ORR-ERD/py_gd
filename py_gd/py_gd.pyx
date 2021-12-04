@@ -4,11 +4,9 @@ Cython wrapper around the gd drawing lib
 Provides an OO interface -- at least to the limited functionality wrapped
 
 NOTE: pixel coordinates are defined as c ints -- if you pass in values
-      larger than a c int can take (usually +- 2**31 - 1), it will overflow,
+      larger than a c int can take (usually ~ 2**31 - 1), it will overflow,
       and who knows what you'll get.
 """
-
-#cython: language_level=3
 
 import cython
 from cython cimport view
@@ -30,30 +28,10 @@ from py_gd.colors import colorschemes
 __gd_version__ = gdVersionString().decode('ascii')
 
 
-# transparent_colors = [('transparent', (0, 0, 0, 127))]
-
-# BW_colors = transparent_colors + [('black', (0,     0,  0)),
-#                                   ('white', (255, 255, 255))]
-
-# web_colors = BW_colors + [('silver',  (191, 191, 191)),
-#                           ('gray',    (127, 127, 127)),
-#                           ('red',     (255,   0,   0)),
-#                           ('maroon',  (127,   0,   0)),
-#                           ('yellow',  (255, 255,   0)),
-#                           ('olive',   (127, 127,   0)),
-#                           ('lime',    (0,   255,   0)),
-#                           ('green',   (0,   127,   0)),
-#                           ('aqua',    (0,   255, 255)),
-#                           ('teal',    (0,   127, 127)),
-#                           ('blue',    (0,     0, 255)),
-#                           ('navy',    (0,     0, 127)),
-#                           ('fuchsia', (255,   0, 255)),
-#                           ('purple',  (127,   0, 127))]
-
-# note that the 1GB max is arbitrary -- you can change it after import,
-# before initializing an Image. On my system going bigger than this brings
-# the system to an almost halt before raising a memory error, so I set
-# a limit here.
+# Note that the default 1GB max is arbitrary -- you can change it after
+# import, before initializing an Image. On my system (as of 2012 or
+# so)going bigger than this brings the system to an almost halt before
+# raising a memory error, so I set a limit here.
 
 MAX_IMAGE_SIZE = 2 ** 30  # 1 GB limit
 
