@@ -7,20 +7,13 @@ The "real" code is in the cython file: py_gd.pyx
 
 This __init__ does some kludges to load libraries, and then does an
 
-import *
-
+from .py_gd import *
 """
-
-from __future__ import print_function
-from __future__ import unicode_literals
-from __future__ import absolute_import
-from __future__ import division
 
 import sys
 import os
 
-__version__ = "1.1.2.dev0"
-
+__version__ = "2.0.0"
 
 if sys.platform.startswith('win'):
     # This only works for Anaconda / miniconda

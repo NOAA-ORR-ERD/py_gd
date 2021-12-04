@@ -1,16 +1,6 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
-from __future__ import unicode_literals
-
 
 # test of scanline:
 
-from future import standard_library
-standard_library.install_aliases()
-from builtins import range
-from builtins import *
-from past.utils import old_div
 import numpy as np # to get an actual 32 bit int
 
 def ip1(y, y1, y2, x1, x2):
@@ -21,22 +11,23 @@ def ip1(y, y1, y2, x1, x2):
     # print ((y - y1) * (x2 - x1)).dtype
     # print
     # print "end ip1"
-    return    ( old_div(((y - y1) * (x2 - x1)).astype(np.float32),
-                  ( (y2 - y1) ).astype(np.float32)) + 0.5 + x1
+    return    ( ((y - y1) * (x2 - x1)).astype(np.float32) /
+                  ( (y2 - y1) ).astype(np.float32) + 0.5 + x1
                   ).astype(np.int32)
 
 def ip2(y, y1, y2, x1, x2):
     # refactored to minimize the overflow
     #this one fails at max value of 4234524 (about 2**22)
-    return  ((old_div((y-y1).astype(np.float32),
-              (y2 - y1).astype(np.float32)) *
+    return  (((y-y1).astype(np.float32) /
+              (y2 - y1).astype(np.float32) *
               (x2 - x1).astype(np.float32)) + 0.5 + x1).astype(np.int32)
 
 def ip3(y, y1, y2, x1, x2):
     # refactored to minimize the overflow
-    return  ((old_div((y-y1).astype(np.float64),
-              (y2 - y1).astype(np.float64)) *
+    return  (((y-y1).astype(np.float64) /
+              (y2 - y1).astype(np.float64) *
               (x2 - x1).astype(np.float64)) + 0.5 + x1).astype(np.int32)
+
 
 
 # def ip23(y, y1, y2, x1, x2):

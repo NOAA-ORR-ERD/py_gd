@@ -18,9 +18,9 @@ from py_gd cimport *
 from libc.stdio cimport FILE, fopen, fclose
 from libc.string cimport memcpy, strlen
 from libc.stdlib cimport malloc, free
-import os
-# from libc.stdint cimport uint8_t, uint32_t
 
+import os
+import sys
 import operator
 
 import numpy as np
@@ -51,9 +51,10 @@ __gd_version__ = gdVersionString().decode('ascii')
 #                           ('purple',  (127,   0, 127))]
 
 # note that the 1GB max is arbitrary -- you can change it after import,
-# before initizing an Image. On my system going bigger than this brings
+# before initializing an Image. On my system going bigger than this brings
 # the system to an almost halt before raising a memory error, so I set
 # a limit here.
+
 MAX_IMAGE_SIZE = 2 ** 30  # 1 GB limit
 
 cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
@@ -76,6 +77,33 @@ cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
         raise ValueError("input  must be convertible to a Nx2 array")
 
     return arr
+
+cdef FILE* open_file(file_path) except *:
+    """
+    opens a file
+
+    :param path: python str or PathLike
+
+    :returns: File Pointer
+
+    Note: On Windows, it uses a wchar, UTC-16 encoded
+          On other platforms (Mac and Linux), it assumes utf-8
+    """
+    cdef FILE* fp
+
+    file_path = os.fspath(file_path)
+
+    fp = NULL
+
+    IF UNAME_SYSNAME == 'Windows':
+        fp = _wfopen(file_path, "wb")
+    ELSE:
+        fp = fopen(file_path.encode('utf-8'), 'wb')
+
+    if fp is NULL:
+        raise OSError('could not open the file: {}'.format(file_path))
+
+    return fp
 
 
 cdef class Image:
@@ -142,8 +170,9 @@ cdef class Image:
 
                                          None - no pre-allocated colors -- the
                                                 first one you allocate will be
-                                                the background color
-                                        or any of the colors in py_gd.colors
+                                                the background color or any of
+                                                the colors in py_gd.colors
+
         :type preset_colors: string or None
 
         The Image is created as a 8-bit Paletted Image.
@@ -436,31 +465,22 @@ cdef class Image:
               was compiled. But bmp and gif should always be there.
 
         :param file_name: full or relative path to file you want created
-        :type file_name: str or unicode object (but only ascii is supported
-                         for now)
+        :type file_name: str or PathLike
 
         :param file_type: type of file you want written
         :type file_type: string
         """
-        cdef bytes file_path
         cdef FILE *fp
         cdef int compression_level
 
-        try:
-            file_path = file_name.encode('ascii')
-        except UnicodeEncodeError:
-            raise ValueError('can only accept ascii filenames')
-
-        file_type_codes = ["bmp", "jpg", "jpeg", "gif", "GIF", "png", "PNG"]
+        file_type_codes = {"bmp", "jpg", "jpeg", "gif", "GIF", "png", "PNG"}
 
         if file_type not in file_type_codes:
             raise ValueError('file_type must be one of: {}'
                              .format(file_type_codes))
 
+        fp = open_file(file_name)
         # open the file here:
-        fp = fopen(file_path, "wb")
-        if fp is NULL:
-            raise IOError('could not open the file: {}'.format(file_path))
 
         # then call the right writer:
         if file_type in ["bmp", "BMP"]:
@@ -936,16 +956,15 @@ cdef class Image:
         :type point: 2-tuple of (x,y) integers
 
         :param font: Desired font -- gd built in fonts are one of:
-                                     {"tiny", "small", "medium", "large",
-                                      "giant"}
+                     ``{"tiny", "small", "medium", "large", "giant"}``
         :type font: string
 
         :param color: Color of text
         :type  color=None: color name or index
 
         :param align: The principal point that the text box references
-        :type align: one of the following: {'lt', 'ct', 'rt', 'r',
-                                            'rb', 'cb', 'lb', 'l'}
+        :type align: one of the following: ``{'lt', 'ct', 'rt', 'r',
+                     'rb', 'cb', 'lb', 'l'}``
 
         :param background: The background color of the text box.
                            Default is 'none' (nothing is drawn)
@@ -955,8 +974,8 @@ cdef class Image:
 
         try:
             text_bytes = text.encode('ascii')
-        except UnicodeEncodeError:
-            raise ValueError("can only accept ascii text")
+        except UnicodeEncodeError as err:
+            raise ValueError("can only accept ascii text") from err
 
         cdef gdFontPtr gdfont
 
@@ -1040,30 +1059,26 @@ cdef class Animation:
     cdef Image prev_frame
     cdef int base_delay
     cdef FILE *_fp
-    cdef bytes _file_path
     cdef int _has_begun
     cdef int _has_closed
     cdef int _frames_written
     cdef int _global_colormap
+    cdef object _file_path
 
-    def __cinit__(self, str file_name, int delay=50, int global_colormap=1):
+    def __cinit__(self, file_name, int delay=50, int global_colormap=1):
         """
         :param file_name: The name/file path of the animation that will be
                           saved
-        :type file_name: string
+        :type file_name: str or PathLike object
 
         :param delay: the default delay between frames
         :type delay: int
 
         :param global_colormap=1: Whether to use a global colormap.
                                   If 1, the same colormap is used for
-                                  all images inthe animation. If 0,
+                                  all images in the animation. If 0,
                                   a new colormap is used for each frame.
         """
-        try:
-            self._file_path = file_name.encode('ascii')
-        except UnicodeEncodeError:
-            raise ValueError("can only accept ascii filenames")
 
         self._fp = NULL
         self.base_delay = delay
@@ -1078,7 +1093,7 @@ cdef class Animation:
         """
         :param file_name: The name/file path of the animation that will be
                           saved
-        :type file_name: string
+        :type file_name: path_like e.g. str or pathlib.Path
 
         :param delay: the default delay between frames
         :type delay: int
@@ -1088,24 +1103,23 @@ cdef class Animation:
                                   all images in the animation. If 0,
                                   a new colormap is used for each frame.
         """
+        self._file_path = file_name
         self.cur_frame = None
         self.prev_frame = None
 
     def __dealloc__(self):
         """
-        cleans up the file and file pointer if animation was started
-        and not closed
-        """
-        if (self._fp is not NULL
-                and self._has_closed != 1
-                and self._has_begun == 1):
-            fclose(self._fp)
+        closes the file and file pointer if animation was started
+        and not closed.
 
-            try:
-                os.remove(self._file_path)
-            except OSError:
-                raise OSError('file {} could not be removed'
-                              .format(self._file_path))
+        also calls gdImageGifAnimEnd to hopefully result in a valid file.
+        """
+        if self._has_begun > 0:
+            self.close_anim()
+
+        if self._fp is not NULL:
+            fclose(self._fp)
+            self._fp = NULL
 
     def begin_anim(self, Image first, int loops=0):
         """
@@ -1120,17 +1134,13 @@ cdef class Animation:
                       (0 -> loop, -1 -> no loop, n > 0 -> loop n times)
         :type loops: int
         """
-        self._fp = fopen(self._file_path, "wb")
 
-        if self._fp is NULL:
-            raise IOError('could not open the file: {}'
-                          .format(self._file_path))
-
-        if self._has_begun is 1:
+        if self._has_begun == 1:
             raise RuntimeError('Animation has already been started')
 
-        if self._has_closed is 1:
+        if self._has_closed == 1:
             raise RuntimeError('Cannot re-begin closed animation')
+        self._fp = open_file(self._file_path)
 
         self.cur_frame = Image(first.width, first.height)
         self.cur_frame.copy(first)
@@ -1153,10 +1163,10 @@ cdef class Animation:
                       <1 reverts to default delay
         :type delay: int
         """
-        if self._has_begun is 0:
+        if self._has_begun == 0:
             raise IOError('Cannot add frame to non-started animation')
 
-        if self._has_closed is 1:
+        if self._has_closed == 1:
             raise IOError('Cannot add frame to closed animation')
 
         if self.cur_frame is None or image is None:
@@ -1198,12 +1208,13 @@ cdef class Animation:
             self._frames_written += 1
 
     def close_anim(self):
-        if self._has_begun is 0:
+        if self._has_begun == 0:
 
             raise RuntimeError("Cannot close animation that hasn't been "
-                               "opened")
+                               "opened (begun)")
 
         cdef gdImagePtr prev
+
         if self._fp is not NULL:
             prev = NULL
 
@@ -1220,24 +1231,21 @@ cdef class Animation:
 
         self._has_closed = 1
 
-    def reset(self, Image img not None, str file_path not None):
+    def reset(self, file_path=None):
         """
         Resets the object state so it can be used again to create
         another animation
 
-        :param img: new first frame
-        :type img: Image
+        NOTE: begin_anim needs to be called again
 
-        :param file_path: path and filename of new animation
-        :param file_path: str
+        :param file_path=None: filename of new animation. Will reuse existing
+                               name if not specified
+        :param file_path: pathlike
         """
-        self.cur_frame = img
         self.prev_frame = None
 
-        try:
-            self._file_path = file_path.encode('ascii')
-        except UnicodeEncodeError:
-            raise ValueError('can only except ascii filenames')
+        if file_path is not None:
+            self._file_path = file_path
 
         if self._fp is not NULL:
             fclose(self._fp)

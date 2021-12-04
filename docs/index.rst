@@ -9,7 +9,7 @@ Welcome to py_gd's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+  :maxdepth: 2
 
   introduction
   installing

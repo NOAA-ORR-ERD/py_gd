@@ -6,25 +6,26 @@ designed to be run with pytest:
 
 py.test test_gd.py
 """
-from __future__ import print_function
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 import os
+import sys
 import hashlib
-import pytest
+from pathlib import Path
 import numpy as np
 
+import pytest
+
 from py_gd import Image, Animation, asn2array, from_array
+
+HERE = Path(__file__).parent
 
 
 def outfile(file_name):
     # just to make it a little easier to type..
-    output_dir = "./test_images_output"
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
-    return os.path.join(output_dir, file_name)
+    output_dir = HERE / "test_images_output"
+    if not output_dir.exists():
+        output_dir.mkdir()
+    return output_dir / file_name
 
 
 def check_file(name):
@@ -85,7 +86,7 @@ def check_file(name):
 
 def test_init_simple():
     """
-    simplest possible initilization -- no preset color palette
+    simplest possible initialization -- no preset color palette
     """
     img = Image(width=400, height=400, preset_colors=None)
     assert img
@@ -118,8 +119,28 @@ def test_asn2array_fail():
 def test_cant_save_file():
     img = Image(width=400, height=400)
 
-    with pytest.raises(IOError):
+    with pytest.raises(OSError):
         img.save("a/non_existant/file_path")
+
+
+def test_non_ascii_file_name():
+    """
+    Can use full Unicode on utf-8 filesystems only
+    e.g. OS-X and most Linux
+
+    Windows only supports ASCII at this point
+    """
+    img = Image(width=400, height=400)
+
+    filename = outfile("file\u2014name_with_unicode.png")  # u2014 is an EmDash
+    if sys.getfilesystemencoding() == 'utf-8':
+        # this should work
+        img.save(filename)
+        assert filename.exists()
+    else:
+        # other filesystem encodings raise an Exception
+        with pytest.raises(ValueError):
+            img.save(filename)
 
 
 def test_init_simple_add_rgb():
@@ -979,53 +1000,62 @@ def test_clip_draw():
     assert check_file(fname)
 
 
+def rotating_line(size=200):
+    """
+    generate the endpoints of a rotating line
+
+    for use in animation tests
+
+    it's expecting to be used in a square image:
+
+    (size,size)
+    """
+    endpoints = np.array(((-size / 2, 0), (size / 2, 0)))
+    offset = np.array((size / 2, size / 2))
+
+    for ang in range(0, 360, 10):
+        rad = np.deg2rad(ang)
+        rot_matrix = [(np.cos(rad), np.sin(rad)), (-np.sin(rad), np.cos(rad))]
+        points = np.dot(endpoints, rot_matrix).astype(np.int32) + offset
+        yield points
+
+
 def test_animation():
     img = Image(200, 200)
-    endpoints = np.array(((-100, 0), (100, 0)))
-    offset = np.array((100, 100))
 
-    fname = "test_animation.gif"
-    anim = Animation(outfile(fname))
+    anim = Animation(outfile("test_animation.gif"))
 
     anim.begin_anim(img, 0)
 
-    for ang in range(0, 360, 10):
-        rad = np.deg2rad(ang)
-        rot_matrix = [(np.cos(rad), np.sin(rad)), (-np.sin(rad), np.cos(rad))]
-        points = np.dot(endpoints, rot_matrix).astype(np.int32) + offset
-
-        if (ang < 180):
-            img.draw_line(points[0], points[1], 'red')
-        else:
-            img.draw_line(points[0], points[1], 'red')
-
+    for points in rotating_line(200):
+        img.draw_line(points[0], points[1], 'red')
         anim.add_frame(img)
 
     img.draw_line(np.array((0, 100)), np.array((200, 100)), 'green')
-
     anim.add_frame(img)
+
     anim.close_anim()
 
-    print(anim.frames_written)
-
+    # not much to auto-check here
+    print(f"{anim.frames_written} frames were written")
+    assert anim.frames_written == 22
 
 def test_static_animation():
+    """
+    If subsequent frames are identical, then it should add tot he delay,
+    rather than adding duplicate images
+
+    Not sure how to actually test the delay, but looking at the animation
+    you can tell it's slower than the previous test one, which is otherwise
+    the same
+    """
     img1 = Image(200, 200)
     img2 = Image(200, 200)
 
-    endpoints = np.array(((-100, 0), (100, 0)))
-    offset = np.array((100, 100))
-
-    fname = "test_animation.gif"
-
-    anim = Animation(outfile(fname))
+    anim = Animation(outfile("test_animation_static.gif"))
     anim.begin_anim(img1, 0)
 
-    for ang in range(0, 360, 10):
-        rad = np.deg2rad(ang)
-        rot_matrix = [(np.cos(rad), np.sin(rad)), (-np.sin(rad), np.cos(rad))]
-        points = np.dot(endpoints, rot_matrix).astype(np.int32) + offset
-
+    for points in rotating_line(200):
         img1.draw_line(points[0], points[1], 'red')
         img2.draw_line(points[0], points[1], 'red')
 
@@ -1035,13 +1065,166 @@ def test_static_animation():
         anim.add_frame(img2)
 
     anim.close_anim()
-    print(anim.frames_written)
+    print(f"{anim.frames_written} frames were written")
+    # duplicate images should have added to delay, rather than adding an image
+    assert anim.frames_written == 21
 
 
-if __name__ == "__main__":
-    # just run these tests..
-    # test_init_default_palette()
-    # test_init_BW()
-    # test_init_simple_add_rgb()
-    # test_init_simple_add_rgba()
-    test_animation()
+def test_animation_reuse_filename():
+    """
+    make an animation, then make another one with the same filename
+
+    The final one should be green lines
+
+    NOTE: we were having issues on Windows with permissions
+    """
+
+    for color in ('red', 'green'):
+        img = Image(200, 200)
+
+        anim = Animation(outfile("test_animation_reuse.gif"))
+        anim.begin_anim(img, 0)
+
+        for points in rotating_line(200):
+            img.draw_line(points[0], points[1], color, line_width=3)
+            anim.add_frame(img)
+        anim.close_anim()
+
+    # not much to auto-check here
+    print(f"{anim.frames_written} frames were written")
+    assert anim.frames_written == 21
+
+
+def test_animation_reuse_filename_not_close():
+    """
+    make an animation, then make another one with the same filename
+
+    The final one should be blue lines
+
+    NOTE: we were having issues on Windows with permissions
+    """
+
+    for color in ('red', 'blue'):
+        img = Image(200, 200)
+
+        anim = Animation(outfile("test_animation_reuse_not_close.gif"))
+        anim.begin_anim(img, 0)
+
+        for points in rotating_line(200):
+            img.draw_line(points[0], points[1], color, line_width=3)
+            anim.add_frame(img)
+        # anim.close_anim()
+
+    # not much to auto-check here
+    print(f"{anim.frames_written} frames were written")
+    assert anim.frames_written == 21
+
+
+def test_animation_reset_new_filename():
+    """
+    create an animation, then reset and make another one
+    """
+    anim = Animation(outfile("test_animation_reset1.gif"))
+    img = Image(200, 200)
+
+    anim.begin_anim(img, 0)
+
+    for points in rotating_line(200):
+        img.draw_line(points[0], points[1], 'red', line_width=3)
+        anim.add_frame(img)
+
+    assert anim.frames_written == 21
+
+    anim.reset(file_path=outfile("test_animation_reset2.gif"))
+    assert anim.frames_written == 0
+
+    img = Image(300, 300)
+    anim.begin_anim(img, 0)
+
+    for points in rotating_line(300):
+        img.draw_line(points[0], points[1], 'blue', line_width=3)
+        anim.add_frame(img)
+
+    anim.close_anim()
+
+    # not much to auto-check here
+    print(f"{anim.frames_written} frames were written")
+    assert anim.frames_written == 21
+
+
+def test_animation_reset_same_filename():
+    """
+    create an animation, then reset and make another one
+    using the same filename (by default)
+    """
+    anim = Animation(outfile("test_animation_reset_same.gif"))
+    img = Image(200, 200)
+
+    anim.begin_anim(img, 0)
+
+    for points in rotating_line(200):
+        img.draw_line(points[0], points[1], 'red', line_width=3)
+        anim.add_frame(img)
+
+    assert anim.frames_written == 21
+
+    anim.reset()
+    assert anim.frames_written == 0
+
+    img = Image(300, 300)
+    anim.begin_anim(img, 0)
+
+    for points in rotating_line(300):
+        img.draw_line(points[0], points[1], 'blue', line_width=3)
+        anim.add_frame(img)
+
+    anim.close_anim()
+
+    # not much to auto-check here
+    print(f"{anim.frames_written} frames were written")
+    assert anim.frames_written == 21
+
+
+def test_animation_delete_before_use():
+    """
+    make sure the dealloc doesn't barf if the file hasn't
+    been opened yet
+    """
+
+    filename = outfile("nothing.gif")
+
+    filename.unlink(missing_ok=True)
+    assert not filename.exists()
+
+    anim = Animation(filename)
+    del anim
+    assert not filename.exists()
+
+    # note: this creates a broken gif
+    anim = Animation(filename)
+    img = Image(200, 200)
+    anim.begin_anim(img, 0)
+    del anim
+    assert filename.exists()
+
+
+def test_animation_delete_one_frame():
+    """
+    make sure the dealloc creates a valid gif with only one frame added
+    """
+    filename = outfile("one_frame_delete.gif")
+    anim = Animation(filename)
+    img = Image(200, 200)
+    anim.begin_anim(img, 0)
+    img.draw_line((0, 0), (200, 200), color="white", line_width=4)
+    anim.add_frame(img)
+    del anim
+
+    assert filename.exists()
+
+
+
+
+
+
+
