@@ -119,7 +119,7 @@ def test_asn2array_fail():
 def test_cant_save_file():
     img = Image(width=400, height=400)
 
-    with pytest.raises(IOError):
+    with pytest.raises(OSError):
         img.save("a/non_existant/file_path")
 
 

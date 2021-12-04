@@ -78,7 +78,7 @@ cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
 
     return arr
 
-cdef FILE* open_file(file_path):
+cdef FILE* open_file(file_path) except *:
     """
     opens a file
     :param path: python PathLike
@@ -95,7 +95,7 @@ cdef FILE* open_file(file_path):
         fp = fopen(file_path.encode('utf-8'), 'wb')
 
     if fp is NULL:
-        raise IOError('could not open the file: {}'.format(file_path))
+        raise OSError('could not open the file: {}'.format(file_path))
 
     return fp
 
