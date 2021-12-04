@@ -78,6 +78,20 @@ cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
 
     return arr
 
+cdef FILE* open_file(file_path):
+    """
+    opens a file
+    :param path: python string
+    """
+    cdef FILE* fp
+    fp = NULL
+    IF UNAME_SYSNAME == 'Windows':
+        fp = _wfopen(file_path, u"wb")
+    ELSE:
+        fp = fopen(file_path.encode('utf-8'), 'wb')
+    if fp is NULL:
+        raise IOError('could not open the file: {}'.format(file_path))
+    return fp
 
 cdef bytes path_to_bytes(path):
     """
@@ -470,11 +484,9 @@ cdef class Image:
         :param file_type: type of file you want written
         :type file_type: string
         """
-        cdef bytes file_path
         cdef FILE *fp
         cdef int compression_level
 
-        file_path =path_to_bytes(file_name)
         # file_name = os.fspath(file_name)
         # try:
         #     file_path = file_name.encode('ascii')
@@ -487,13 +499,8 @@ cdef class Image:
             raise ValueError('file_type must be one of: {}'
                              .format(file_type_codes))
 
+        fp = open_file(file_name)
         # open the file here:
-        IF UNAME_SYSNAME == 'Windows':
-            fp = _wfopen(file_path.decode('utf-8'), u"wb")
-        ELSE:
-            fp = fopen(file_path, 'wb')
-        if fp is NULL:
-            raise IOError('could not open the file: {}'.format(file_path))
 
         # then call the right writer:
         if file_type in ["bmp", "BMP"]:
@@ -1072,7 +1079,6 @@ cdef class Animation:
     cdef Image prev_frame
     cdef int base_delay
     cdef FILE *_fp
-    cdef bytes _file_path
     cdef int _has_begun
     cdef int _has_closed
     cdef int _frames_written
@@ -1092,7 +1098,7 @@ cdef class Animation:
                                   all images in the animation. If 0,
                                   a new colormap is used for each frame.
         """
-        self._file_path =path_to_bytes(file_name)
+        self._file_path = file_name
 
         # file_name = os.fspath(file_name)
         # try:
@@ -1159,11 +1165,7 @@ cdef class Animation:
 
         if self._has_closed == 1:
             raise RuntimeError('Cannot re-begin closed animation')
-
-        IF UNAME_SYSNAME == 'Windows':
-            self._fp = _wfopen(self._file_path.decode('utf-8'), u"wb")
-        ELSE:
-            self._fp = fopen(self._file_path, 'wb')
+        self._fp = open_file(self._file_path)
 
         self.cur_frame = Image(first.width, first.height)
         self.cur_frame.copy(first)
