@@ -13,7 +13,7 @@ from .py_gd import *
 import sys
 import os
 
-__version__ = "2.0.2"
+__version__ = "2.0.3"
 
 if sys.platform.startswith('win'):
     # This only works for Anaconda / miniconda
