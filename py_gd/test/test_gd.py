@@ -227,6 +227,13 @@ def test_info():
     assert str(img) == "py_gd.Image: width: 400, height: 300"
     assert repr(img) == "Image(width=400, height=300)"
 
+def test_get_color_indices():
+    img = Image(10, 10, preset_colors='xkcd')
+
+    colors = img.get_color_indices(['white', 'dust', 'tea'])
+
+    assert np.array_equal(colors, np.array([0, 3, 9], dtype=np.uint8))
+
 
 def test_add_colors():
     img = Image(10, 10, preset_colors='BW')
@@ -285,7 +292,7 @@ def test_save_image(filetype):
     fname = "test_image_save." + filetype
     img.save(outfile(fname), filetype)
 
-    if filetype != "jpg":  # jpeg is lossy and thus inconsistent
+    if filetype != "jpg":  # jpeg is lossy and thus can be inconsistent
         assert check_file(fname)
 
     with pytest.raises(ValueError):
@@ -662,6 +669,28 @@ def test_draw_dots_lots():
     img.draw_dots(points, diameter=2, color='red')
 
     img.save(outfile("test_image_dots_lots.png"), 'png')
+
+
+def test_draw_dots_multi_named_colors():
+    """
+    test drawing a lot of dots
+    """
+    import random
+    w, h, = 500, 500
+    img = Image(w, h, preset_colors='xkcd')
+
+    points = [ (x, y) for x in range(0, w, 50) for y in range(0, h, 50)]
+
+    # print(points)
+    colors = [img.get_color_names()[i+1] for i in range(len(points))]
+
+    print(colors)
+    # colors =
+    img.draw_dots(points, diameter=10, color=colors)
+
+    img.save(outfile("test_draw_dots_multi_named_colors.png"), 'png')
+
+    assert check_file("test_draw_dots_multi_named_colors.png")
 
 
 def test_draw_dots_wrong_shape():

@@ -95,6 +95,7 @@ TABLEAU_COLORS = {
 #
 # License: http://creativecommons.org/publicdomain/zero/1.0/
 XKCD_COLORS = {
+    'white': '#ffffff',
     'cloudy blue': '#acc2d9',
     'dark pastel green': '#56ae57',
     'dust': '#b2996e',
@@ -926,7 +927,6 @@ XKCD_COLORS = {
     'brick': '#a03623',
     'sage': '#87ae73',
     'grey green': '#789b73',
-    'white': '#ffffff',
     "robin's egg blue": '#98eff9',
     'moss green': '#658b38',
     'steel blue': '#5a7d9a',

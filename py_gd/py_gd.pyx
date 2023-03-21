@@ -133,30 +133,33 @@ cdef class Image:
         :param height: height of image in pixels
         :type height: integer
 
-        :param preset_colors=web_colors: which set of preset colors you want.
-                                         options are:
+        :param preset_colors=web: which set of preset colors you want.
+                                     options are:
 
-                                         'web' - the basic named colors for
-                                                 the web: transparent
-                                                 background
+                                     'web' - the basic named colors for
+                                             the web: transparent
+                                             background
 
-                                         'BW' - transparent, black, and white:
-                                                transparent background
+                                     'BW' - transparent, black, and white:
+                                            transparent background
 
-                                         'transparent' - transparent background,
-                                                         no other colors set
+                                     'transparent' - transparent background,
+                                                     no other colors set
 
-                                         None - no pre-allocated colors -- the
-                                                first one you allocate will be
-                                                the background color or any of
-                                                the colors in py_gd.colors
+                                     Any other of the colorschemes in:
+                                     `py_gd.colors.colorschemes.keys()`
+
+                                     None - no pre-allocated colors -- the
+                                            first one you allocate will be
+                                            the background color or any of
+                                            the colors in py_gd.colors
 
         :type preset_colors: string or None
 
         The Image is created as a 8-bit Paletted Image.
 
         """
-        # NOTE: the initilization of the C structs is happening in the __cinit__
+        # NOTE: the initialization of the C structs is happening in the __cinit__
 
         # set first color (background) to transparent
         # initialize the colors
@@ -504,6 +507,31 @@ cdef class Image:
                                  )
         return c
 
+    def get_color_indices(self, colors):
+        """
+        returns a numpy array color indices: one element for each color in colors
+        """
+        # cdef cnp.uint8_t c
+        cdef cnp.uint32_t i
+        cdef cnp.ndarray[cnp.uint8_t, ndim=1, mode='c'] color_inds
+        color_inds = np.zeros(len(colors), dtype=np.uint8)
+
+        for i in range(len(colors)):
+            color = colors[i]
+            try:
+                color_inds[i] = self.colors[color]
+            except KeyError:
+                try:
+                    if 0 <= color <= 255:
+                        color_inds[i] = color
+                    else:
+                        raise ValueError('you must provide an integer between 0 and 255')
+                except TypeError:  # not an int
+                    raise ValueError('you must provide an existing named color '
+                                     )
+        return color_inds
+
+
     def get_pixel_color(self, point):
         """
         returns the string value for the color at a point
@@ -584,7 +612,7 @@ cdef class Image:
         """
         Draws a set of individual dots all in the same color
 
-        :param points: the (x,y) coordianates of the center of the dots
+        :param points: the (x,y) coordinates of the center of the dots
         :type points: a Nx2 numpy array of integers, or something that can be
                       turned in to one
 
@@ -597,11 +625,16 @@ cdef class Image:
         cdef cnp.uint8_t c
         cdef cnp.uint32_t i, n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
+        cdef cnp.ndarray[cnp.uint8_t, ndim=1, mode='c'] colors
 
         points_arr = asn2array(points, dtype=np.intc)
         n = points_arr.shape[0]
 
-        c = self.get_color_index(color)
+        if isinstance(color, (str, int)) or len(color) == 1:
+            colors = np.zeros((points_arr.shape[0],), dtype=np.uint8)
+            colors[:] = self.get_color_index(color)
+        else:
+            colors = self.get_color_indices(color)
 
         if diameter == 1:
             for i in range(n):
@@ -637,7 +670,7 @@ cdef class Image:
         """
         Draws a set of individual Xs all in the same color
 
-        :param points: the (x,y) coordianates of the center of the dots
+        :param points: the (x,y) coordinates of the center of the dots
         :type points: a Nx2 numpy array of integers, or something that can be
                       turned in to one
 
@@ -654,29 +687,34 @@ cdef class Image:
         cdef cnp.uint8_t c
         cdef cnp.uint32_t i, n
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
+        cdef cnp.ndarray[cnp.uint8_t, ndim=1, mode='c'] colors
 
         points_arr = asn2array(points, dtype=np.intc)
         n = points_arr.shape[0]
 
-        c = self.get_color_index(color)
+        if isinstance(color, (str, int)) or len(color) == 1:
+            colors = np.zeros((points_arr.shape[0],), dtype=np.uint8)
+            colors[:] = self.get_color_index(color)
+        else:
+            colors = self.get_color_indices(color)
 
         if diameter == 2:  # draw five pixels
             for i in range(n):
                 gdImageSetPixel(self._image,
                                 points_arr[i, 0], points_arr[i, 1],
-                                c)
+                                colors[i])
                 gdImageSetPixel(self._image,
                                 points_arr[i, 0] + 1, points_arr[i, 1] + 1,
-                                c)
+                                colors[i])
                 gdImageSetPixel(self._image,
                                 points_arr[i, 0] - 1, points_arr[i, 1] - 1,
-                                c)
+                                colors[i])
                 gdImageSetPixel(self._image,
                                 points_arr[i, 0] + 1, points_arr[i, 1] - 1,
-                                c)
+                                colors[i])
                 gdImageSetPixel(self._image,
                                 points_arr[i, 0] - 1, points_arr[i, 1] + 1,
-                                c)
+                                colors[i])
         elif diameter > 2:
             gdImageSetThickness(self._image, line_width)
 
@@ -686,11 +724,11 @@ cdef class Image:
                 gdImageLine(self._image,
                             points_arr[i, 0] - r, points_arr[i, 1] - r,
                             points_arr[i, 0] + r, points_arr[i, 1] + r,
-                            c)
+                            colors[i])
                 gdImageLine(self._image,
                             points_arr[i, 0] - r, points_arr[i, 1] + r,
                             points_arr[i, 0] + r, points_arr[i, 1] - r,
-                            c)
+                            colors[i])
 
             gdImageSetThickness(self._image, 1)
         else:
