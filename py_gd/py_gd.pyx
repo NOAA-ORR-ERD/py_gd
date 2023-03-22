@@ -510,6 +510,10 @@ cdef class Image:
     def get_color_indices(self, colors):
         """
         returns a numpy array color indices: one element for each color in colors
+
+        :param colors: Sequence of color names or indexes
+
+        if colors is an numpy ndarray of dtype uint8, this will be a pass-through.
         """
         # cdef cnp.uint8_t c
         cdef cnp.uint32_t i
@@ -527,8 +531,7 @@ cdef class Image:
                     else:
                         raise ValueError('you must provide an integer between 0 and 255')
                 except TypeError:  # not an int
-                    raise ValueError('you must provide an existing named color '
-                                     )
+                    raise ValueError('you must provide an existing named color')
         return color_inds
 
 
@@ -630,38 +633,43 @@ cdef class Image:
         points_arr = asn2array(points, dtype=np.intc)
         n = points_arr.shape[0]
 
-        if isinstance(color, (str, int)) or len(color) == 1:
+        if isinstance(color, (str, int)):  # it is a single color
             colors = np.zeros((points_arr.shape[0],), dtype=np.uint8)
             colors[:] = self.get_color_index(color)
-        else:
-            colors = self.get_color_indices(color)
+        else:  # a sequence of colors:
+            if len(color) != len(points):
+                raise ValueError("number of colors must match number of points, or be only one color")
+            try:
+                colors = np.asarray(color, dtype=np.uint8)
+            except ValueError: # it's not integers
+                colors = self.get_color_indices(color)
 
         if diameter == 1:
             for i in range(n):
                 gdImageSetPixel(self._image,
                                 points_arr[i, 0], points_arr[i, 1],
-                                c)
+                                colors[i])
         elif diameter == 2:  # draw four pixels
             for i in range(n):
                 gdImageSetPixel(self._image,
                                 points_arr[i, 0], points_arr[i, 1],
-                                c)
+                                colors[i])
                 gdImageSetPixel(self._image,
                                 points_arr[i, 0]+1, points_arr[i, 1],
-                                c)
+                                colors[i])
                 gdImageSetPixel(self._image,
                                 points_arr[i, 0], points_arr[i, 1]+1,
-                                c)
+                                colors[i])
                 gdImageSetPixel(self._image,
                                 points_arr[i, 0]+1, points_arr[i, 1]+1,
-                                c)
+                                colors[i])
         elif diameter > 2:
             for i in range(n):
                 gdImageFilledArc(self._image,
                                  points_arr[i, 0], points_arr[i, 1],
                                  diameter, diameter,
                                  0, 360,
-                                 c, gdArc)
+                                 colors[i], gdArc)
         else:
             raise NotImplementedError("only diameters >= 1 are supported.")
 

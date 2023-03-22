@@ -74,7 +74,10 @@ def check_file(name):
                  'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076',
                  'test_image_x_lots.png': '57aa5a9a060f98083c023f70dfe35c29',
                  'test_text_align.bmp': '3151fe59ab1177fe6fde144dedae1082',
-                 'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d'}
+                 'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d',
+                 'test_draw_dots_multi_color_indices.png': '45d4adfa5f57cbf1e281280b1e945ff0',
+                 'test_draw_dots_multi_named_colors.png': '81dc2ef5cb1b592f461c09284df222b7',
+                 }
 
     cs = hashlib.md5(open(outfile(name), 'rb').read()).hexdigest()
     if checksums[name] == cs:
@@ -691,6 +694,27 @@ def test_draw_dots_multi_named_colors():
     img.save(outfile("test_draw_dots_multi_named_colors.png"), 'png')
 
     assert check_file("test_draw_dots_multi_named_colors.png")
+
+def test_draw_dots_multi_color_indices():
+    """
+    test drawing a lot of dots
+    """
+    import random
+    w, h, = 500, 500
+    img = Image(w, h, preset_colors='xkcd')
+
+    points = [ (x, y) for x in range(0, w, 25) for y in range(0, h, 25)]
+
+    # print(points)
+    colors = [i%255 for i in range(len(points))]
+
+    print(colors)
+    # colors =
+    img.draw_dots(points, diameter=10, color=colors)
+
+    img.save(outfile("test_draw_dots_multi_color_indices.png"), 'png')
+
+    assert check_file("test_draw_dots_multi_color_indices.png")
 
 
 def test_draw_dots_wrong_shape():
