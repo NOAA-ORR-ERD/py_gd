@@ -1,0 +1,15 @@
+[flake8]
+max-line-length = 120
+extend-ignore =
+  # imports not in alphabetical order (time, os)
+  H306
+  # 'from .py_gd import *' used; unable to detect undefined names
+  F403
+exclude =
+  .git
+  __pycache__
+  docs
+  source
+  conf.py
+  build
+  dist
