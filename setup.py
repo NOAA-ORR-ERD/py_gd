@@ -112,40 +112,40 @@ ext_modules = cythonize(
                   ext_modules,
                   compiler_directives={'language_level': 3})
 
-def get_version():
-    """
-    get version from __init__.py
-    """
-    with open(os.path.join("py_gd", "__init__.py")) as initfile:
-        for line in initfile:
-            line = line.strip()
-            if line.startswith("__version__"):
-                version = line.split("=")[1].strip(' "')
-                return version
+# def get_version():
+#     """
+#     get version from __init__.py
+#     """
+#     with open(os.path.join("py_gd", "__init__.py")) as initfile:
+#         for line in initfile:
+#             line = line.strip()
+#             if line.startswith("__version__"):
+#                 version = line.split("=")[1].strip(' "')
+#                 return version
 
 
-setup(name="py_gd",
-      version=get_version(),
-      description="python wrappers around libgd graphics lib",
+setup(# name="py_gd",
+      # version=get_version(),
+      # description="python wrappers around libgd graphics lib",
       # long_description=read('README'),
-      author="Christopher H. Barker",
-      author_email="chris.barker@noaa.gov",
-      url="https://github.com/NOAA-ORR-ERD/py_gd",
-      license="Public Domain",
-      keywords="graphics cython drawing",
+      # author="Christopher H. Barker",
+      # author_email="chris.barker@noaa.gov",
+      # url="https://github.com/NOAA-ORR-ERD/py_gd",
+      #license="Public Domain",
+      #keywords="graphics cython drawing",
       cmdclass={'cleanall': cleanall},
       ext_modules=cythonize(ext_modules),
-      zip_safe=False,  # dont want a compiled extension in a zipfile...
-      packages=['py_gd', 'py_gd.test'],
-      python_requires='>=3.8',
-      classifiers=["Development Status :: 2 - Pre-Alpha",
-                   "Topic :: Utilities",
-                   "License :: Public Domain",
-                   "Intended Audience :: Developers",
-                   "Operating System :: OS Independent",
-                   "Programming Language :: Cython",
-                   "Programming Language :: Python :: 3 :: Only",
-                   "Programming Language :: Python :: Implementation :: CPython",
-                   "Topic :: Multimedia :: Graphics",
-                   ],
+      # zip_safe=False,  # dont want a compiled extension in a zipfile...
+      #packages=['py_gd', 'py_gd.test'],
+      #python_requires='>=3.8',
+      # classifiers=["Development Status :: 2 - Pre-Alpha",
+      #              "Topic :: Utilities",
+      #              "License :: Public Domain",
+      #              "Intended Audience :: Developers",
+      #              "Operating System :: OS Independent",
+      #              "Programming Language :: Cython",
+      #              "Programming Language :: Python :: 3 :: Only",
+      #              "Programming Language :: Python :: Implementation :: CPython",
+      #              "Topic :: Multimedia :: Graphics",
+      #              ],
       )
