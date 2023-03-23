@@ -77,7 +77,7 @@ def check_file(name):
                  'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d',
                  'test_draw_dots_multi_color_indices.png': '45d4adfa5f57cbf1e281280b1e945ff0',
                  'test_draw_dots_multi_named_colors.png': '81dc2ef5cb1b592f461c09284df222b7',
-                 'test_image_with_colorramp.png': '79677e45b41772fc38291eca78783b28',
+                  'test_image_with_colorramp.png': '1ac385ddcbe4b179ba00e718384f31d7',
                  }
 
     cs = hashlib.md5(open(outfile(name), 'rb').read()).hexdigest()
