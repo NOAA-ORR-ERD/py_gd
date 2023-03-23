@@ -821,7 +821,7 @@ def test_colors():
     img.get_color_index(255)
 
     # will round floating point numbers
-    # shoul dthi sbe changed?
+    # should this be changed?
     assert img.get_color_index(2.3) == 2
 
     with pytest.raises(ValueError):
@@ -832,8 +832,8 @@ def test_colors():
         # error if color is not in dict
         img.get_color_index('something else')
 
-    with pytest.raises(ValueError):
-        # error if color is not anumber
+    with pytest.raises(TypeError):
+        # error if color is not a number
         img.get_color_index((1, 2, 3))
 
     with pytest.raises(TypeError):

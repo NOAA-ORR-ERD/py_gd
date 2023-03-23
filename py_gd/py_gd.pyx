@@ -498,13 +498,13 @@ cdef class Image:
             c = self.colors[color]
         except KeyError:
             try:
-                if 0 <= color <= 255:
-                    c = color
-                else:
-                    raise ValueError('you must provide an integer between 0 and 255')
-            except TypeError:  # not an int
-                raise ValueError('you must provide an existing named color '
-                                 )
+                color = int(color)
+            except ValueError:
+                raise ValueError('you must provide an existing named color or integer color index')
+            if 0 <= color <= 255:
+                c = color
+            else:
+                raise ValueError('you must provide an integer between 0 and 255')
         return c
 
     def get_color_indices(self, colors):
