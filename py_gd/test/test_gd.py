@@ -5,9 +5,9 @@ unit tests for the py_gd project
 designed to be run with pytest:
 
 py.test test_gd.py
+
 """
 
-import os
 import sys
 import hashlib
 from pathlib import Path
@@ -77,7 +77,7 @@ def check_file(name):
                  'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d',
                  'test_draw_dots_multi_color_indices.png': '45d4adfa5f57cbf1e281280b1e945ff0',
                  'test_draw_dots_multi_named_colors.png': '81dc2ef5cb1b592f461c09284df222b7',
-                  'test_image_with_colorramp.png': '1ac385ddcbe4b179ba00e718384f31d7',
+                 'test_image_with_colorramp.png': '1ac385ddcbe4b179ba00e718384f31d7',
                  }
 
     cs = hashlib.md5(open(outfile(name), 'rb').read()).hexdigest()
@@ -112,10 +112,10 @@ def test_asn2array_fail():
     check if it fails when wrong imput is used
     """
     with pytest.raises(ValueError):
-        _arr = asn2array([(1, 2, 3), (3, 4, 5), (5, 6, 7)], dtype=np.intc)
+        _arr = asn2array([(1, 2, 3), (3, 4, 5), (5, 6, 7)], dtype=np.intc)  # noqa: F841
 
     with pytest.raises(ValueError):
-        _arr = asn2array((1, 2, 3, 3, 4, 5, 5, 6, 7), dtype=np.intc)
+        _arr = asn2array((1, 2, 3, 3, 4, 5, 5, 6, 7), dtype=np.intc)  # noqa: F841
 
     assert True
 
@@ -169,17 +169,22 @@ def test_init_default_colors():
     """
     Initialize with the default palette
     """
-    _img = Image(width=400, height=300)
+    img = Image(width=400, height=300)
+
+    colors = img.get_color_names()
+    assert len(colors) == 17
 
 
 def test_init_BW():
-    _img = Image(10, 10, preset_colors='BW')
+    img = Image(10, 10, preset_colors='BW')
+    colors = img.get_color_names()
+    assert len(colors) == 3
 
 
 def test_init2():
     _img = Image(width=400, height=400)
 
-    _img = Image(400, 400)
+    _img = Image(400, 400)  # noqa: F841
 
     # need to pass in width and height
     with pytest.raises(TypeError):
@@ -202,7 +207,8 @@ def test_mem_limit():
     _img = Image(32768, 32768)  # 1 GB image
 
     with pytest.raises(MemoryError):
-        _img = Image(32768, 32769)  # > 1 GB image
+        # > 1 GB image
+        _img = Image(32768, 32769)    # noqa: F841
 
 
 def test_set_size():
@@ -219,10 +225,10 @@ def test_set_size():
         img.size = (50, 60)
 
     with pytest.raises(AttributeError):
-            img.height = 100
+        img.height = 100
 
     with pytest.raises(AttributeError):
-            img.width = 100
+        img.width = 100
 
 
 def test_info():
@@ -230,6 +236,7 @@ def test_info():
 
     assert str(img) == "py_gd.Image: width: 400, height: 300"
     assert repr(img) == "Image(width=400, height=300)"
+
 
 def test_get_color_indices():
     img = Image(10, 10, preset_colors='xkcd')
@@ -679,11 +686,10 @@ def test_draw_dots_multi_named_colors():
     """
     test drawing a lot of dots
     """
-    import random
     w, h, = 500, 500
     img = Image(w, h, preset_colors='xkcd')
 
-    points = [ (x, y) for x in range(0, w, 50) for y in range(0, h, 50)]
+    points = [(x, y) for x in range(0, w, 50) for y in range(0, h, 50)]
 
     # print(points)
     colors = [img.get_color_names()[i+1] for i in range(len(points))]
@@ -696,6 +702,7 @@ def test_draw_dots_multi_named_colors():
 
     assert check_file("test_draw_dots_multi_named_colors.png")
 
+
 def test_draw_dots_multi_color_indices():
     """
     test drawing a lot of dots
@@ -703,10 +710,9 @@ def test_draw_dots_multi_color_indices():
     w, h, = 500, 500
     img = Image(w, h, preset_colors='xkcd')
 
-    points = [ (x, y) for x in range(0, w, 25) for y in range(0, h, 25)]
+    points = [(x, y) for x in range(0, w, 25) for y in range(0, h, 25)]
 
-    # print(points)
-    colors = [i%255 for i in range(len(points))]
+    colors = [i % 255 for i in range(len(points))]
 
     img.draw_dots(points, diameter=10, color=colors)
 
@@ -1091,6 +1097,7 @@ def test_animation():
     print(f"{anim.frames_written} frames were written")
     assert anim.frames_written == 22
 
+
 def test_static_animation():
     """
     If subsequent frames are identical, then it should add tot he delay,
@@ -1272,10 +1279,3 @@ def test_animation_delete_one_frame():
     del anim
 
     assert filename.exists()
-
-
-
-
-
-
-

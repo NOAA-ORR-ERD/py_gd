@@ -14,6 +14,7 @@ continuous_schemes = ('cividis', 'inferno', 'magma', 'plasma', 'turbo',
 
 all_color_schemes = basic_schemes + discrete_schemes + continuous_schemes
 
+
 # make sure the ones we expect are there
 @pytest.mark.parametrize("color_name", all_color_schemes)
 def test_known_colors(color_name):
@@ -66,9 +67,3 @@ def test_colornames():
     for name in names:
         assert name[0] in all_names
         assert name[1] in {'discrete', 'continuous'}
-
-
-
-
-
-

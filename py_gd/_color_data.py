@@ -79,8 +79,6 @@ TABLEAU_COLORS = {
     'cyan': '#17becf',
 }
 
-
-
 # # Normalize name to "tab:<name>" to avoid name collisions.
 # TABLEAU_COLORS = OrderedDict(
 #     ('tab:' + name, value) for name, value in TABLEAU_COLORS)

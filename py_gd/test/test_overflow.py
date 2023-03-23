@@ -348,7 +348,6 @@ class TestPolyFill():
         # with pytest.raises(OverflowError):
         #     img.draw_line( (-val, -val), (val, val), 'white', line_width=2)
 
-
         try:
             img.draw_polygon(points, line_color='black', fill_color='red',
                              line_width=1)

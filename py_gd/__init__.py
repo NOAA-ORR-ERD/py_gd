@@ -42,7 +42,7 @@ if sys.platform.startswith('win'):
                            )
     os.environ['PATH'] = libpath + os.pathsep + os.environ['PATH']
 try:
-    from .py_gd import *
+    from .py_gd import *  # noqa: F401
 
 except ImportError as err:
     if str(err).startswith("DLL load failed:"):

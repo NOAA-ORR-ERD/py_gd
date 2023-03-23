@@ -138,5 +138,3 @@ for dataname in dir(_cm_listed):
 
 # clean up the namespace
 del dataname, scheme, np
-
-
