@@ -27,7 +27,7 @@ jobs:
         run: |
             conda install --file conda_requirements.txt --file conda_requirements_dev.txt
             pip install .
-            pytest --pyargs gridded
+            pytest --pyargs py_gd
 
   lint:
     name: Flake8 linting
@@ -46,7 +46,5 @@ jobs:
         shell: bash -l {0}
         run: |
             conda install flake8
+            # flake8 config in setup.cfg
             python -m flake8 --statistics py_gd/
-      # python -m flake8 --count --max-line-length=95 --show-source --statistics gridded/
-      # python -m flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-      #       python -m flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
