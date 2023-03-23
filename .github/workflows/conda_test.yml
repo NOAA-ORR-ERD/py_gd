@@ -20,13 +20,18 @@ jobs:
       - shell: bash -l {0}
         run: |
           conda config --add channels conda-forge
+          conda config --set channel_priority strict
 #          conda info
 #          conda list
-      - name: Run pytest
+      - name: Build
         shell: bash -l {0}
         run: |
             conda install --file conda_requirements.txt --file conda_requirements_dev.txt
             pip install .
+
+      - name: Test
+        shell: bash -l {0}
+        run: |
             pytest --pyargs py_gd
 
   lint:
@@ -42,6 +47,7 @@ jobs:
       - shell: bash -l {0}
         run: |
           conda config --add channels conda-forge
+          conda config --set channel_priority strict
       - name: Lint
         shell: bash -l {0}
         run: |
