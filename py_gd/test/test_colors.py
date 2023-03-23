@@ -2,24 +2,17 @@
 import pytest
 
 import py_gd
-from py_gd.colors import colorschemes
+from py_gd.colors import colorschemes, colorscheme_names
 
 from .test_gd import outfile
 
-all_color_schemes = ('magma',
-                     'inferno',
-                     'plasma',
-                     'viridis',
-                     'cividis',
-                     'twilight',
-                     # 'twilight_shifted',
-                     'turbo',
-                     'css4',
-                     'tableau',
-                     'xkcd',
-                     'web',
-                     )
+basic_schemes = ('transparent', 'BW')
+discrete_schemes = ('web', 'tableau', 'css4', 'xkcd')
 
+continuous_schemes = ('cividis', 'inferno', 'magma', 'plasma', 'turbo',
+                      'twilight', 'viridis')
+
+all_color_schemes = basic_schemes + discrete_schemes + continuous_schemes
 
 # make sure the ones we expect are there
 @pytest.mark.parametrize("color_name", all_color_schemes)
@@ -66,6 +59,13 @@ def test_drawing_with_colors(color_name):
                               )
     im.save(outfile(f"sample_{color_name}.png"), 'png')
 
+
+def test_colornames():
+    names = colorscheme_names
+    all_names = set(all_color_schemes)
+    for name in names:
+        assert name[0] in all_names
+        assert name[1] in {'discrete', 'continuous'}
 
 
 

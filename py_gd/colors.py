@@ -3,8 +3,22 @@ colormaps.py
 
 Assorted colormaps you can use with py_gd
 
-These have (so far) been borrowed from the Matplotlib project, so are
-licensed as MPL is:
+To see what they all are::
+
+  print(py_gd.colors.colorscheme_names)
+
+To access a particular one::
+
+  py_gd.colors.colorscheme[name]
+
+NOTE: there are both discrete and continuous colorschemes provided
+
+
+To Do: a function to create a py_gd colormap from MPL colormaps
+       directly
+
+Some of these have been borrowed from the Matplotlib project, so are
+licensed under the  MPL license:
 
 1. This LICENSE AGREEMENT is between the Matplotlib Development Team
 ("MDT"), and the Individual or Organization ("Licensee") accessing and
@@ -79,16 +93,14 @@ def build_from_named_colors(named_colors):
 
 colorschemes = {}
 
-# basic named color set
-# http://en.wikipedia.org/wiki/Web_colors#HTML_color_names
-
+# just for transparent background, no other colors
 colorschemes['transparent'] = [('transparent', (0, 0, 0, 127))]
 
 colorschemes['BW'] = (colorschemes["transparent"] + [('black', (0, 0, 0)),
-                                                     ('white',
-                                                      (255, 255, 255))])
+                                                     ('white', (255, 255, 255)),
+                                                     ])
 
-# basic named color set
+# Basic named HTTP color set
 # http://en.wikipedia.org/wiki/Web_colors#HTML_color_names
 colorschemes['web'] = (colorschemes["BW"] + [('silver', (191, 191, 191)),
                                              ('gray', (127, 127, 127)),
@@ -113,6 +125,8 @@ colorschemes['css4'] = build_from_named_colors(_color_data.CSS4_COLORS)
 XKCD = dict(islice(_color_data.XKCD_COLORS.items(), 0, 255))
 colorschemes['xkcd'] = build_from_named_colors(XKCD)
 
+colorscheme_names = [(name, 'discrete') for name in colorschemes.keys()]
+
 # build continuous colormaps
 for dataname in dir(_cm_listed):
     if dataname.endswith("_data"):
@@ -120,3 +134,9 @@ for dataname in dir(_cm_listed):
         scheme = getattr(_cm_listed, dataname)
         scheme = (np.array(scheme) * 255).round().astype(np.uint8).tolist()
         colorschemes[name] = [(str(i), tuple(c)) for i, c in enumerate(scheme)]
+        colorscheme_names.append((name, 'continuous'))
+
+# clean up the namespace
+del dataname, scheme, np
+
+
