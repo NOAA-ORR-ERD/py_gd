@@ -1,8 +1,14 @@
+"""
+Using py_gd to draw a Madelbrot set
+
+This sets the colors pixel by pixel
+"""
+
 import numpy as np
 import py_gd as gd
 
 
-def Mandelbrot_iter (c):
+def Mandelbrot_iter(c):
     z = 0
     for iters in range(200):
         if abs(z) >= 2:
@@ -12,24 +18,23 @@ def Mandelbrot_iter (c):
 
 
 def Mandelbrot(size):
-    image = gd.Image(400, 400, preset_colors='turbo')
+    image = gd.Image(size, size, preset_colors='turbo')
 
-    xPts = np.arange(-1.5, 0.5, 2.0 / size)
-    yPts = np.arange(-1, 1, 2.0 / size)
-    scale = 400.0 / 2
+    scale = size / 2
     x_shift = 1.5
     y_shift = 1.0
 
-    for xx, x in enumerate(xPts):
-        for yy, y in enumerate(yPts):
-            # v = Mandelbrot_iter(np.complex(x, y))
-            v = Mandelbrot_iter( x + y * 1j)
-            _x = scale * (x + x_shift)
-            _y = scale * (y + y_shift)
-            print("_x: %6.2f, _y: %6.2f, v: %3d" % (_x, _y, v))
-            image.set_pixel_value((_x, _y), v)
+    v_max = 0
+    for i in range(image.width):
+        for j in range(image.height):
+            x = (i / scale) - x_shift
+            y = (j / scale) - y_shift
+            v = Mandelbrot_iter( x + (y * 1j))
+            print("i: %d, j: %d, v: %3d" % (i, j, v))
+            image.set_pixel_value((i, j), v)
+            v_max = max(v_max, v)
     return image
 
-im = Mandelbrot(100)
+im = Mandelbrot(400)
 
 im.save ("Mandelbrot.png", file_type="png")
