@@ -49,10 +49,12 @@ cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
 
     :param dtype: the numpy data type you want the returned array to be
     """
-    arr = np.asarray(obj, dtype)
+    arr = np.asarray(obj)
 
     if arr.ndim != 2 or arr.shape[1] != 2:
         raise ValueError("input  must be convertible to a Nx2 array")
+
+    arr = arr.astype(dtype)
 
     return arr
 
@@ -788,6 +790,7 @@ cdef class Image:
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
 
         points_arr = asn2array(points, dtype=np.intc)
+
         n = points_arr.shape[0]
 
         if n < 3:

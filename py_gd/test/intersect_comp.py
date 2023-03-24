@@ -1,4 +1,8 @@
 # test of scanline:
+"""
+For histories sake -- not py_gd tests here
+"""
+
 
 import numpy as np  # to get an actual 32 bit int
 

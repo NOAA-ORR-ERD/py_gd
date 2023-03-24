@@ -4,8 +4,8 @@ tests for overflow in py_gd code
 
 what happens when you use large coordinates? well outside the image?
 
-It fails to properly fill polygons even when teh coords are well less than what
-can fit in a 32 bit int. -- it seems as thoough there is a multiplication in
+It fails to properly fill polygons even when the coords are well less than what
+can fit in a 32 bit int. -- it seems as though there is a multiplication in
 play -- the limit is around the square root of a max int.
 """
 import numpy as np
