@@ -961,14 +961,106 @@ cdef class Image:
 
             gdImageSetThickness(self._image, line_width)
 
-            gdImageFilledArc(self._image,
+            # gdImageFilledArc(self._image,
+            #    void gdImageArc(gdImagePtr im, int cx, int cy, int w, int h, int s, int e, int color)
+            gdImageArc(self._image,
                              center[0], center[1],
                              width, height,
                              start, end,
                              self.get_color_index(line_color),
-                             flag)
+                             )
 
             gdImageSetThickness(self._image, 1)
+
+    def draw_ellipse(self,
+                     center,
+                     width,
+                     height,
+                     line_color=None,
+                     fill_color=None,
+                     int line_width=1,
+                     ):
+        # void gdImageEllipse(gdImagePtr im, int mx, int my, int w, int h, int c)
+        # void gdImageFilledEllipse (gdImagePtr im, int mx, int my, int w, int h, int c)
+
+        """
+        Draw an ellipse centered at the given point, with the specified
+        width and height in pixels.
+
+        :param center: center of arc
+        :type center: (x,y) tuple or 2-sequence of integers
+
+        :param width: width of ellipse
+        :type width: integer
+
+        :param height: height of ellipse
+        :type height: integer
+
+        :param fill_color=None: the color of the filled portion of the ellipse
+        :type  fill_color=None: color name or index
+
+        :param line_color=None: the color of the outline
+        :type  line_color=None: color name or index
+
+        :param line_width=1: width of line
+        :type line_width: integer
+
+        A circle can be drawn by setting the width and height the same
+        """
+        # filled ellipse
+        if fill_color is not None:
+            gdImageFilledEllipse(self._image,
+                                 center[0], center[1],
+                                 width, height,
+                                 self.get_color_index(fill_color),
+                                 )
+
+        if line_color is not None:
+            gdImageSetThickness(self._image, line_width)
+
+            gdImageEllipse(self._image,
+                           center[0], center[1],
+                           width, height,
+                           self.get_color_index(line_color),
+                           )
+            gdImageSetThickness(self._image, 1)
+
+
+    def draw_circle(self,
+                    center,
+                    diameter,
+                    line_color=None,
+                    fill_color=None,
+                    int line_width=1,
+                    ):
+        """
+        Draw a circle centered on a point.
+
+        NOTE: this is a simplified call to draw_arc()
+
+        :param center: center of the circle
+        :type center: (x,y) tuple or 2-sequence of integers
+
+        :param diameter: diameter of the circle
+        :type diameter: integer
+
+        :param fill_color=None: the color of the filled portion of the circle
+        :type  fill_color=None: color name or index
+
+        :param line_color=None: the color of the outline
+        :type  line_color=None: color name or index
+
+        :param line_width=1: width of the outline
+        :type line_width: integer
+        """
+        self.draw_ellipse(center=center,
+                          width=diameter,
+                          height=diameter,
+                          line_color=line_color,
+                          fill_color=fill_color,
+                          line_width=line_width,
+                          )
+
 
     def draw_text(self, text, point, font="medium", color='black', align='lt',
                   background='none'):

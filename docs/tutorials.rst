@@ -11,5 +11,6 @@ A collection of tutorials and example scripts to get you up and running.
 
    sample_scripts
    tutorial_1
+   tutorial_2
 
 

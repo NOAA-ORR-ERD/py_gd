@@ -1,4 +1,6 @@
 """
+Continuous color schemes:
+
 Colormap data borrowed from matplotlib
 
 1. This LICENSE AGREEMENT is between the Matplotlib Development Team

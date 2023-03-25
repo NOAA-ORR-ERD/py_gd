@@ -67,6 +67,9 @@ cdef extern from "gd.h":
     void gdImageArc(gdImagePtr im, int cx, int cy, int w, int h, int s, int e, int color)
     void gdImageFilledArc(gdImagePtr im, int cx, int cy, int w, int h, int s, int e, int color, int style)
 
+    void gdImageEllipse(gdImagePtr im, int mx, int my, int w, int h, int c)
+    void gdImageFilledEllipse (gdImagePtr im, int mx, int my, int w, int h, int c)
+
     #copying, etc.
     void gdImageCopy(gdImagePtr dst, gdImagePtr src, int dstX, int dstY, int srcX, int srcY, int w, int h)
 

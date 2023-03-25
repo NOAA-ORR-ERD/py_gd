@@ -121,9 +121,9 @@ colorschemes['web'] = (colorschemes["BW"] + [('silver', (191, 191, 191)),
 colorschemes['tableau'] = build_from_named_colors(_color_data.TABLEAU_COLORS)
 colorschemes['css4'] = build_from_named_colors(_color_data.CSS4_COLORS)
 # XKCD has 954 colors -- we're using the first 255
-# but I don't know if they are in significant order
+# maybe the most popular?
 XKCD = dict(islice(_color_data.XKCD_COLORS.items(), 0, 255))
-colorschemes['xkcd'] = build_from_named_colors(XKCD)
+colorschemes['xkcd'] = colorschemes['transparent'] + build_from_named_colors(XKCD)
 
 colorscheme_names = [(name, 'discrete') for name in colorschemes.keys()]
 

@@ -75,8 +75,8 @@ def check_file(name):
                  'test_image_x_lots.png': '57aa5a9a060f98083c023f70dfe35c29',
                  'test_text_align.bmp': '3151fe59ab1177fe6fde144dedae1082',
                  'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d',
-                 'test_draw_dots_multi_color_indices.png': '45d4adfa5f57cbf1e281280b1e945ff0',
-                 'test_draw_dots_multi_named_colors.png': '81dc2ef5cb1b592f461c09284df222b7',
+                 'test_draw_dots_multi_color_indices.png': '415db687d254a58eb6d4cabc4be22ea8',
+                 'test_draw_dots_multi_named_colors.png': 'ca7a67f726517e341b55366a7b08b48e',
                  'test_image_with_colorramp.png': '1ac385ddcbe4b179ba00e718384f31d7',
                  }
 
@@ -241,9 +241,9 @@ def test_info():
 def test_get_color_indices():
     img = Image(10, 10, preset_colors='xkcd')
 
-    colors = img.get_color_indices(['white', 'dust', 'tea'])
+    colors = img.get_color_indices(['white', 'lavender', 'aquamarine'])
 
-    assert np.array_equal(colors, np.array([0, 3, 9], dtype=np.uint8))
+    assert np.array_equal(colors, np.array([ 1, 22, 54], dtype=np.uint8))
 
 
 def test_add_colors():
@@ -514,6 +514,51 @@ def test_arc():
     with pytest.raises(ValueError):
         img.draw_arc(center, 380, 280, start=30, end=90, line_color='white',
                      style='fred')
+
+def test_circle():
+    img = Image(400, 400, preset_colors='web')
+    img.clear('white')
+
+
+    # just the outline
+    center = (100, 100)
+    img.draw_circle(center, diameter=100, line_color='black', line_width=3)
+
+
+    # just the fill
+    center = (100, 300)
+    img.draw_circle(center, diameter=100, fill_color='teal')
+
+    # fill and outline
+    center = (300, 100)
+    img.draw_circle(center,
+                    diameter=100,
+                    fill_color='red',
+                    line_color='red',
+                    line_width=4)
+
+
+    # # just fill
+    # img.draw_arc(center, 380, 280, start=210, end=270, fill_color='purple',
+    #              style='arc')
+    # img.draw_arc(center, 380, 280, start=270, end=330, fill_color='teal',
+    #              style='chord')
+
+    # # line and fill
+    # center = (200, 450)
+
+    # img.draw_arc(center, 380, 280, start=30, end=90, line_color='white',
+    #              fill_color='green', style='chord')
+    # # img.draw_arc(center, 380, 280, start= 90, end= 150, line_color='white',
+    # #              fill_color='blue', styles=['NoFill'])
+    # img.draw_arc(center, 380, 280, start=150, end=210, line_color='green',
+    #              fill_color='white', style='arc')
+    # # img.draw_arc(center, 380, 280, start=210, end= 270, line_color='white',
+    # #              fill_color='purple', styles=['Chord','Edged', 'NoFill'])
+    # img.draw_arc(center, 380, 280, start=270, end=330, line_color='blue',
+    #              fill_color='red', line_width=3)
+
+    img.save(outfile("test_image_circle.bmp"))
 
 
 def test_text():
