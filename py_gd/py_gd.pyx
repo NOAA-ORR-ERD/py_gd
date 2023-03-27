@@ -96,7 +96,7 @@ cdef class Image:
     cdef unsigned char * _buffer_array
 
     cdef list color_names
-    cdef list color_rgb
+    cdef dict colors_rgb
     cdef dict colors
 
     def __cinit__(self, int width, int height, preset_colors='web'):
@@ -166,6 +166,7 @@ cdef class Image:
         # set first color (background) to transparent
         # initialize the colors
         self.colors = {}
+        self.colors_rgb = {}
         self.color_names = []
 
         if preset_colors is not None:
@@ -271,6 +272,7 @@ cdef class Image:
             raise ValueError('there are no more colors available to allocate')
 
         self.colors[name] = color_index
+        self.colors_rgb[name] = color
         self.color_names.append(name)
 
         return color_index
@@ -483,6 +485,12 @@ cdef class Image:
         fclose(fp)
 
         return None
+
+    def get_colors(self):
+        """
+        :returns color_names: a list of all color names in use
+        """
+        return self.colors_rgb
 
     def get_color_names(self):
         """

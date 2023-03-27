@@ -634,6 +634,8 @@ def test_text():
 
     img.save(outfile("test_image_text.bmp"), "bmp")
 
+    assert check_file("test_image_text.bmp")
+
 
 def test_text_align():
     img = Image(200, 200)
