@@ -963,12 +963,21 @@ cdef class Image:
 
             # gdImageFilledArc(self._image,
             #    void gdImageArc(gdImagePtr im, int cx, int cy, int w, int h, int s, int e, int color)
-            gdImageArc(self._image,
+            # using gdFilledArc, because the gdEdged flag works
+            # but using gdImageArc only works for the outer circle
+            gdImageFilledArc(self._image,
                              center[0], center[1],
                              width, height,
                              start, end,
                              self.get_color_index(line_color),
+                             flag
                              )
+            # gdImageArc(self._image,
+            #                  center[0], center[1],
+            #                  width, height,
+            #                  start, end,
+            #                  self.get_color_index(line_color),
+            #                  )
 
             gdImageSetThickness(self._image, 1)
 
@@ -1015,7 +1024,11 @@ cdef class Image:
                                  self.get_color_index(fill_color),
                                  )
 
+        # FIXME: line thickness appears to be broken.
         if line_color is not None:
+            if line_width != 1:
+                print("WARNING: setting line width for Ellipse may be broken")
+
             gdImageSetThickness(self._image, line_width)
 
             gdImageEllipse(self._image,
@@ -1053,13 +1066,23 @@ cdef class Image:
         :param line_width=1: width of the outline
         :type line_width: integer
         """
-        self.draw_ellipse(center=center,
+        # Using draw_arc, because line thickenss is broken with Ellipse
+        self.draw_arc(center=center,
                           width=diameter,
                           height=diameter,
                           line_color=line_color,
                           fill_color=fill_color,
                           line_width=line_width,
+                          start=0, end=360,
+                          draw_wedge=False
                           )
+        # self.draw_ellipse(center=center,
+        #                   width=diameter,
+        #                   height=diameter,
+        #                   line_color=line_color,
+        #                   fill_color=fill_color,
+        #                   line_width=line_width,
+        #                   )
 
 
     def draw_text(self, text, point, font="medium", color='black', align='lt',
@@ -1142,14 +1165,6 @@ cdef class Image:
                       point[1] - offsets[align][1],
                       text_bytes,
                       self.get_color_index(color))
-
-        # if line_color is not None:
-        #     gdImageArc(self._image,
-        #                center[0], center[1],
-        #                width, height,
-        #                start, end,
-        #                self.get_color_index(line_color)
-        #                )
 
 
 def from_array(char[:, :] arr not None, *args, **kwargs):
