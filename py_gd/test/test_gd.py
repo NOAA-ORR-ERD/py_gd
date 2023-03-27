@@ -243,7 +243,7 @@ def test_get_color_indices():
 
     colors = img.get_color_indices(['white', 'lavender', 'aquamarine'])
 
-    assert np.array_equal(colors, np.array([ 1, 22, 54], dtype=np.uint8))
+    assert np.array_equal(colors, np.array([1, 22, 54], dtype=np.uint8))
 
 
 def test_add_colors():
@@ -515,15 +515,14 @@ def test_arc():
         img.draw_arc(center, 380, 280, start=30, end=90, line_color='white',
                      style='fred')
 
+
 def test_circle():
     img = Image(400, 400, preset_colors='web')
     img.clear('white')
 
-
     # just the outline
     center = (100, 100)
     img.draw_circle(center, diameter=100, line_color='black', line_width=3)
-
 
     # just the fill
     center = (100, 300)
@@ -536,7 +535,6 @@ def test_circle():
                     fill_color='red',
                     line_color='red',
                     line_width=4)
-
 
     # # just fill
     # img.draw_arc(center, 380, 280, start=210, end=270, fill_color='purple',
