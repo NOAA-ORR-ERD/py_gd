@@ -96,7 +96,7 @@ cdef class Image:
     cdef unsigned char * _buffer_array
 
     cdef list color_names
-    cdef list color_rgb
+    cdef dict colors_rgb
     cdef dict colors
 
     def __cinit__(self, int width, int height, preset_colors='web'):
@@ -166,6 +166,7 @@ cdef class Image:
         # set first color (background) to transparent
         # initialize the colors
         self.colors = {}
+        self.colors_rgb = {}
         self.color_names = []
 
         if preset_colors is not None:
@@ -195,13 +196,22 @@ cdef class Image:
 
     property size:
         def __get__(self):
+            """
+            The size of the image as a (width, height) tuple
+            """
             return (gdImageSX(self._image), gdImageSY(self._image))
 
     property width:
         def __get__(self):
+            """
+            The width of the image in pixels
+            """
             return gdImageSX(self._image)
 
     property height:
+        """
+        The height of the image in pixels
+        """
         def __get__(self):
             return gdImageSY(self._image)
 
@@ -271,6 +281,7 @@ cdef class Image:
             raise ValueError('there are no more colors available to allocate')
 
         self.colors[name] = color_index
+        self.colors_rgb[name] = color
         self.color_names.append(name)
 
         return color_index
@@ -484,6 +495,12 @@ cdef class Image:
 
         return None
 
+    def get_colors(self):
+        """
+        :returns color_names: a list of all color names and RGB values
+        """
+        return self.colors_rgb
+
     def get_color_names(self):
         """
         :returns color_names: a list of all color names in use
@@ -492,7 +509,11 @@ cdef class Image:
 
     def get_color_index(self, color):
         """
-        returns the color index for a named or integer color
+        Returns the color index for a named color or index
+
+        If passed and index, the index is returned.
+
+        Usually used internally for drawing.
         """
         cdef int c = 0
 
@@ -561,10 +582,9 @@ cdef class Image:
 
     def set_pixel_value(self, point, value):
         """
-        returns the value (index into palette) of the pixel at a point
+        sets the value of a pixel (index into palette).
 
-        :param point: the (x,y) coord you want the value of
-
+        :param point: the (x, y) coord of the pixel to set.
         """
         gdImageSetPixel(self._image, point[0], point[1], value)
 
@@ -963,12 +983,21 @@ cdef class Image:
 
             # gdImageFilledArc(self._image,
             #    void gdImageArc(gdImagePtr im, int cx, int cy, int w, int h, int s, int e, int color)
-            gdImageArc(self._image,
+            # using gdFilledArc, because the gdEdged flag works
+            # but using gdImageArc only works for the outer circle
+            gdImageFilledArc(self._image,
                              center[0], center[1],
                              width, height,
                              start, end,
                              self.get_color_index(line_color),
+                             flag
                              )
+            # gdImageArc(self._image,
+            #                  center[0], center[1],
+            #                  width, height,
+            #                  start, end,
+            #                  self.get_color_index(line_color),
+            #                  )
 
             gdImageSetThickness(self._image, 1)
 
@@ -1015,7 +1044,11 @@ cdef class Image:
                                  self.get_color_index(fill_color),
                                  )
 
+        # FIXME: line thickness appears to be broken.
         if line_color is not None:
+            if line_width != 1:
+                print("WARNING: setting line width for Ellipse may be broken")
+
             gdImageSetThickness(self._image, line_width)
 
             gdImageEllipse(self._image,
@@ -1053,13 +1086,23 @@ cdef class Image:
         :param line_width=1: width of the outline
         :type line_width: integer
         """
-        self.draw_ellipse(center=center,
+        # Using draw_arc, because line thickenss is broken with Ellipse
+        self.draw_arc(center=center,
                           width=diameter,
                           height=diameter,
                           line_color=line_color,
                           fill_color=fill_color,
                           line_width=line_width,
+                          start=0, end=360,
+                          draw_wedge=False
                           )
+        # self.draw_ellipse(center=center,
+        #                   width=diameter,
+        #                   height=diameter,
+        #                   line_color=line_color,
+        #                   fill_color=fill_color,
+        #                   line_width=line_width,
+        #                   )
 
 
     def draw_text(self, text, point, font="medium", color='black', align='lt',
@@ -1143,14 +1186,6 @@ cdef class Image:
                       text_bytes,
                       self.get_color_index(color))
 
-        # if line_color is not None:
-        #     gdImageArc(self._image,
-        #                center[0], center[1],
-        #                width, height,
-        #                start, end,
-        #                self.get_color_index(line_color)
-        #                )
-
 
 def from_array(char[:, :] arr not None, *args, **kwargs):
     """
@@ -1173,6 +1208,9 @@ def from_array(char[:, :] arr not None, *args, **kwargs):
 
 
 cdef class Animation:
+    """
+    Animation class -- creates an animated GIF
+    """
     cdef Image cur_frame
     cdef int _cur_delay
     cdef Image prev_frame
@@ -1185,20 +1223,6 @@ cdef class Animation:
     cdef object _file_path
 
     def __cinit__(self, file_name, int delay=50, int global_colormap=1):
-        """
-        :param file_name: The name/file path of the animation that will be
-                          saved
-        :type file_name: str or PathLike object
-
-        :param delay: the default delay between frames
-        :type delay: int
-
-        :param global_colormap=1: Whether to use a global colormap.
-                                  If 1, the same colormap is used for
-                                  all images in the animation. If 0,
-                                  a new colormap is used for each frame.
-        """
-
         self._fp = NULL
         self.base_delay = delay
         self._has_begun = 0
@@ -1207,14 +1231,13 @@ cdef class Animation:
         self._cur_delay = delay
         self._global_colormap = global_colormap
 
-
-    def __init__(self,  file_name, delay=50, global_colormap=1):
+    def __init__(self, file_name, delay=50, global_colormap=1):
         """
         :param file_name: The name/file path of the animation that will be
                           saved
         :type file_name: path_like e.g. str or pathlib.Path
 
-        :param delay: the default delay between frames
+        :param delay: the default delay between frames in 1/100 sec.
         :type delay: int
 
         :param global_colormap=1: Whether to use a global colormap.
@@ -1240,7 +1263,7 @@ cdef class Animation:
             fclose(self._fp)
             self._fp = NULL
 
-    def begin_anim(self, Image first, int loops=0):
+    def begin(self, Image first, int loops=0):
         """
         Begins the animation. This creates the file pointer and infers size and
         palette information from the initial Image
@@ -1249,7 +1272,7 @@ cdef class Animation:
                       Also determines palette and size
         :type first: Image
 
-        :param loops: Specifies the looping behavior of the animation.
+        :param loops=0: Specifies the looping behavior of the animation.
                       (0 -> loop, -1 -> no loop, n > 0 -> loop n times)
         :type loops: int
         """
@@ -1270,6 +1293,9 @@ cdef class Animation:
                             loops)
 
         self._has_begun = 1
+
+    # create an alias to the old name
+    begin_anim = begin
 
     def add_frame(self, Image image, int delay=-1):
         """
@@ -1326,9 +1352,13 @@ cdef class Animation:
 
             self._frames_written += 1
 
-    def close_anim(self):
-        if self._has_begun == 0:
+    def close(self):
+        """
+        close the current animation
 
+        finalizes animation, and closed gif file
+        """
+        if self._has_begun == 0:
             raise RuntimeError("Cannot close animation that hasn't been "
                                "opened (begun)")
 
@@ -1349,6 +1379,9 @@ cdef class Animation:
             self._fp = NULL
 
         self._has_closed = 1
+
+    # keeping the old alias
+    close_anim = close
 
     def reset(self, file_path=None):
         """
@@ -1378,13 +1411,24 @@ cdef class Animation:
 
     @property
     def frames_written(self):
+        """
+        number of animation frames currently written
+        """
         return self._frames_written
 
 
 def animation_from_images(images, file_name, delay=50):
-    a = Animation(file_name, delay)
-    a.begin_anim(images[0])
+    """
+    Create an animation (aniated GIF) from existing images.
 
-    for img in images[1:]:
-        a.add_frame(img)
-    a.close_anim()
+    :param images: iterable of Images with which to create the animation
+
+    """
+    anim = Animation(file_name, delay)
+    images = iter(images)
+
+    anim.begin_anim(next(images))
+
+    for img in images:
+        anim.add_frame(img)
+    anim.close_anim()

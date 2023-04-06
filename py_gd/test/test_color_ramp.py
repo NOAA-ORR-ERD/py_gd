@@ -33,14 +33,14 @@ def test_init_with_named_base_colors():
     cr = ColorRamp(scheme, 100, 1000, base_colorscheme='web')
 
     assert cr.start_index == len(colorschemes['web'])
-    assert cr._num_colors == 255 - len(colorschemes['web'])
+    assert cr._num_colors == 256 - len(colorschemes['web'])
 
 
 def test_init_with_int_base_colors():
     scheme = 'inferno'
     cr = ColorRamp(scheme, 100, 1000, base_colorscheme=6)
 
-    assert cr.start_index == 7
+    assert cr.start_index == 6
 
 
 def test_get_color_indices():
@@ -54,7 +54,7 @@ def test_get_color_indices():
 
     assert inds.dtype == np.uint8
     assert inds.shape == (5,)
-    assert np.all(inds - 6 == [0, 0, 89, 199, 199])
+    assert np.all(inds - 5 == [0, 0, 89, 199, 199])
 
 
 def test_get_colors():

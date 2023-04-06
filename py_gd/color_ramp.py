@@ -41,11 +41,11 @@ class ColorRamp():
         try:
             self.start_index = len(base_colorscheme)
         except TypeError:  # it should be an integer now
-            self.start_index = base_colorscheme + 1
-        else:
-            self.start_index = len(base_colorscheme)
+            self.start_index = base_colorscheme
+        # else:
+        #     self.start_index = len(base_colorscheme)
 
-        self._num_colors = 255 - self.start_index if num_colors is None else num_colors
+        self._num_colors = 256 - self.start_index if num_colors is None else num_colors
         self._delta = (self.max_value - self.min_value) / self._num_colors
 
         if isinstance(colors, str):

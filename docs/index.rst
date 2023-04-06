@@ -12,8 +12,9 @@ Contents:
   :maxdepth: 2
 
   introduction
-  installing
+  working_with_color
   tutorials
+  installing
   reference
 
 

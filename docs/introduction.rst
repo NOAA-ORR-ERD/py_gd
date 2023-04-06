@@ -36,50 +36,45 @@ The image can be saved out in various formats::
 
     img.save('my_image.png', 'png')
 
+Parameters of Drawing:
+----------------------
 
-Managing Colors
-...............
+Depedning in the object being draw, there are a number of parameters that can be set:
 
-`py_gd` works with colors in (RGB) space. But an interface is provided to work with colors by name. With 8-bit color (The only option in the current version), up to 255 colors can be used. By default, `Image` is created with the "web" colorscheme, so you have access to the standard html colors by name. You can see what colors are available in the currennt Image:
+For Lines:
+..........
 
-.. code-block:: ipython
-
-    In [6]: img.get_color_names()
-    Out[6]:
-    ['transparent',
-     'black',
-     'white',
-     'silver',
-     'gray',
-     'red',
-     'maroon',
-     'yellow',
-     'olive',
-     'lime',
-     'green',
-     'aqua',
-     'teal',
-     'blue',
-     'navy',
-     'fuchsia',
-     'purple']
-
-Note that the first color in the list is the background color.
-
-In order to use a different color, it needs to be added to the image's color pallet first.
-Colors can be added to the image by providing a name and an RGB triple (or RGBA quad for alpha::
-
-    img.add_color('grey', (100, 100, 100))
+| ``color``: string colorname
+| ``line_width``: integer pixels
 
 
+For Solid Color Objects:
+........................
 
+| ``color``: string colorname
 
+For Objects with a Line and Fill:
+.................................
 
+| ``line_color``: string colorname
+| ``fill_color``: string colorname
+| ``line_width``: integer pixels
 
+For Ojects Defined at a Single Point:
+.....................................
 
+| ``point``: (x, y) tuple
 
+For Ojects Defined at a Multiple Points:
+........................................
 
+Polygon, Polyline
 
+| ``points``: sequence of points: ``[(x1, y1), (x2, y2), (x3, y3), ...]`` (Nx2 numpy array)
 
+For Objects with a Width or Height:
+...................................
 
+| ``width``: integer pixels
+| ``height``: integer pixels
 

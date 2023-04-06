@@ -3,7 +3,7 @@
 Ultra Simple Example
 ====================
 
-:download:`ultra_simple.py <examples/ultra_simple.py>`
+Full script here:  :download:`ultra_simple.py <examples/ultra_simple.py>`
 
 For a first introduction to the py_gd, we create a very simple image with a single line on it:
 
