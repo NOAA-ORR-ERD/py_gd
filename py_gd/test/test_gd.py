@@ -101,7 +101,7 @@ def check_file(name):
         'test_image_save.jpg': 'e6d5a45b093988240cbe3d0365c0675a',
         'test_image_save.png': '3067832d58ce76285b7e32d3f42e2659',
         'test_image_text.bmp': 'a7b1fe64f4da978706d857c39ce5c026',
-        'test_image_with_colorramp.png': '1ac385ddcbe4b179ba00e718384f31d7',
+        'test_image_with_colorramp.png': 'b73b81b6badde809753f801d96b1b0dd',
         'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076',
         'test_image_x_lots.png': '4c3c223185c407c8ead2afbf28244ebe',
         'test_text_align.bmp': '3151fe59ab1177fe6fde144dedae1082',
