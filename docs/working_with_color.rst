@@ -14,7 +14,7 @@ Transparency:
 
 ``py_gd`` support RGBA colors for transparency. Many of the default colorschemes have a transparent background by default.
 
-.. note Some back-ends do not support transparency backgrounds -- BMP, GIF, JPEG. PNG is a good option if you want a transparent background.
+.. note:: Some backends do not support transparency backgrounds -- BMP, GIF, JPEG. PNG is a good option if you want a transparent background.
 
 If you draw with a semi-transparent color, the blending will be done directly when drawing.
 
@@ -65,7 +65,7 @@ By default, an ``Image`` is created with the "web" colorscheme, so you have acce
 
 Note that the first color in the list is the background color.
 
-Other colorschemes are available for initialization -- see ``py_gd.colors.colorscheme_names`` will show them all:
+Other colorschemes are available for initialization -- ``py_gd.colors.colorscheme_names`` will show them all:
 
 .. code-block:: ipython
 
@@ -93,39 +93,19 @@ Colors can be added to the image by providing a name and an RGB triple (or RGBA 
 
     img.add_color('grey', (100, 100, 100))
 
+After adding the color, it can be used by name::
+
+    img.draw_rectangle((10, 20), (60, 70), color = 'grey')
+
 
 Builtin ColorSchemes:
 ---------------------
 
-Continuous
-..........
+.. include:: color_images.rst
 
-.. image:: examples/cividis-colorbar.png
-   :width: 600
-   :align: center
 
-.. image:: examples/inferno-colorbar.png
-   :width: 600
-   :align: center
 
-.. image:: examples/magma-colorbar.png
-   :width: 600
-   :align: center
 
-.. image:: examples/plasma-colorbar.png
-   :width: 600
-   :align: center
 
-.. image:: examples/turbo-colorbar.png
-   :width: 600
-   :align: center
-
-.. image:: examples/twilight-colorbar.png
-   :width: 600
-   :align: center
-
-.. image:: examples/viridis-colorbar.png
-   :width: 600
-   :align: center
 
 

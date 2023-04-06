@@ -118,8 +118,8 @@ colorschemes['web'] = (colorschemes["BW"] + [('silver', (191, 191, 191)),
                                              ('purple', (127, 0, 127))])
 
 
-colorschemes['tableau'] = build_from_named_colors(_color_data.TABLEAU_COLORS)
-colorschemes['css4'] = build_from_named_colors(_color_data.CSS4_COLORS)
+colorschemes['tableau'] = colorschemes['transparent'] + build_from_named_colors(_color_data.TABLEAU_COLORS)
+colorschemes['css4'] = colorschemes['transparent'] + build_from_named_colors(_color_data.CSS4_COLORS)
 # XKCD has 954 colors -- we're using the first 255
 # maybe the most popular?
 XKCD = dict(islice(_color_data.XKCD_COLORS.items(), 0, 255))
