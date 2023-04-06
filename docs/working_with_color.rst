@@ -1,3 +1,5 @@
+.. _working_with_color:
+
 Working with Color
 ==================
 

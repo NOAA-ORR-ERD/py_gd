@@ -17,6 +17,9 @@ import pytest
 
 from py_gd import Image, Animation, asn2array, from_array
 
+print(py_gd.__version__)
+print(py_gd.__file__)
+
 HERE = Path(__file__).parent
 
 
