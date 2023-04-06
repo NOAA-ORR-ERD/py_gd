@@ -49,6 +49,5 @@ colors = ramp.get_color_indices(Z.flat)
 
 img.draw_dots(points, diameter=D, color=colors)
 
-#  Save the first frame as a PNG
+#  Save the image as a PNG
 img.save('colorramp.png', 'png')
-

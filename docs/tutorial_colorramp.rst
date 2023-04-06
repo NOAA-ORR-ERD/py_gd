@@ -5,95 +5,94 @@ Using a ``ColorRamp``
 
 Full script here:  :download:`colorramp.py <examples/colorramp.py>`
 
-This tutorial covers rendering a "heat map" wusing a color ramp.
+This tutorial covers rendering a "heat map" using a color ramp.
+
+In this case, we plot a "heat map" of a surface from the equation:
+
+z = sin(x) + sin(y)
 
 
-Import the library
-------------------
+Import the libraries
+--------------------
 
-Most of the functionality you need are methods on the :class:Image object, so you import that directly::
-
-  from py_gd import Image
+For this one, you need ``numpy`` itself, the :class:`~py_gd.py_gd.Image` class, and the :class:`~py_gd.color_ramp.ColorRamp` class. Then set a few parameters for the image::
 
 
-Create the Image
-----------------
+    import numpy as np
+    from py_gd import Image
+    from py_gd.color_ramp import ColorRamp
 
-In this case,the image is created as 800x800 with the "xkcd" colorscheme::
-
-    img = Image(width=600, height=600, preset_colors='xkcd')
-
-The xkcd colors are set to those named by a
-`survey by Randall Monroe <https://xkcd.com/color/rgb/>`_
-(py_gd only support 256 colors, so this is the first 256)
-
-You can check what colors are set on the image with ``Image.get_color_names()``:
-
-.. code-block:: ipython
-
-    In [5]: img.get_color_names()
-    Out[5]:
-    ['transparent',
-     'white',
-     'black',
-     'red',
-     'blue',
-     'green',
-     'purple',
-     'pink',
-     'brown',
-     'light blue',
-    ...
-
-The first color (in this case transparent) is the default background color.
-
-Reset the Backgound
--------------------
-
-If you want a different background color, or to clear the whole image, you can call clear with the color you want.
-
-img.clear('lilac')
+    N = 100  # number or grid points
+    D = 9 # diameter of dots
+    w, h = 600, 600  # Size of image
 
 
-Draw a Line
------------
+Compute the Function
+--------------------
 
-The ``Image`` class has a number of drawing methods.
+Some ``numpy`` magic is used here -- see the numpy docs for details, but in short, a square grid of values from 0 to 2 pi is set up, and the function:
 
-* To draw a line, you need to specify the start and end coordinates as (x, y) pairs. (0, 0) is at the top left, with x going down, and y going to the right.
+z = sin(x) + sin(y)
 
-* You can specify the color by name: it must be one of the named colors set on the image.
-
-* Other parameters can be set as well. In the case of a line, the width can be set in pixels.
-
-    img.draw_line((0, 0), (600, 600), color='red', line_width=10)
+Is computed, which results in a square array of values between -2.0 and 2.0::
 
 
-This will draw a 10 pixel wide red line from the top left corner to the bottom right corner.
+    # Compute the function:
 
-Draw a Rectangle
-----------------
+    span = np.linspace(0, 2 * np.pi, N)
 
-* To draw a rectangle, you need to specify the upper left and bottom right corners.
+    X, Y = np.meshgrid(span, span)
 
-* You can specify the color by name: it must be one of the named colors set on the image.
-
-* Other parameters can be set as well. In the case of a line, the width can be set in pixels.
-
-    img.draw_line((0, 0), (600, 600), color='red', line_width=10)
+    Z = np.sin(X) + np.cos(Y)
 
 
-This will draw a 10 pixel wide red line from the top left corner to the bottom right corner.
+
+Create the Image and Color Ramp:
+--------------------------------
+
+The image is created with the Black and White preset colorscheme. That will provide transparent, black, and white, for use for drawing text or something else.::
+
+    img = Image(width=w, height=h, preset_colors='BW')
+
+The colorramp is created with the "magma" colorscheme, included with ``py_gd``. The minimum and maximum expected values are set to what the function is expected to produce.
+
+The base_colorsheme is set to the number of colors used in the image. Note: you could pass in 'BW' in this case, but this approach is more universal, in case any additional colors have been added to the image.::
+
+    # create a ColorRamp:
+    ramp = ColorRamp(colors='magma',  # use the magma colorscheme from MPL
+                     min_value=-2.0,
+                     max_value=2.0,
+                     base_colorscheme=len(img.get_colors()),  # make sure we accommodate what's there
+                     )
+
+Once the colors have been set on the ``ColorRamp``, they need to be added to the ``Image``::
 
 
-Save the Image
+    # and the ramp colors to the image:
+    img.add_colors(ramp.colorlist)
+
+Draw the Image
 --------------
 
-The image can be saved in a number of formats. BMP is the default. Other formats will be available dependingon how libgd was compiled.::
+The image will be drawn as overlapping dots. First you need to find the center points of the dots, corresponding to points where the function was computed. (more numpy magic here)::
 
-    img.save("moderate_complex.png", 'png')
 
-.. image:: examples/moderate_complex.png
-   :width: 300
+    x = (X / np.pi / 2 * h).flat
+    y = (Y / np.pi / 2 * w).flat
+
+    points = np.c_[x, y]
+
+The ``ColorRamp`` is used to get the color indices needed to draw the dots, and then they can be drawn::
+
+    colors = ramp.get_color_indices(Z.flat)
+
+    img.draw_dots(points, diameter=D, color=colors)
+
+And the image is saved in the usual way:
+
+    img.save('colorramp.png', 'png')
+
+
+.. image:: examples/colorramp.png
    :align: center
 
