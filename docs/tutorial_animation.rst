@@ -26,7 +26,7 @@ After creating the Image, it's cleared to set a white background (the default is
     N = 50 # number of dots
     w, h = 400, 400  # Size of image
 
-    img = Image(width=400, height=400)
+    img = Image(width=w, height=h)
     img.clear('white')
 
 Set Colors

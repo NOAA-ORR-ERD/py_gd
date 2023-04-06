@@ -12,7 +12,7 @@ from py_gd import Image, Animation
 N = 50  # number of dots
 w, h = 400, 400  # Size of image
 
-img = Image(width=400, height=400)
+img = Image(width=w, height=h)
 img.clear('white')
 
 # random colors: excluding first three: transparent, white, black
