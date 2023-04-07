@@ -683,16 +683,20 @@ def test_text_background():
 def test_draw_dot():
     img = Image(100, 100,)
 
+    img.clear('white')
+
     img.draw_dot((10, 10))
     img.draw_dot((20, 20), diameter=2, color='black')
     img.draw_dot((30, 30), diameter=3, color='red')
-    img.draw_dot((40, 0), diameter=4, color='blue')
+    img.draw_dot((40, 40), diameter=4, color='blue')
     img.draw_dot((50, 50), diameter=6, color='aqua')
     img.draw_dot((60, 60), diameter=8, color='lime')
     img.draw_dot((70, 70), diameter=10, color='fuchsia')
     img.draw_dot((80, 80), diameter=15, color='purple')
 
+
     img.save(outfile("test_image_dot.png"), "png")
+    check_file("test_image_dot.png")
 
 
 def test_draw_dots():

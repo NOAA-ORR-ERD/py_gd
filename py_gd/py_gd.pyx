@@ -86,6 +86,35 @@ cdef FILE* open_file(file_path) except *:
     return fp
 
 
+cdef draw_single_dot(gdImagePtr image,
+                     int x,
+                     int y,
+                     int diameter,
+                     cnp.uint8_t c):
+
+    if diameter == 1:
+        gdImageSetPixel(image, x, y, c)
+    elif diameter == 2:  # draw four pixels
+        gdImageSetPixel(image, x,     y, c)
+        gdImageSetPixel(image, x + 1, y, c)
+        gdImageSetPixel(image, x,     y + 1, c)
+        gdImageSetPixel(image, x + 1, y + 1, c)
+    elif diameter == 3:  # draw five pixels (should be 7)
+        gdImageSetPixel(image, x, y - 1, c)
+        gdImageSetPixel(image, x, y,     c)
+        gdImageSetPixel(image, x, y + 1, c)
+        gdImageSetPixel(image, x - 1, y, c)
+        gdImageSetPixel(image, x + 1, y, c)
+    elif diameter > 3:
+        gdImageFilledArc(image,
+                         x, y,
+                         diameter, diameter,
+                         0, 360,
+                         c, gdArc)
+    else:
+        raise NotImplementedError("only diameters >= 1 are supported.")
+
+
 cdef class Image:
     """
     class wrapper  around a gdImage object
@@ -600,6 +629,7 @@ cdef class Image:
                         point[0], point[1],
                         self.get_color_index(color))
 
+
     def draw_dot(self, point, color='black', int diameter=1):
         """
         draw a dot (filled circle) at the point:(x,y)
@@ -610,28 +640,20 @@ cdef class Image:
         :param color='black': color to draw the dot
         :type color: string colorname of color index
 
-        :param diameter=1: diamter of the dot
+        :param diameter=1: diameter of the dot
         :type diameter: integer
         """
+        if diameter < 1:
+            raise NotImplementedError("only diameters >= 1 are supported.")
+
         cdef cnp.uint8_t c
+
+        cdef int x = point[0]
+        cdef int y = point[1]
 
         c = self.get_color_index(color)
 
-        if diameter == 1:
-            gdImageSetPixel(self._image, point[0], point[1], c)
-        elif diameter == 2:  # draw four pixels
-            gdImageSetPixel(self._image, point[0],     point[1], c)
-            gdImageSetPixel(self._image, point[0] + 1, point[1], c)
-            gdImageSetPixel(self._image, point[0],     point[1] + 1, c)
-            gdImageSetPixel(self._image, point[0] + 1, point[1] + 1, c)
-        elif diameter > 2:
-            gdImageFilledArc(self._image,
-                             point[0], point[1],
-                             diameter, diameter,
-                             0, 360,
-                             c, gdArc)
-        else:
-            raise NotImplementedError("only diameters >= 1 are supported.")
+        draw_single_dot(self._image, x, y, diameter, c)
 
     def draw_dots(self, points, color='black', int diameter=1):
         """
@@ -652,6 +674,9 @@ cdef class Image:
         cdef cnp.ndarray[int, ndim=2, mode='c'] points_arr
         cdef cnp.ndarray[cnp.uint8_t, ndim=1, mode='c'] colors
 
+        if diameter < 1:
+            raise NotImplementedError("only diameters >= 1 are supported.")
+
         points_arr = asn2array(points, dtype=np.intc)
         n = points_arr.shape[0]
 
@@ -660,40 +685,17 @@ cdef class Image:
             colors[:] = self.get_color_index(color)
         else:  # a sequence of colors:
             if len(color) != len(points):
-                raise ValueError("number of colors must match number of points, or be only one color")
+                raise ValueError("number of colors must match number of points, "
+                                 "or be only one color")
             try:
                 colors = np.asarray(color, dtype=np.uint8)
-            except ValueError: # it's not integers
+            except ValueError:  # it's not integers
                 colors = self.get_color_indices(color)
 
-        if diameter == 1:
-            for i in range(n):
-                gdImageSetPixel(self._image,
-                                points_arr[i, 0], points_arr[i, 1],
-                                colors[i])
-        elif diameter == 2:  # draw four pixels
-            for i in range(n):
-                gdImageSetPixel(self._image,
-                                points_arr[i, 0], points_arr[i, 1],
-                                colors[i])
-                gdImageSetPixel(self._image,
-                                points_arr[i, 0]+1, points_arr[i, 1],
-                                colors[i])
-                gdImageSetPixel(self._image,
-                                points_arr[i, 0], points_arr[i, 1]+1,
-                                colors[i])
-                gdImageSetPixel(self._image,
-                                points_arr[i, 0]+1, points_arr[i, 1]+1,
-                                colors[i])
-        elif diameter > 2:
-            for i in range(n):
-                gdImageFilledArc(self._image,
-                                 points_arr[i, 0], points_arr[i, 1],
-                                 diameter, diameter,
-                                 0, 360,
-                                 colors[i], gdArc)
-        else:
-            raise NotImplementedError("only diameters >= 1 are supported.")
+        for i in range(n):
+            c = colors[i]
+            draw_single_dot(self._image, points_arr[i, 0], points_arr[i, 1], diameter, c)
+
 
     def draw_xes(self, points, color='black',
                  int diameter=2, int line_width=1):
