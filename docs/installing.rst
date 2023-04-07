@@ -1,5 +1,5 @@
 Installing
-=====================
+==========
 
 py_gd is written in Cython (http://www.cython.org) and depends on the gd library (http://libgd.bitbucket.org/)
 
@@ -81,7 +81,7 @@ Note: If you determine that you lack jpeg support these libs are known to be com
 * libjpeg-turbo
 
 Building ``py_gd``
-................
+..................
 
  * Clone the [``py_gd`` repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
  * Create a virtualenv or conda environemnt to scope your python installations to this project (<i>optional</i>)
