@@ -695,7 +695,6 @@ def test_draw_dot():
     img.draw_dot((70, 70), diameter=10, color='fuchsia')
     img.draw_dot((80, 80), diameter=15, color='purple')
 
-
     img.save(outfile("test_image_dot.png"), "png")
     assert check_file("test_image_dot.png")
 
