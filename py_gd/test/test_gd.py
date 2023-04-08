@@ -80,7 +80,7 @@ def check_file(name):
         'test_image_clear_after2.png': '30bc477928a84571e60925fd61013a94',
         'test_image_clear_before.png': 'd34a1e3576b2732321f32c4ee1117730',
         'test_image_clear_before2.png': 'd34a1e3576b2732321f32c4ee1117730',
-        'test_image_dot.png': 'ac9816fa29137487198c550be4e8db15',
+        'test_image_dot.png': '275c79433ded774c5cfebaf45fc8c9fb',
         'test_image_dots_large.png': '0a49a24272e0e3bfba82fcdc21d3cb73',
         'test_image_dots_lots.png': '85b073f3d7d1d2d0797f8ac3b107a718',
         'test_image_ellipse.bmp': '543ec0befeb67d131f4df23eeb21e590',
@@ -105,7 +105,8 @@ def check_file(name):
         'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076',
         'test_image_x_lots.png': '4c3c223185c407c8ead2afbf28244ebe',
         'test_text_align.bmp': '3151fe59ab1177fe6fde144dedae1082',
-        'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d'
+        'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d',
+        'test_spline_1.png': '40c722b313fd0722b5a99585af409329',
         }
     cs = hashlib.md5(open(outfile(name), 'rb').read()).hexdigest()
     if checksums[name] == cs:
@@ -696,7 +697,7 @@ def test_draw_dot():
 
 
     img.save(outfile("test_image_dot.png"), "png")
-    check_file("test_image_dot.png")
+    assert check_file("test_image_dot.png")
 
 
 def test_draw_dots():
