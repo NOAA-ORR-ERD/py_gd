@@ -54,6 +54,7 @@ def test_find_control_points():
     img.save(outfile(filename), 'png')
     # assert check_file(filename)
 
+
 def test_poly_from_ctrl_points():
     points = ((100, 100),
               (200, 500),
@@ -70,7 +71,6 @@ def test_poly_from_ctrl_points():
 
     poly_points = poly_from_ctrl_points(points, ctrl_points)
 
-
     print(ctrl_points)
 
     img = Image(600, 600)
@@ -83,6 +83,4 @@ def test_poly_from_ctrl_points():
 
     filename = "test_smooth_poly.png"
     img.save(outfile(filename), 'png')
-    # assert check_file(filename)
-
-    assert False
+    assert check_file(filename)

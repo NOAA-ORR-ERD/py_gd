@@ -104,6 +104,7 @@ def check_file(name):
         'test_image_with_colorramp.png': 'b73b81b6badde809753f801d96b1b0dd',
         'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076',
         'test_image_x_lots.png': '4c3c223185c407c8ead2afbf28244ebe',
+        'test_smooth_poly.png': 'df9a9f7b10c21d98466f4e5ad4b1df88',
         'test_text_align.bmp': '3151fe59ab1177fe6fde144dedae1082',
         'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d',
         'test_spline_1.png': '40c722b313fd0722b5a99585af409329',

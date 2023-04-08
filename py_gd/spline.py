@@ -225,5 +225,4 @@ def poly_from_ctrl_points(points, ctrl_points):
                                     ctrl_points[-4],
                                     ctrl_points[-3]))
 
-
     return poly_points
