@@ -9,7 +9,7 @@ from py_gd.spline import (bezier_curve,
                           poly_from_ctrl_points,
                           distance_pt_to_line)
 
-#from .test_gd import outfile, check_file
+# from .test_gd import outfile, check_file
 from py_gd.test.test_gd import outfile, check_file
 import math
 
@@ -38,6 +38,7 @@ def test_bezier_curve():
 
     # assert False
 
+
 def test_bezier_curve2():
     # ctrl_pts = [(100, 200), (10, 500), (500, 50), (500, 300)]
     pt1 = (100, 200)
@@ -45,12 +46,17 @@ def test_bezier_curve2():
     cp1 = (10, 500)
     cp2 = (500, 50)
 
-    spline_pts = bezier_curve2(pt1, pt2, cp1, cp2, min_gap=2, max_gap=8)
+    spline_pts = bezier_curve2(pt1, pt2, cp1, cp2, max_gap=0.1)
 
     print(f"Total number of points: {len(spline_pts)}")
+    # print("segment lengths:")
+    # print(np.hypot(np.diff(spline_pts[:, 0]), np.diff(spline_pts[:, 1])))
+    # print(spline_pts)
 
     img = Image(600, 600)
     img.clear('white')
+
+    # print(spline_pts)
 
     img.draw_polyline(spline_pts, 'black', line_width=2)
     # img.draw_dots(spline_pts, diameter=7, color='red')
@@ -58,9 +64,7 @@ def test_bezier_curve2():
 
     filename = "test_spline_2.png"
     img.save(outfile(filename), 'png')
-    #assert check_file(filename)
-
-    assert False
+    assert check_file(filename)
 
 
 def test_find_control_points():
@@ -115,7 +119,7 @@ def test_poly_from_ctrl_points():
 
     filename = "test_smooth_poly.png"
     img.save(outfile(filename), 'png')
-    #assert check_file(filename)
+    # assert check_file(filename)
 
     # assert False
 
@@ -164,6 +168,7 @@ def test_distance_pt_to_line_neg():
 
     assert d1 == d2
 
+
 def test_distance_pt_to_line_zero():
     """
     point on line should be close to zero
@@ -176,6 +181,7 @@ def test_distance_pt_to_line_zero():
     print(d1)
 
     assert d1 <= 1e-14
+
 
 def test_distance_pt_to_line_zero_length_line():
     """
@@ -197,8 +203,29 @@ def test_distance_pt_to_line_zero_length_line():
     assert math.isnan(d2)
 
 
+def test_distance_pt_to_line_beyond():
+    """
+    does it work beyond the points?
+    """
+    line_start = (0.0, 0.0)
+    line_end = (4.0, 4.0)
+
+    point = (6.0, 5.0)
+    d1 = distance_pt_to_line(point, line_start, line_end)
+    print(d1)
+
+    assert math.isclose(d1, 0.7071067811865476)
+
+    point = (5.0, 6.0)
+    d2 = distance_pt_to_line(point, line_start, line_end)
+
+    assert d1 == d2
+
+    # reverse the order of the line:
+    d3 = distance_pt_to_line(point, line_end, line_start)
+
+    assert d3 == d1
 
 
-if __name__ == "__main__":
-    test_bezier_curve2()
-
+# if __name__ == "__main__":
+#     test_bezier_curve2()

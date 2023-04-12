@@ -108,6 +108,7 @@ def check_file(name):
         'test_text_align.bmp': '3151fe59ab1177fe6fde144dedae1082',
         'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d',
         'test_spline_1.png': '40c722b313fd0722b5a99585af409329',
+        'test_spline_2.png': '16ed4f5f857d57288d23b632e1839fa1',
         }
     cs = hashlib.md5(open(outfile(name), 'rb').read()).hexdigest()
     if checksums[name] == cs:
