@@ -106,7 +106,17 @@ ext_modules = [Extension("py_gd.py_gd",
                          libraries=libraries,
                          extra_compile_args=compile_args,
                          extra_link_args=link_args,
-                         )]
+                         ),
+                Extension("py_gd._spline",
+                         ["py_gd/_spline.pyx"],
+                         include_dirs=include_dirs,
+                         library_dirs=library_dirs,
+                         libraries=libraries,
+                         extra_compile_args=compile_args,
+                         extra_link_args=link_args,
+                         )
+
+                ]
 
 ext_modules = cythonize(
                   ext_modules,
