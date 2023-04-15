@@ -17,58 +17,58 @@ import numpy as np
 from numpy import power as pow
 from math import ceil, sqrt, nan
 
-from ._spline import bez_point, bezier_curve2
+from ._spline import bez_point, bezier_curve, distance_pt_to_line
 
 
-def bezier_curve(pt1, pt2, cp1, cp2, max_gap=10):
-    """
-    /* Function that take input as Control Point x_coordinates and
-Control Point y_coordinates and draw bezier curve */
-void bezierCurve(int x[] , int y[])
+# def bezier_curve(pt1, pt2, cp1, cp2, max_gap=10):
+#     """
+#     /* Function that take input as Control Point x_coordinates and
+# Control Point y_coordinates and draw bezier curve */
+# void bezierCurve(int x[] , int y[])
 
-    :param control_points: 4x2 numpy array of integer points
-    """
-    # points = np.asarray(control_points, dtype=np.intc)
+#     :param control_points: 4x2 numpy array of integer points
+#     """
+#     # points = np.asarray(control_points, dtype=np.intc)
 
-    xu = 0.0
-    yu = 0.0
-    u = 0.0
-    # i = 0
+#     xu = 0.0
+#     yu = 0.0
+#     u = 0.0
+#     # i = 0
 
-    x = [pt1[0], cp1[0], cp2[0], pt2[0]]
-    y = [pt1[1], cp1[1], cp2[1], pt2[1]]
+#     x = [pt1[0], cp1[0], cp2[0], pt2[0]]
+#     y = [pt1[1], cp1[1], cp2[1], pt2[1]]
 
-    # First guess at number of interior points
-    N = int(np.hypot((x[1] - x[0]), (y[0] - y[1])) // (max_gap / 2))
-    while True:  # loop until there are enough interior points
-        # print("computing with N=", N)
+#     # First guess at number of interior points
+#     N = int(np.hypot((x[1] - x[0]), (y[0] - y[1])) // (max_gap / 2))
+#     while True:  # loop until there are enough interior points
+#         # print("computing with N=", N)
 
-        u = np.linspace(0, 1, N)  # original used 10,000 - dynamic??
+#         u = np.linspace(0, 1, N)  # original used 10,000 - dynamic??
 
-        xu = (pow(1 - u, 3)
-              * x[0] + 3 * u
-              * pow(1 - u, 2) * x[1] + 3
-              * pow(u, 2) * (1 - u) * x[2]
-              + pow(u, 3) * x[3])
+#         xu = (pow(1 - u, 3)
+#               * x[0] + 3 * u
+#               * pow(1 - u, 2) * x[1] + 3
+#               * pow(u, 2) * (1 - u) * x[2]
+#               + pow(u, 3) * x[3])
 
-        yu = (pow(1 - u, 3)
-              * y[0] + 3 * u
-              * pow(1 - u, 2) * y[1] + 3
-              * pow(u, 2) * (1 - u) * y[2]
-              + pow(u, 3) * y[3])
+#         yu = (pow(1 - u, 3)
+#               * y[0] + 3 * u
+#               * pow(1 - u, 2) * y[1] + 3
+#               * pow(u, 2) * (1 - u) * y[2]
+#               + pow(u, 3) * y[3])
 
-        dist = np.hypot(np.diff(xu), np.diff(yu))
-        # print()
-        # print(f"{dist.max()=}")
-        # print(f"{dist.min()=}")
-        max_dist = dist.max()
-        if max_dist <= max_gap:
-            break
-        # print("Too big a gap -- recomputing")
-        N = ceil(N * max_dist / max_gap * 1.1)  # bump up a bit to make sure.
-    points = np.c_[np.round(xu), np.round(yu)].astype(np.intc)
+#         dist = np.hypot(np.diff(xu), np.diff(yu))
+#         # print()
+#         # print(f"{dist.max()=}")
+#         # print(f"{dist.min()=}")
+#         max_dist = dist.max()
+#         if max_dist <= max_gap:
+#             break
+#         # print("Too big a gap -- recomputing")
+#         N = ceil(N * max_dist / max_gap * 1.1)  # bump up a bit to make sure.
+#     points = np.c_[np.round(xu), np.round(yu)].astype(np.intc)
 
-    return points
+#     return points
 
 
 # def bez_point(t, x0, y0, x1, y1, x2, y2, x3, y3):
@@ -90,16 +90,19 @@ void bezierCurve(int x[] , int y[])
 #     return xu, yu
 
 
-def dist_sq(pt1, pt2):
-    """
-    return the square of the distance between two points
-    """
-    pow((pt2[0] - pt1[0]), 2) + pow((pt2[1] - pt1[1]), 2)
+# def dist_sq(pt1, pt2):
+#     """
+#     return the square of the distance between two points
+#     """
+#     pow((pt2[0] - pt1[0]), 2) + pow((pt2[1] - pt1[1]), 2)
 
 # def bezier_curve_recursive(pt1, pt2, cp1, cp2, max_gap=2):
 #     """
 #     How to do this? I have no idea what the control points are
 #     for a sub-section of the curve
+
+      # or how to keep the points in order -- if they are genenerated
+      # out of order, they would need to be sorted.
 #     """
 #     # if the two points are too close
 #     if dist_sq(pt1, pt2) < 4:
@@ -400,65 +403,65 @@ def poly_from_ctrl_points(points, ctrl_points):
     return poly_points
 
 
-def distance_pt_to_line(pt, lineStart, lineEnd):
-    """
-    find the distance between a point and a line
+# def distance_pt_to_line(pt, lineStart, lineEnd):
+#     """
+#     find the distance between a point and a line
 
-    This really should be Cythonized
-    """
-    # from: https://gist.github.com/TimSC/0813573d77734bcb6f2cd2cf6cc7aa51
-    # double PerpendicularDistance(const Point &pt, const Point &lineStart, const Point &lineEnd)
-    # {
-    #     double dx = lineEnd.first - lineStart.first;
-    #     double dy = lineEnd.second - lineStart.second;
+#     This really should be Cythonized
+#     """
+#     # from: https://gist.github.com/TimSC/0813573d77734bcb6f2cd2cf6cc7aa51
+#     # double PerpendicularDistance(const Point &pt, const Point &lineStart, const Point &lineEnd)
+#     # {
+#     #     double dx = lineEnd.first - lineStart.first;
+#     #     double dy = lineEnd.second - lineStart.second;
 
-    #     //Normalise
-    #     double mag = pow(pow(dx,2.0)+pow(dy,2.0),0.5);
-    #     if(mag > 0.0)
-    #     {
-    #         dx /= mag; dy /= mag;
-    #     }
+#     #     //Normalise
+#     #     double mag = pow(pow(dx,2.0)+pow(dy,2.0),0.5);
+#     #     if(mag > 0.0)
+#     #     {
+#     #         dx /= mag; dy /= mag;
+#     #     }
 
-    #     double pvx = pt.first - lineStart.first;
-    #     double pvy = pt.second - lineStart.second;
+#     #     double pvx = pt.first - lineStart.first;
+#     #     double pvy = pt.second - lineStart.second;
 
-    #     //Get dot product (project pv onto normalized direction)
-    #     double pvdot = dx * pvx + dy * pvy;
+#     #     //Get dot product (project pv onto normalized direction)
+#     #     double pvdot = dx * pvx + dy * pvy;
 
-    #     //Scale line direction vector
-    #     double dsx = pvdot * dx;
-    #     double dsy = pvdot * dy;
+#     #     //Scale line direction vector
+#     #     double dsx = pvdot * dx;
+#     #     double dsy = pvdot * dy;
 
-    #     //Subtract this from pv
-    #     double ax = pvx - dsx;
-    #     double ay = pvy - dsy;
+#     #     //Subtract this from pv
+#     #     double ax = pvx - dsx;
+#     #     double ay = pvy - dsy;
 
-    #     return pow(pow(ax,2.0)+pow(ay,2.0),0.5);
-    # }
+#     #     return pow(pow(ax,2.0)+pow(ay,2.0),0.5);
+#     # }
 
-    dx = lineEnd[0] - lineStart[0]
-    dy = lineEnd[1] - lineStart[1]
+#     dx = lineEnd[0] - lineStart[0]
+#     dy = lineEnd[1] - lineStart[1]
 
-    # Normalise  # why do this?
-    mag = pow(pow(dx, 2.0) + pow(dy, 2.0), 0.5)
-    if mag == 0.0:
-        return nan
-    else:
-        dx /= mag
-        dy /= mag
+#     # Normalise  # why do this?
+#     mag = pow(pow(dx, 2.0) + pow(dy, 2.0), 0.5)
+#     if mag == 0.0:
+#         return nan
+#     else:
+#         dx /= mag
+#         dy /= mag
 
-    pvx = pt[0] - lineStart[0]
-    pvy = pt[1] - lineStart[1]
+#     pvx = pt[0] - lineStart[0]
+#     pvy = pt[1] - lineStart[1]
 
-    # Get dot product (project pv onto normalized direction)
-    pvdot = dx * pvx + dy * pvy
+#     # Get dot product (project pv onto normalized direction)
+#     pvdot = dx * pvx + dy * pvy
 
-    # Scale line direction vector
-    dsx = pvdot * dx
-    dsy = pvdot * dy
+#     # Scale line direction vector
+#     dsx = pvdot * dx
+#     dsy = pvdot * dy
 
-    # Subtract this from pv
-    ax = pvx - dsx
-    ay = pvy - dsy
+#     # Subtract this from pv
+#     ax = pvx - dsx
+#     ay = pvy - dsy
 
-    return pow(pow(ax, 2.0) + pow(ay, 2.0), 0.5)
+#     return pow(pow(ax, 2.0) + pow(ay, 2.0), 0.5)

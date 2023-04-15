@@ -176,7 +176,7 @@ cpdef double distance_pt_to_line(tuple pt, tuple lineStart, tuple lineEnd):
 
     return pow(pow(ax, 2.0) + pow(ay, 2.0), 0.5)
 
-def bezier_curve2(tuple pt1, tuple pt2, tuple cp1, tuple cp2, double max_gap=0.5):
+def bezier_curve(pt1, pt2, cp1, cp2, double max_gap=0.5):
     """
     This version automatically adjusts the spacing of the points as it goes.
 

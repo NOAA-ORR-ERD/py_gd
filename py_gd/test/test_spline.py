@@ -4,7 +4,6 @@ test code for splines
 
 from py_gd import Image
 from py_gd.spline import (bezier_curve,
-                          bezier_curve2,
                           find_control_points,
                           poly_from_ctrl_points,
                           distance_pt_to_line)
@@ -36,35 +35,55 @@ def test_bezier_curve():
     img.save(outfile(filename), 'png')
     assert check_file(filename)
 
-    # assert False
-
-
-def test_bezier_curve2():
+def test_bezier_curve_flat():
     # ctrl_pts = [(100, 200), (10, 500), (500, 50), (500, 300)]
-    pt1 = (100, 200)
-    pt2 = (500, 300)
-    cp1 = (10, 500)
-    cp2 = (500, 50)
+    pt1 = (100, 100)
+    pt2 = (500, 500)
+    cp1 = (200, 200)
+    cp2 = (300, 300)
 
-    spline_pts = bezier_curve2(pt1, pt2, cp1, cp2, max_gap=0.1)
+    spline_pts = bezier_curve(pt1, pt2, cp1, cp2)
 
-    print(f"Total number of points: {len(spline_pts)}")
-    # print("segment lengths:")
-    # print(np.hypot(np.diff(spline_pts[:, 0]), np.diff(spline_pts[:, 1])))
-    # print(spline_pts)
+    print(spline_pts)
 
     img = Image(600, 600)
     img.clear('white')
-
-    # print(spline_pts)
 
     img.draw_polyline(spline_pts, 'black', line_width=2)
     # img.draw_dots(spline_pts, diameter=7, color='red')
     img.draw_xes([pt1, pt2, cp1, cp2], diameter=7, color='black', line_width=3)
 
-    filename = "test_spline_2.png"
+    filename = "test_spline_flat.png"
     img.save(outfile(filename), 'png')
     assert check_file(filename)
+
+
+# def test_bezier_curve2():
+#     # ctrl_pts = [(100, 200), (10, 500), (500, 50), (500, 300)]
+#     pt1 = (100, 200)
+#     pt2 = (500, 300)
+#     cp1 = (10, 500)
+#     cp2 = (500, 50)
+
+#     spline_pts = bezier_curve2(pt1, pt2, cp1, cp2, max_gap=0.1)
+
+#     print(f"Total number of points: {len(spline_pts)}")
+#     # print("segment lengths:")
+#     # print(np.hypot(np.diff(spline_pts[:, 0]), np.diff(spline_pts[:, 1])))
+#     # print(spline_pts)
+
+#     img = Image(600, 600)
+#     img.clear('white')
+
+#     # print(spline_pts)
+
+#     img.draw_polyline(spline_pts, 'black', line_width=2)
+#     # img.draw_dots(spline_pts, diameter=7, color='red')
+#     img.draw_xes([pt1, pt2, cp1, cp2], diameter=7, color='black', line_width=3)
+
+#     filename = "test_spline_2.png"
+#     img.save(outfile(filename), 'png')
+#     assert check_file(filename)
 
 
 def test_find_control_points():
