@@ -52,9 +52,14 @@ In [3]: %timeit spline_pts = bezier_curve2(pt1, pt2, cp1, cp2)
 
 nice!
 
+distance_pt_to_line typedefed
 
+In [3]: %timeit spline_pts = bezier_curve2(pt1, pt2, cp1, cp2)
+116 µs ± 2.31 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
-
+typedefed bezier_curve2
+In [4]: %timeit spline_pts = bezier_curve2(pt1, pt2, cp1, cp2)
+75 µs ± 2.54 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
 
 """
@@ -108,7 +113,7 @@ cpdef bez_point(double t,
 
     return xu, yu
 
-def distance_pt_to_line(pt, lineStart, lineEnd):
+cpdef double distance_pt_to_line(tuple pt, tuple lineStart, tuple lineEnd):
     """
     find the distance between a point and a line
 
@@ -143,9 +148,9 @@ def distance_pt_to_line(pt, lineStart, lineEnd):
 
     #     return pow(pow(ax,2.0)+pow(ay,2.0),0.5);
     # }
-
-    dx = lineEnd[0] - lineStart[0]
-    dy = lineEnd[1] - lineStart[1]
+    cdef double dx = lineEnd[0] - lineStart[0]
+    cdef double dy = lineEnd[1] - lineStart[1]
+    cdef double mag
 
     # Normalise  # why do this?
     mag = pow(pow(dx, 2.0) + pow(dy, 2.0), 0.5)
@@ -155,25 +160,23 @@ def distance_pt_to_line(pt, lineStart, lineEnd):
         dx /= mag
         dy /= mag
 
-    pvx = pt[0] - lineStart[0]
-    pvy = pt[1] - lineStart[1]
+    cdef double pvx = pt[0] - lineStart[0]
+    cdef double pvy = pt[1] - lineStart[1]
 
     # Get dot product (project pv onto normalized direction)
-    pvdot = dx * pvx + dy * pvy
+    cdef double pvdot = dx * pvx + dy * pvy
 
     # Scale line direction vector
-    dsx = pvdot * dx
-    dsy = pvdot * dy
+    cdef double dsx = pvdot * dx
+    cdef double dsy = pvdot * dy
 
     # Subtract this from pv
-    ax = pvx - dsx
-    ay = pvy - dsy
+    cdef double ax = pvx - dsx
+    cdef double ay = pvy - dsy
 
     return pow(pow(ax, 2.0) + pow(ay, 2.0), 0.5)
 
-def bezier_curve2(pt1, pt2, cp1, cp2, max_gap=0.5):
-    # NOTE: this version is much slower than above -- it can't be vectorized
-    #       but it produces many fewer points. If Cythonized, it could be much faster
+def bezier_curve2(tuple pt1, tuple pt2, tuple cp1, tuple cp2, double max_gap=0.5):
     """
     This version automatically adjusts the spacing of the points as it goes.
 
@@ -194,32 +197,32 @@ def bezier_curve2(pt1, pt2, cp1, cp2, max_gap=0.5):
                   piecewise-linear interpolation of the points computed.
                   smaller gap, is smoother, larger gap is fewer points.
     """
-    min_gap = max_gap / 2
+    cdef double min_gap = max_gap / 2.0
 
-    x0 = pt1[0]
-    x1 = cp1[0]
-    x2 = cp2[0]
-    x3 = pt2[0]
-    y0 = pt1[1]
-    y1 = cp1[1]
-    y2 = cp2[1]
-    y3 = pt2[1]
+    cdef double x0 = pt1[0]
+    cdef double x1 = cp1[0]
+    cdef double x2 = cp2[0]
+    cdef double x3 = pt2[0]
+    cdef double y0 = pt1[1]
+    cdef double y1 = cp1[1]
+    cdef double y2 = cp2[1]
+    cdef double y3 = pt2[1]
 
     # First guess at delta_t
 #    N = np.hypot((x1 - x0), (y0 - y1)) / 5
-    dt = 5 / np.hypot((x1 - x0), (y0 - y1))
+    cdef double dt = 5 / np.hypot((x1 - x0), (y0 - y1))
     # print("computing with N=", N)
-    XU = [x0]
-    YU = [y0]
+    cdef list XU = [x0]
+    cdef list YU = [y0]
 #    xu, yu = bez_point(dt, x0, y0, x1, y1, x2, y2, x3, y3)
     XU = [x0]
     YU = [y0]
     # T = np.linspace(0, 1, N)
     # print(T)
     # dt = 1 / (N - 1)
-    t = 0
-    use_prev_point = False
-    xm = ym = None  # just to satisfy flake8)
+    cdef double t = 0.0
+    cdef char use_prev_point = 0
+    cdef double xm, ym, xf, yf, tf, tm
     while True:
         tf = t + dt
         tf = 1.0 if tf >= 1.0 else tf
@@ -230,7 +233,6 @@ def bezier_curve2(pt1, pt2, cp1, cp2, max_gap=0.5):
             xf, yf = xm, ym
         else:
             xf, yf = bez_point(tf, x0, y0, x1, y1, x2, y2, x3, y3)
-        # print(f"computing mid point: {tm=}")
         xm, ym, = bez_point(tm, x0, y0, x1, y1, x2, y2, x3, y3)
 
         dist = distance_pt_to_line((xm, ym), (XU[-1], YU[-1]), (xf, yf))
@@ -240,15 +242,15 @@ def bezier_curve2(pt1, pt2, cp1, cp2, max_gap=0.5):
             XU.append(xf)
             YU.append(yf)
             t += dt
-            use_prev_point = False
+            use_prev_point = 0
         elif dist > max_gap:  # reduce dt and try again
             # print(f"gap to big, reducing dt")
             dt /= 2
-            use_prev_point = True
+            use_prev_point = 1
         elif dist < min_gap:  # increase dt and try again
             # print(f"gap to small, increasing dt")
             dt *= 1.5
-            use_prev_point = False
+            use_prev_point = 0
 
         if t >= 1.0:
             break
