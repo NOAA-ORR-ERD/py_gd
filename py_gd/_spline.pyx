@@ -72,9 +72,9 @@ import cython
 from libc.stdio cimport FILE, fopen, fclose
 from libc.string cimport memcpy, strlen
 from libc.stdlib cimport malloc, free
-from libc.math cimport pow
+from libc.math cimport pow, sqrt
 
-from math import ceil, sqrt, nan
+from math import ceil, nan
 
 
 import os
@@ -113,68 +113,143 @@ cpdef bez_point(double t,
 
     return xu, yu
 
-cpdef double distance_pt_to_line(tuple pt, tuple lineStart, tuple lineEnd):
+# cpdef distance_pt_to_line(tuple point, tuple line_start, tuple line_end):
     """
-    find the distance between a point and a line
+    distance from a point (x, y) to the line defined by two points:
+    (x1, y1) and (x2, y2)
 
-    This really should be Cythonized
+    from:
+    https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
     """
-    # from: https://gist.github.com/TimSC/0813573d77734bcb6f2cd2cf6cc7aa51
-    # double PerpendicularDistance(const Point &pt, const Point &lineStart, const Point &lineEnd)
-    # {
-    #     double dx = lineEnd.first - lineStart.first;
-    #     double dy = lineEnd.second - lineStart.second;
+cpdef distance_pt_to_line(double x,
+                          double y,
+                          double x1,
+                          double y1,
+                          double x2,
+                          double y2,
+                          ):
 
-    #     //Normalise
-    #     double mag = pow(pow(dx,2.0)+pow(dy,2.0),0.5);
-    #     if(mag > 0.0)
-    #     {
-    #         dx /= mag; dy /= mag;
-    #     }
+    # function pDistance(x, y, x1, y1, x2, y2) {
 
-    #     double pvx = pt.first - lineStart.first;
-    #     double pvy = pt.second - lineStart.second;
+    #   var A = x - x1;
+    #   var B = y - y1;
+    #   var C = x2 - x1;
+    #   var D = y2 - y1;
 
-    #     //Get dot product (project pv onto normalized direction)
-    #     double pvdot = dx * pvx + dy * pvy;
+    #   var dot = A * C + B * D;
+    #   var len_sq = C * C + D * D;
+    #   var param = -1;
+    #   if (len_sq != 0) //in case of 0 length line
+    #       param = dot / len_sq;
 
-    #     //Scale line direction vector
-    #     double dsx = pvdot * dx;
-    #     double dsy = pvdot * dy;
+    #   var xx, yy;
 
-    #     //Subtract this from pv
-    #     double ax = pvx - dsx;
-    #     double ay = pvy - dsy;
+    #   if (param < 0) {
+    #     xx = x1;
+    #     yy = y1;
+    #   }
+    #   else if (param > 1) {
+    #     xx = x2;
+    #     yy = y2;
+    #   }
+    #   else {
+    #     xx = x1 + param * C;
+    #     yy = y1 + param * D;
+    #   }
 
-    #     return pow(pow(ax,2.0)+pow(ay,2.0),0.5);
+    #   var dx = x - xx;
+    #   var dy = y - yy;
+    #   return Math.sqrt(dx * dx + dy * dy);
     # }
-    cdef double dx = lineEnd[0] - lineStart[0]
-    cdef double dy = lineEnd[1] - lineStart[1]
-    cdef double mag
 
-    # Normalise  # why do this?
-    mag = pow(pow(dx, 2.0) + pow(dy, 2.0), 0.5)
-    if mag == 0.0:
-        return nan
+    cdef double A = x - x1
+    cdef double B = y - y1
+    cdef double C = x2 - x1
+    cdef double D = y2 - y1
+
+    cdef double xx, yy, param
+
+    if x1 == x2 and y1 == y2:  # end points are the same
+        xx = x1
+        yy = y1
     else:
-        dx /= mag
-        dy /= mag
+        dot = A * C + B * D
+        len_sq = C * C + D * D
 
-    cdef double pvx = pt[0] - lineStart[0]
-    cdef double pvy = pt[1] - lineStart[1]
+        param = dot / len_sq
 
-    # Get dot product (project pv onto normalized direction)
-    cdef double pvdot = dx * pvx + dy * pvy
+        xx = x1 + param * C
+        yy = y1 + param * D
 
-    # Scale line direction vector
-    cdef double dsx = pvdot * dx
-    cdef double dsy = pvdot * dy
+    dx = x - xx
+    dy = y - yy
 
-    # Subtract this from pv
-    cdef double ax = pvx - dsx
-    cdef double ay = pvy - dsy
+    return sqrt(dx * dx + dy * dy)
 
-    return pow(pow(ax, 2.0) + pow(ay, 2.0), 0.5)
+
+# cpdef double distance_pt_to_line(tuple pt, tuple lineStart, tuple lineEnd):
+#     """
+#     find the distance between a point and a line
+
+#     This really should be Cythonized
+#     """
+#     # from: https://gist.github.com/TimSC/0813573d77734bcb6f2cd2cf6cc7aa51
+#     # double PerpendicularDistance(const Point &pt, const Point &lineStart, const Point &lineEnd)
+#     # {
+#     #     double dx = lineEnd.first - lineStart.first;
+#     #     double dy = lineEnd.second - lineStart.second;
+
+#     #     //Normalise
+#     #     double mag = pow(pow(dx,2.0)+pow(dy,2.0),0.5);
+#     #     if(mag > 0.0)
+#     #     {
+#     #         dx /= mag; dy /= mag;
+#     #     }
+
+#     #     double pvx = pt.first - lineStart.first;
+#     #     double pvy = pt.second - lineStart.second;
+
+#     #     //Get dot product (project pv onto normalized direction)
+#     #     double pvdot = dx * pvx + dy * pvy;
+
+#     #     //Scale line direction vector
+#     #     double dsx = pvdot * dx;
+#     #     double dsy = pvdot * dy;
+
+#     #     //Subtract this from pv
+#     #     double ax = pvx - dsx;
+#     #     double ay = pvy - dsy;
+
+#     #     return pow(pow(ax,2.0)+pow(ay,2.0),0.5);
+#     # }
+#     cdef double dx = lineEnd[0] - lineStart[0]
+#     cdef double dy = lineEnd[1] - lineStart[1]
+#     cdef double mag
+
+#     # Normalise  # why do this?
+#     mag = pow(pow(dx, 2.0) + pow(dy, 2.0), 0.5)
+#     if mag == 0.0:
+#         return nan
+#     else:
+#         dx /= mag
+#         dy /= mag
+
+#     cdef double pvx = pt[0] - lineStart[0]
+#     cdef double pvy = pt[1] - lineStart[1]
+
+#     # Get dot product (project pv onto normalized direction)
+#     cdef double pvdot = dx * pvx + dy * pvy
+
+#     # Scale line direction vector
+#     cdef double dsx = pvdot * dx
+#     cdef double dsy = pvdot * dy
+
+#     # Subtract this from pv
+#     cdef double ax = pvx - dsx
+#     cdef double ay = pvy - dsy
+
+#     return pow(pow(ax, 2.0) + pow(ay, 2.0), 0.5)
+
 
 def bezier_curve(pt1, pt2, cp1, cp2, double max_gap=0.5):
     """
@@ -209,8 +284,8 @@ def bezier_curve(pt1, pt2, cp1, cp2, double max_gap=0.5):
     cdef double y3 = pt2[1]
 
     # First guess at delta_t
-#    N = np.hypot((x1 - x0), (y0 - y1)) / 5
-    cdef double dt = 5 / np.hypot((x1 - x0), (y0 - y1))
+    # cdef double dt = 5 / np.hypot((x1 - x0), (y0 - y1))
+    cdef double dt = 5.0 / sqrt(pow((x1 - x0), 2) + pow((y0 - y1), 2))
     # print("computing with N=", N)
     cdef list XU = [x0]
     cdef list YU = [y0]
@@ -235,7 +310,7 @@ def bezier_curve(pt1, pt2, cp1, cp2, double max_gap=0.5):
             xf, yf = bez_point(tf, x0, y0, x1, y1, x2, y2, x3, y3)
         xm, ym, = bez_point(tm, x0, y0, x1, y1, x2, y2, x3, y3)
 
-        dist = distance_pt_to_line((xm, ym), (XU[-1], YU[-1]), (xf, yf))
+        dist = distance_pt_to_line(xm, ym, XU[-1], YU[-1], xf, yf)
         # check minimum segment length too?
         if min_gap <= dist <= max_gap:  # add the far point
             # print(f"looking good, adding: {xf, yf}")

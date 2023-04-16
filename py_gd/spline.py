@@ -402,11 +402,81 @@ def poly_from_ctrl_points(points, ctrl_points):
 
     return poly_points
 
+# def distance_pt_to_line(point, line_start, line_end):
+#     """
+#     distance from a point (x, y) to the line defined by two points:
+#     (x1, y1) and (x2, y2)
+
+#     from:
+#     https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+#     """
+
+#     x, y = point
+#     x1, y1 = line_start
+#     x2, y2 = line_end
+
+#     # function pDistance(x, y, x1, y1, x2, y2) {
+
+#     #   var A = x - x1;
+#     #   var B = y - y1;
+#     #   var C = x2 - x1;
+#     #   var D = y2 - y1;
+
+#     #   var dot = A * C + B * D;
+#     #   var len_sq = C * C + D * D;
+#     #   var param = -1;
+#     #   if (len_sq != 0) //in case of 0 length line
+#     #       param = dot / len_sq;
+
+#     #   var xx, yy;
+
+#     #   if (param < 0) {
+#     #     xx = x1;
+#     #     yy = y1;
+#     #   }
+#     #   else if (param > 1) {
+#     #     xx = x2;
+#     #     yy = y2;
+#     #   }
+#     #   else {
+#     #     xx = x1 + param * C;
+#     #     yy = y1 + param * D;
+#     #   }
+
+#     #   var dx = x - xx;
+#     #   var dy = y - yy;
+#     #   return Math.sqrt(dx * dx + dy * dy);
+#     # }
+
+#     A = x - x1
+#     B = y - y1
+#     C = x2 - x1
+#     D = y2 - y1
+
+#     if x1 == x2 and y1 == y2:  # end points are the same
+#         xx = x1
+#         yy = y1
+#     else:
+#         dot = A * C + B * D
+#         len_sq = C * C + D * D
+
+#         param = dot / len_sq
+
+#         xx = x1 + param * C
+#         yy = y1 + param * D
+
+#     dx = x - xx
+#     dy = y - yy
+
+#     return sqrt(dx * dx + dy * dy)
+
+
 
 # def distance_pt_to_line(pt, lineStart, lineEnd):
 #     """
 #     find the distance between a point and a line
 
+#     NOTE: this one is a lot slower that the other one :=)
 #     This really should be Cythonized
 #     """
 #     # from: https://gist.github.com/TimSC/0813573d77734bcb6f2cd2cf6cc7aa51

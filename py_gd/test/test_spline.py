@@ -6,7 +6,8 @@ from py_gd import Image
 from py_gd.spline import (bezier_curve,
                           find_control_points,
                           poly_from_ctrl_points,
-                          distance_pt_to_line)
+                          distance_pt_to_line,
+                          )
 
 # from .test_gd import outfile, check_file
 from py_gd.test.test_gd import outfile, check_file
@@ -142,7 +143,6 @@ def test_poly_from_ctrl_points():
 
     # assert False
 
-
 def test_distance_pt_to_line():
     """
     A few quick checks -- points on either side should be same dist
@@ -204,7 +204,7 @@ def test_distance_pt_to_line_zero():
 
 def test_distance_pt_to_line_zero_length_line():
     """
-    Zero Length line should return NaN
+    Zero Length line should return distance to the point
     """
     line_start = (10.0, 20.0)
     line_end = (10.0, 20.0)
@@ -213,14 +213,13 @@ def test_distance_pt_to_line_zero_length_line():
     d1 = distance_pt_to_line(point, line_start, line_end)
     print(d1)
 
-    assert math.isnan(d1)
+    assert d1 == 0.0
 
     point = (10.0, 10.0)
     d2 = distance_pt_to_line(point, line_start, line_end)
     print(d2)
 
-    assert math.isnan(d2)
-
+    assert d2 == 10.0
 
 def test_distance_pt_to_line_beyond():
     """
