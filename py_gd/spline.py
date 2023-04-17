@@ -17,7 +17,7 @@ import numpy as np
 from numpy import power as pow
 from math import ceil, sqrt, nan
 
-from ._spline import bez_point, bezier_curve, distance_pt_to_line
+from ._spline import bezier_curve, distance_pt_to_line
 
 
 # def bezier_curve(pt1, pt2, cp1, cp2, max_gap=10):
@@ -401,6 +401,17 @@ def poly_from_ctrl_points(points, ctrl_points):
                                     ctrl_points[-3]))
 
     return poly_points
+
+# cy_distance_pt_to_line = distance_pt_to_line
+
+# def distance_pt_to_line(point, line_start, line_end):
+#     """
+#     python version -- takes 2-sequences of points
+#     """
+#     return cy_distance_pt_to_line(point[0], point[1],
+#                                   line_start[0], line_start[1],
+#                                   line_end[0], line_end[1])
+
 
 # def distance_pt_to_line(point, line_start, line_end):
 #     """

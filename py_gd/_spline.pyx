@@ -61,6 +61,10 @@ typedefed bezier_curve2
 In [4]: %timeit spline_pts = bezier_curve2(pt1, pt2, cp1, cp2)
 75 µs ± 2.54 µs per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
+removed tuple unpacking in bez_point
+
+In [3]: %timeit spline_pts = bezier_curve(pt1, pt2, cp1, cp2)
+57 µs ± 957 ns per loop (mean ± std. dev. of 7 runs, 10,000 loops each)
 
 """
 import cython
@@ -85,15 +89,15 @@ import numpy as np
 cimport numpy as cnp
 
 
-cpdef bez_point(double t,
-                double x0,
-                double y0,
-                double x1,
-                double y1,
-                double x2,
-                double y2,
-                double x3,
-                double y3):
+cdef bez_point(double t,
+                 double x0,
+                 double y0,
+                 double x1,
+                 double y1,
+                 double x2,
+                 double y2,
+                 double x3,
+                 double y3):
     """
     return a single point on a bezier curve
     """
@@ -121,13 +125,13 @@ cpdef bez_point(double t,
     from:
     https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
     """
-cpdef distance_pt_to_line(double x,
-                          double y,
-                          double x1,
-                          double y1,
-                          double x2,
-                          double y2,
-                          ):
+cdef c_distance_pt_to_line(double x,
+                           double y,
+                           double x1,
+                           double y1,
+                           double x2,
+                           double y2,
+                           ):
 
     # function pDistance(x, y, x1, y1, x2, y2) {
 
@@ -169,6 +173,7 @@ cpdef distance_pt_to_line(double x,
 
     cdef double xx, yy, param
 
+    # should I do a closeness test?
     if x1 == x2 and y1 == y2:  # end points are the same
         xx = x1
         yy = y1
@@ -185,6 +190,15 @@ cpdef distance_pt_to_line(double x,
     dy = y - yy
 
     return sqrt(dx * dx + dy * dy)
+
+
+def distance_pt_to_line(point, line_start, line_end):
+    """
+    python version -- takes 2-sequences of points
+    """
+    return c_distance_pt_to_line(point[0], point[1],
+                                 line_start[0], line_start[1],
+                                 line_end[0], line_end[1])
 
 
 # cpdef double distance_pt_to_line(tuple pt, tuple lineStart, tuple lineEnd):
@@ -253,6 +267,45 @@ cpdef distance_pt_to_line(double x,
 
 def bezier_curve(pt1, pt2, cp1, cp2, double max_gap=0.5):
     """
+    Compute a polyline aproximation to a cubic bezier spline
+
+    Function that take input as Control Point x_coordinates and
+    Control Point y_coordinates and draw bezier curve
+
+    :param pt1: (x, y) pair: first end point
+    :param pt2: (x, y) pair: second end point
+
+    :param cp1: (x, y) pair: first control point
+    :param cp2: (x, y) pair: second control point
+
+    :max_gap=0.5: maximum allowable gap between actual spline and
+                  piecewise-linear interpolation of the points computed.
+                  smaller gap, is smoother, larger gap is fewer points.
+
+
+    """
+    cdef double x0 = pt1[0]
+    cdef double x1 = cp1[0]
+    cdef double x2 = cp2[0]
+    cdef double x3 = pt2[0]
+    cdef double y0 = pt1[1]
+    cdef double y1 = cp1[1]
+    cdef double y2 = cp2[1]
+    cdef double y3 = pt2[1]
+
+    return c_bezier_curve(x0, x1,
+                          x2, x3,
+                          y0, y1,
+                          y2, y3,
+                          max_gap)
+
+cdef c_bezier_curve(double x0, double x1,
+                    double x2, double x3,
+                    double y0, double y1,
+                    double y2, double y3,
+                    double max_gap
+                    ):
+    """
     This version automatically adjusts the spacing of the points as it goes.
 
     It enforces an maximum deviation from the curve.
@@ -273,15 +326,6 @@ def bezier_curve(pt1, pt2, cp1, cp2, double max_gap=0.5):
                   smaller gap, is smoother, larger gap is fewer points.
     """
     cdef double min_gap = max_gap / 2.0
-
-    cdef double x0 = pt1[0]
-    cdef double x1 = cp1[0]
-    cdef double x2 = cp2[0]
-    cdef double x3 = pt2[0]
-    cdef double y0 = pt1[1]
-    cdef double y1 = cp1[1]
-    cdef double y2 = cp2[1]
-    cdef double y3 = pt2[1]
 
     # First guess at delta_t
     # cdef double dt = 5 / np.hypot((x1 - x0), (y0 - y1))
@@ -310,7 +354,7 @@ def bezier_curve(pt1, pt2, cp1, cp2, double max_gap=0.5):
             xf, yf = bez_point(tf, x0, y0, x1, y1, x2, y2, x3, y3)
         xm, ym, = bez_point(tm, x0, y0, x1, y1, x2, y2, x3, y3)
 
-        dist = distance_pt_to_line(xm, ym, XU[-1], YU[-1], xf, yf)
+        dist = c_distance_pt_to_line(xm, ym, XU[-1], YU[-1], xf, yf)
         # check minimum segment length too?
         if min_gap <= dist <= max_gap:  # add the far point
             # print(f"looking good, adding: {xf, yf}")
