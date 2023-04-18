@@ -1,6 +1,8 @@
 """
 test code for splines
 """
+import math
+import numpy as np
 
 from py_gd import Image
 from py_gd.spline import (bezier_curve,
@@ -11,7 +13,6 @@ from py_gd.spline import (bezier_curve,
 
 # from .test_gd import outfile, check_file
 from py_gd.test.test_gd import outfile, check_file
-import math
 
 
 def test_bezier_curve():
@@ -22,6 +23,8 @@ def test_bezier_curve():
     cp2 = (500, 50)
 
     spline_pts = bezier_curve(pt1, pt2, cp1, cp2)
+
+    spline_pts = np.round(spline_pts).astype(np.intc)
 
     # print(spline_pts)
 
@@ -88,12 +91,14 @@ def test_bezier_curve_flat():
 
 
 def test_find_control_points():
-    points = ((100, 100),
-              (200, 500),
-              (300, 300),
-              (500, 400),
-              (500, 100),
-              (250, 250))
+    points = np.array([(100, 100),
+                       (200, 500),
+                       (300, 300),
+                       (500, 400),
+                       (500, 100),
+                       (250, 250)],
+                       dtype = np.float64
+                       )
 
     ctrl_points = find_control_points(points)
 
@@ -112,13 +117,13 @@ def test_find_control_points():
 
 
 def test_poly_from_ctrl_points():
-    points = ((100, 100),
-              (200, 500),
-              (300, 300),
-              (500, 400),
-              (500, 100),
-              (250, 250),
-              )
+    points = np.array([(100, 100),
+                       (200, 500),
+                       (300, 300),
+                       (500, 400),
+                       (500, 100),
+                       (250, 250),
+                       ], dtype=np.float64)
 
     ctrl_points = find_control_points(points)
 
