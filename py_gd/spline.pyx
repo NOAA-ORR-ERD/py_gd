@@ -393,6 +393,7 @@ cdef c_bezier_curve(double x0, double x1,
 
     return points
 
+
 def find_control_points(cnp.ndarray[double, ndim=2, mode='c'] in_points,
                         double smooth_value=0.5):
     """
@@ -401,6 +402,9 @@ def find_control_points(cnp.ndarray[double, ndim=2, mode='c'] in_points,
     :param points: Nx2 array of (x, y) points (np.float64)
 
     :param smooth_value=0.5: amount to smooth -- should be between 0 and 1.0
+
+
+    :returns ctrl_points: two points for each line segment
 
     Adapted from AGG code found here:
 

@@ -104,11 +104,12 @@ def check_file(name):
         'test_image_with_colorramp.png': 'b73b81b6badde809753f801d96b1b0dd',
         'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076',
         'test_image_x_lots.png': '4c3c223185c407c8ead2afbf28244ebe',
-        'test_smooth_poly.png': 'df9a9f7b10c21d98466f4e5ad4b1df88',
+        'test_smooth_poly.png': 'd8802ab8da358d7789f0ee8e0f12bd77',
         'test_text_align.bmp': '3151fe59ab1177fe6fde144dedae1082',
         'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d',
         'test_spline_1.png': 'ecdad8150859041787d88d3836606733',
         'test_spline_flat.png': 'bd75cdd52bfdec87648f3a894f8e83b6',
+        'test_image_spline_polygon.png': '4f81e7a46a971365bf4f85a5c7c423da',
         }
     cs = hashlib.md5(open(outfile(name), 'rb').read()).hexdigest()
     if checksums[name] == cs:
@@ -488,6 +489,38 @@ def test_polyline():
         img.draw_polyline(((10, 10),), 'blue')
 
     img.save(outfile("test_image_polyline.bmp"))
+
+
+def test_draw_spline_polygon():
+
+    img = Image(600, 600)
+    img.clear('white')
+
+    vertices = [(100, 100),
+                (200, 500),
+                (300, 300),
+                (500, 400),
+                (500, 100),
+                (250, 250),
+                ]
+
+    img.draw_spline_polygon(vertices,
+                            fill_color='blue',
+                            line_color=None,
+                            smooth_value=0.5)
+
+    img.draw_spline_polygon(vertices,
+                            fill_color=None,
+                            line_color='red',
+                            line_width=2,
+                            smooth_value=1.0)
+
+    # print(img.get_color_names())
+    img.draw_dots(vertices, diameter=8, color='red')
+
+    filename = "test_image_spline_polygon.png"
+    img.save(outfile(filename), 'png')
+    assert check_file(filename)
 
 
 def test_rectangles():

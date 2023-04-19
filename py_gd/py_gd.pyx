@@ -24,6 +24,7 @@ import operator
 import numpy as np
 cimport numpy as cnp
 from py_gd.colors import colorschemes
+from py_gd.spline import find_control_points, poly_from_ctrl_points
 
 __gd_version__ = gdVersionString().decode('ascii')
 
@@ -834,6 +835,53 @@ cdef class Image:
                            self.get_color_index(line_color))
 
             gdImageSetThickness(self._image, 1)
+
+    def draw_spline_polygon(self, points,
+                            line_color=None, fill_color=None,
+                            int line_width=1,
+                            double smooth_value=0.5,
+                            ):
+        """
+        Draw a polygon
+
+        :param points: sequence of points
+        :type points: Nx2 array of integers (or somethign that can be turned
+                      into one)
+
+        :param line_color=None: the color of the outline
+        :type line_color=None:  color name or index
+
+        :param fill_color=None: the color of the filled polygon
+        :type  fill_color=None: color name or index
+
+        :param line_width=1: width of line
+        :type line_width: integer
+
+        :param smooth_value=0.5: smoothness of the corners -- usually between 0 and 1.0
+        :type smooth_value: float
+        """
+        cdef int n
+        cdef cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] points_arr
+
+        points_arr = asn2array(points, dtype=np.float64)
+
+        n = points_arr.shape[0]
+
+        if n < 3:
+            raise ValueError('There must be at least three points specified '
+                             'for a polygon')
+
+        cdef cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] ctrl_points
+        cdef cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] poly_points
+
+        ctrl_points = find_control_points(points_arr, smooth_value=smooth_value)
+        poly_points = poly_from_ctrl_points(points_arr, ctrl_points)
+
+        self.draw_polygon(poly_points,
+                          line_color=line_color,
+                          fill_color=fill_color,
+                          line_width=line_width)
+
 
     def draw_polyline(self, points, line_color, int line_width=1):
         """
