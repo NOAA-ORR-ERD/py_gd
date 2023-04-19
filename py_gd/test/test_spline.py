@@ -39,6 +39,7 @@ def test_bezier_curve():
     img.save(outfile(filename), 'png')
     assert check_file(filename)
 
+
 def test_bezier_curve_flat():
     # ctrl_pts = [(100, 200), (10, 500), (500, 50), (500, 300)]
     pt1 = (100, 100)
@@ -62,34 +63,6 @@ def test_bezier_curve_flat():
     assert check_file(filename)
 
 
-# def test_bezier_curve2():
-#     # ctrl_pts = [(100, 200), (10, 500), (500, 50), (500, 300)]
-#     pt1 = (100, 200)
-#     pt2 = (500, 300)
-#     cp1 = (10, 500)
-#     cp2 = (500, 50)
-
-#     spline_pts = bezier_curve2(pt1, pt2, cp1, cp2, max_gap=0.1)
-
-#     print(f"Total number of points: {len(spline_pts)}")
-#     # print("segment lengths:")
-#     # print(np.hypot(np.diff(spline_pts[:, 0]), np.diff(spline_pts[:, 1])))
-#     # print(spline_pts)
-
-#     img = Image(600, 600)
-#     img.clear('white')
-
-#     # print(spline_pts)
-
-#     img.draw_polyline(spline_pts, 'black', line_width=2)
-#     # img.draw_dots(spline_pts, diameter=7, color='red')
-#     img.draw_xes([pt1, pt2, cp1, cp2], diameter=7, color='black', line_width=3)
-
-#     filename = "test_spline_2.png"
-#     img.save(outfile(filename), 'png')
-#     assert check_file(filename)
-
-
 def test_find_control_points():
     points = np.array([(100, 100),
                        (200, 500),
@@ -97,8 +70,8 @@ def test_find_control_points():
                        (500, 400),
                        (500, 100),
                        (250, 250)],
-                       dtype = np.float64
-                       )
+                      dtype=np.float64
+                      )
 
     ctrl_points = find_control_points(points)
 
@@ -144,15 +117,14 @@ def test_poly_from_ctrl_points():
 
     filename = "test_smooth_poly.png"
     img.save(outfile(filename), 'png')
-    # assert check_file(filename)
+    assert check_file(filename)
 
-    # assert False
 
 def test_distance_pt_to_line():
     """
     A few quick checks -- points on either side should be same dist
 
-    reverseing line should be the same
+    reversing line should be the same
     """
     line_start = (0.0, 0.0)
     line_end = (10.0, 10.0)
@@ -225,6 +197,7 @@ def test_distance_pt_to_line_zero_length_line():
     print(d2)
 
     assert d2 == 10.0
+
 
 def test_distance_pt_to_line_beyond():
     """
