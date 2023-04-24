@@ -24,7 +24,7 @@ import operator
 import numpy as np
 cimport numpy as cnp
 from py_gd.colors import colorschemes
-from py_gd.spline import find_control_points, poly_from_ctrl_points
+from py_gd.spline import find_control_points, polygon_from_ctrl_points, polyline_from_ctrl_points
 
 __gd_version__ = gdVersionString().decode('ascii')
 
@@ -875,7 +875,7 @@ cdef class Image:
         cdef cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] poly_points
 
         ctrl_points = find_control_points(points_arr, smoothness=smoothness)
-        poly_points = poly_from_ctrl_points(points_arr, ctrl_points)
+        poly_points = polygon_from_ctrl_points(points_arr, ctrl_points)
 
         self.draw_polygon(poly_points,
                           line_color=line_color,

@@ -359,8 +359,8 @@ cdef c_bezier_curve(double x0, double x1,
         # make sure final point is exactly t=1.0
         tf = 1.0 if tf >= 1.0 else tf
 
-        tm = t + (dt / 2)
-        # print(f"computing far point: {tf=}")
+        tm = (t + tf) / 2
+
         if use_prev_point:
             xf, yf = xm, ym
         else:
@@ -370,8 +370,7 @@ cdef c_bezier_curve(double x0, double x1,
         xm, ym, = bez_point(tm, x0, y0, x1, y1, x2, y2, x3, y3)
 
         dist = c_distance_pt_to_line(xm, ym, XU[-1], YU[-1], xf, yf)
-        if min_gap <= dist <= max_gap:  # add the far point
-            # print(f"looking good, adding: {xf, yf}")
+        if dist <= max_gap and (dist >= min_gap or tf >= 1.0):  # add the far point
             XU.append(xf)
             YU.append(yf)
             t += dt
@@ -506,8 +505,8 @@ def find_control_points(cnp.ndarray[double, ndim=2, mode='c'] in_points,
     return ctrl_points
 
 
-def poly_from_ctrl_points(cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] points,
-                          cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] ctrl_points):
+def polygon_from_ctrl_points(cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] points,
+                             cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] ctrl_points):
 
     cdef list poly_points = []
     cdef cnp.uint16_t i
@@ -526,3 +525,22 @@ def poly_from_ctrl_points(cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] points,
 
     return np.array(poly_points, dtype=np.float64)
 
+def polyline_from_ctrl_points(cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] points,
+                              cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] ctrl_points):
+
+    cdef list poly_points = []
+    cdef cnp.uint16_t i
+
+    for i in range(len(points) - 1):
+        poly_points.extend(bezier_curve(points[i],
+                                        points[i + 1],
+                                        ctrl_points[2 * i - 2],
+                                        ctrl_points[2 * i - 1]).tolist())
+
+    # poly_points.extend(bezier_curve(points[-1],
+    #                                 points[0],
+    #                                 ctrl_points[-4],
+    #                                 ctrl_points[-3]).tolist())
+
+
+    return np.array(poly_points, dtype=np.float64)

@@ -7,7 +7,8 @@ import numpy as np
 from py_gd import Image
 from py_gd.spline import (bezier_curve,
                           find_control_points,
-                          poly_from_ctrl_points,
+                          polygon_from_ctrl_points,
+                          polyline_from_ctrl_points,
                           distance_pt_to_line,
                           )
 
@@ -63,6 +64,29 @@ def test_bezier_curve_flat():
     assert check_file(filename)
 
 
+def test_bezier_curve_single_ctrl_pt():
+    # ctrl_pts = [(100, 200), (10, 500), (500, 50), (500, 300)]
+    pt1 = (100, 200)
+    pt2 = (500, 300)
+    cp1 = (475, 250)
+    cp2 = (475, 250)
+
+    spline_pts = bezier_curve(pt1, pt2, cp1, cp2)
+
+    print(spline_pts)
+
+    img = Image(600, 600)
+    img.clear('white')
+
+    img.draw_polyline(spline_pts, 'black', line_width=2)
+    # img.draw_dots(spline_pts, diameter=7, color='red')
+    img.draw_xes([pt1, pt2, cp1, cp2], diameter=7, color='black', line_width=3)
+
+    filename = "test_spline_single_ctrl_pt.png"
+    img.save(outfile(filename), 'png')
+    assert check_file(filename)
+
+
 def test_find_control_points():
     points = np.array([(100, 100),
                        (200, 500),
@@ -89,7 +113,7 @@ def test_find_control_points():
     # assert check_file(filename)
 
 
-def test_poly_from_ctrl_points():
+def test_polygon_from_ctrl_points():
     points = np.array([(100, 100),
                        (200, 500),
                        (300, 300),
@@ -103,7 +127,7 @@ def test_poly_from_ctrl_points():
     print(f"{points=}")
     print(f"{ctrl_points=}")
 
-    poly_points = poly_from_ctrl_points(points, ctrl_points)
+    poly_points = polygon_from_ctrl_points(points, ctrl_points)
 
     print(ctrl_points)
 
@@ -120,31 +144,36 @@ def test_poly_from_ctrl_points():
     assert check_file(filename)
 
 
-def test_poly_line():
+def test_polyline_from_ctrl_points():
     points = np.array([(100, 100),
                        (200, 500),
                        (300, 300),
                        (500, 400),
                        (500, 100),
-                       (250, 250),
+                       # (250, 250),
                        ], dtype=np.float64)
 
     ctrl_points = find_control_points(points)
+    # ctrl_points = ctrl_points[1:-1, :]
+    ctrl_points[-2, :] = ctrl_points[-1, :]
+    ctrl_points[-5, :] = ctrl_points[-6, :]
+    # ctrl_points[6, :] = ctrl_points[7, :]
 
-    print(f"{points=}")
-    print(f"{ctrl_points=}")
+    print(f"{len(points)=}")
+    print(f"{len(ctrl_points)=}")
 
-    poly_points = poly_from_ctrl_points(points, ctrl_points)
+    poly_points = polyline_from_ctrl_points(points, ctrl_points)
 
-    print(ctrl_points)
+    ctrl_points = np.r_[ctrl_points[:-4], ctrl_points[-2:]]
 
     img = Image(600, 600)
     img.clear('white')
 
-    img.draw_polygon(points, 'black', line_width=2)
-    img.draw_polygon(poly_points, 'red', line_width=2)
+    img.draw_polyline(poly_points, 'black', line_width=2)
     img.draw_dots(points, diameter=8, color='red')
-    img.draw_dots(ctrl_points, diameter=10, color='blue')
+    img.draw_dots(ctrl_points, diameter=8, color='blue')
+    for i, pt in enumerate(ctrl_points):
+        img.draw_text(f"{i} ", pt,  align="r")
 
     filename = "test_smooth_polyline.png"
     img.save(outfile(filename), 'png')
@@ -253,7 +282,6 @@ def test_distance_pt_to_line_beyond():
     d3 = distance_pt_to_line(point, line_end, line_start)
 
     assert d3 == d1
-
 
 
 # if __name__ == "__main__":

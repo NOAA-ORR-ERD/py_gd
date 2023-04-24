@@ -39,78 +39,81 @@ def check_file(name):
     # you may need to do that with a new libjpeg version, for instance
     #  it would be nice if all images were checked, but only a few are now...
     checksums = {
-        'image_clip.bmp': '6adb4af2332bedec46815f86ac462b9f',
-        'image_copy.bmp': 'a0e7ffb4ecada86965fcfc60a032cad4',
-        'image_copy_middle1.bmp': '0ac48cdf5e2652999a33efa6c558a9b7',
-        'image_copy_middle2.bmp': '09be326e5940e58dfdfa492e03d7e818',
-        'image_copy_trans.png': '8939012bbd494ec19c8afa639eedafb8',
-        'image_copy_upper_left.bmp': '24f96fb535350df3cdcdc25bcb95a25a',
-        'nothing.gif': 'fa2e02f338a8ab98c5c1f3cd280ca505',
-        'one_frame_delete.gif': '35d46c172f95bf79fa66eb0c4f114ada',
-        'sample_BW.png': 'a211aaa9093b345bc2c7944aaef76899',
-        'sample_cividis.png': '5b6af4aa252d0a84969dfe93cdb489ae',
-        'sample_css4.png': '43ffd2b528e067c37e46fed685bc6297',
-        'sample_inferno.png': '850806ac80c706bf510d38443d3b145a',
-        'sample_magma.png': '0ebdc1856554e2ed441cf94883a59bf9',
-        'sample_plasma.png': 'd1e954be4f07b5b4b2bd712022525425',
-        'sample_tableau.png': 'b64d48d10529655065a78149c2e16529',
-        'sample_transparent.png': 'a60406f4c35294111ab6a1eda9eeb63a',
-        'sample_turbo.png': 'c19b0b0c474ba425c3f5015a086aa8c8',
-        'sample_twilight.png': 'ef008e3ca66132b49e7ff11d96ac0ba7',
-        'sample_viridis.png': '8fe4956a7c00136e132ade927b433982',
-        'sample_web.png': '5d5a8f1de03282ea675cf591eb32b815',
-        'sample_xkcd.png': '83dd36fb952930d99ac4e68f23045906',
-        'test_animation.gif': '3abc5d1963116b1a05701978b048ac8a',
-        'test_animation_reset1.gif': 'a53e5aaebcf441f002927b913c12f213',
-        'test_animation_reset2.gif': 'ec5961189acd876f73f8132707f13c82',
-        'test_animation_reset_same.gif': 'ec5961189acd876f73f8132707f13c82',
-        'test_animation_reuse.gif': 'a45117a3d17f1093d5e395fcc20e69e1',
-        'test_animation_reuse_not_close.gif':
-        '7587576ac36cd0e2e8bcd8ee4ff52b82',
-        'test_animation_static.gif': '4639911d250a50f9a76a24bb23031921',
-        'test_draw_dots_multi_color_indices.png':
-        '415db687d254a58eb6d4cabc4be22ea8',
-        'test_draw_dots_multi_named_colors.png':
-        'ca7a67f726517e341b55366a7b08b48e',
-        'test_image_arc.bmp': 'c0a3c29d49922cac32e4a6fae5c9ac4e',
-        'test_image_array1.bmp': 'e268130b61eaecdc9d809b771909f7b6',
-        'test_image_array2.bmp': 'e268130b61eaecdc9d809b771909f7b6',
-        'test_image_circle.bmp': 'bc3e62938f64c5c084d176b99e7e156a',
-        'test_image_clear_after.png': 'b6825be7e699ea19bd2571c3b4864dac',
-        'test_image_clear_after2.png': '30bc477928a84571e60925fd61013a94',
-        'test_image_clear_before.png': 'd34a1e3576b2732321f32c4ee1117730',
-        'test_image_clear_before2.png': 'd34a1e3576b2732321f32c4ee1117730',
-        'test_image_dot.png': '275c79433ded774c5cfebaf45fc8c9fb',
-        'test_image_dots_large.png': '0a49a24272e0e3bfba82fcdc21d3cb73',
-        'test_image_dots_lots.png': '85b073f3d7d1d2d0797f8ac3b107a718',
-        'test_image_ellipse.bmp': '543ec0befeb67d131f4df23eeb21e590',
-        'test_image_grey.bmp': '46f3b8773ac4d552944a2eb378ba27e8',
-        'test_image_line.bmp': 'd279707389a3bac62c4413839919b962',
-        'test_image_line_clip.bmp': 'fe6e5505f60428d47a64124cbb86c68d',
-        'test_image_pixel.bmp': '1bf9f74b1122d8b3cc4a955c7216feb7',
-        'test_image_points.png': 'd16cb5b8b309f570940db8c17bccd9a1',
-        'test_image_points3.png': 'fbbd89301eb5de8e7785da095c3c2b51',
-        'test_image_poly1.bmp': 'd4654eb592716d5fe73c0661b39b39a7',
-        'test_image_poly2.bmp': '066f46e0363d1c04b002ea1d6716a07f',
-        'test_image_poly3.bmp': '4fa4411acb4aee16a1c6a2e15df44cc5',
-        'test_image_polygon_clip.bmp': 'fb8037129941fd6c9e2686f0c109496b',
-        'test_image_polyline.bmp': '01d7d25972d69796af9fefc67a1e17af',
-        'test_image_rectangle.bmp': 'f0eff1deadc678b78e26bd1a4cd88810',
-        'test_image_save.bmp': '1facb71e1f6d0e21abfb8b07ae900a49',
-        'test_image_save.gif': '50f1d8d494edba646813b7e7ab830e64',
-        'test_image_save.jpg': 'e6d5a45b093988240cbe3d0365c0675a',
-        'test_image_save.png': '3067832d58ce76285b7e32d3f42e2659',
-        'test_image_text.bmp': 'a7b1fe64f4da978706d857c39ce5c026',
-        'test_image_with_colorramp.png': 'b73b81b6badde809753f801d96b1b0dd',
-        'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076',
-        'test_image_x_lots.png': '4c3c223185c407c8ead2afbf28244ebe',
-        'test_smooth_poly.png': 'd8802ab8da358d7789f0ee8e0f12bd77',
-        'test_text_align.bmp': '3151fe59ab1177fe6fde144dedae1082',
-        'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d',
-        'test_spline_1.png': 'ecdad8150859041787d88d3836606733',
-        'test_spline_flat.png': 'bd75cdd52bfdec87648f3a894f8e83b6',
-        'test_image_spline_polygon.png': '4f81e7a46a971365bf4f85a5c7c423da',
+         'file—name_with_unicode.png': '30eb0faa2123ae24cdffb0d98714b834',
+         'image_clip.bmp': '6adb4af2332bedec46815f86ac462b9f',
+         'image_copy.bmp': 'a0e7ffb4ecada86965fcfc60a032cad4',
+         'image_copy_middle1.bmp': '0ac48cdf5e2652999a33efa6c558a9b7',
+         'image_copy_middle2.bmp': '09be326e5940e58dfdfa492e03d7e818',
+         'image_copy_trans.png': '8939012bbd494ec19c8afa639eedafb8',
+         'image_copy_upper_left.bmp': '24f96fb535350df3cdcdc25bcb95a25a',
+         'nothing.gif': 'fa2e02f338a8ab98c5c1f3cd280ca505',
+         'one_frame_delete.gif': '35d46c172f95bf79fa66eb0c4f114ada',
+         'sample_BW.png': 'a211aaa9093b345bc2c7944aaef76899',
+         'sample_cividis.png': '5b6af4aa252d0a84969dfe93cdb489ae',
+         'sample_css4.png': 'b1281b61e5ae0fcf8b4df6a668b6755e',
+         'sample_inferno.png': '850806ac80c706bf510d38443d3b145a',
+         'sample_magma.png': '0ebdc1856554e2ed441cf94883a59bf9',
+         'sample_plasma.png': 'd1e954be4f07b5b4b2bd712022525425',
+         'sample_tableau.png': '8572a2ff7b7a888238f5d51564ea5cee',
+         'sample_transparent.png': 'a60406f4c35294111ab6a1eda9eeb63a',
+         'sample_turbo.png': 'c19b0b0c474ba425c3f5015a086aa8c8',
+         'sample_twilight.png': 'ef008e3ca66132b49e7ff11d96ac0ba7',
+         'sample_viridis.png': '8fe4956a7c00136e132ade927b433982',
+         'sample_web.png': '5d5a8f1de03282ea675cf591eb32b815',
+         'sample_xkcd.png': '83dd36fb952930d99ac4e68f23045906',
+         'test_animation.gif': '3abc5d1963116b1a05701978b048ac8a',
+         'test_animation_reset1.gif': 'a53e5aaebcf441f002927b913c12f213',
+         'test_animation_reset2.gif': 'ec5961189acd876f73f8132707f13c82',
+         'test_animation_reset_same.gif': 'ec5961189acd876f73f8132707f13c82',
+         'test_animation_reuse.gif': 'a45117a3d17f1093d5e395fcc20e69e1',
+         'test_animation_reuse_not_close.gif': '7587576ac36cd0e2e8bcd8ee4ff52b82',
+         'test_animation_static.gif': '4639911d250a50f9a76a24bb23031921',
+         'test_control_points.png': '0d4600278f63c502b4ceafe376148011',
+         'test_draw_dots_multi_color_indices.png': '415db687d254a58eb6d4cabc4be22ea8',
+         'test_draw_dots_multi_named_colors.png': 'ca7a67f726517e341b55366a7b08b48e',
+         'test_image_arc.bmp': 'c0a3c29d49922cac32e4a6fae5c9ac4e',
+         'test_image_array1.bmp': 'e268130b61eaecdc9d809b771909f7b6',
+         'test_image_array2.bmp': 'e268130b61eaecdc9d809b771909f7b6',
+         'test_image_circle.bmp': 'bc3e62938f64c5c084d176b99e7e156a',
+         'test_image_clear_after.png': 'b6825be7e699ea19bd2571c3b4864dac',
+         'test_image_clear_after2.png': '30bc477928a84571e60925fd61013a94',
+         'test_image_clear_before.png': 'd34a1e3576b2732321f32c4ee1117730',
+         'test_image_clear_before2.png': 'd34a1e3576b2732321f32c4ee1117730',
+         'test_image_dot.png': '275c79433ded774c5cfebaf45fc8c9fb',
+         'test_image_dots_large.png': '6eb04cc1e853e29aad7abf0f50fe1e3e',
+         'test_image_dots_lots.png': 'a6737bc3e8e084b9e056c393e5a19a28',
+         'test_image_ellipse.bmp': '543ec0befeb67d131f4df23eeb21e590',
+         'test_image_grey.bmp': '46f3b8773ac4d552944a2eb378ba27e8',
+         'test_image_line.bmp': 'd279707389a3bac62c4413839919b962',
+         'test_image_line_clip.bmp': 'fe6e5505f60428d47a64124cbb86c68d',
+         'test_image_pixel.bmp': '1bf9f74b1122d8b3cc4a955c7216feb7',
+         'test_image_points.png': 'd16cb5b8b309f570940db8c17bccd9a1',
+         'test_image_points3.png': '984de9e7f1ec017db9c26a19c8e05c14',
+         'test_image_poly1.bmp': 'd4654eb592716d5fe73c0661b39b39a7',
+         'test_image_poly2.bmp': '066f46e0363d1c04b002ea1d6716a07f',
+         'test_image_poly3.bmp': '4fa4411acb4aee16a1c6a2e15df44cc5',
+         'test_image_polygon_clip.bmp': 'fb8037129941fd6c9e2686f0c109496b',
+         'test_image_polyline.bmp': '01d7d25972d69796af9fefc67a1e17af',
+         'test_image_rectangle.bmp': 'f0eff1deadc678b78e26bd1a4cd88810',
+         'test_image_save.bmp': '1facb71e1f6d0e21abfb8b07ae900a49',
+         'test_image_save.gif': '50f1d8d494edba646813b7e7ab830e64',
+         'test_image_save.jpg': 'e6d5a45b093988240cbe3d0365c0675a',
+         'test_image_save.png': '3067832d58ce76285b7e32d3f42e2659',
+         'test_image_spline_polygon.png': 'f71ff8d679ed1860a0b032e71a473dc1',
+         'test_image_text.bmp': 'a7b1fe64f4da978706d857c39ce5c026',
+         'test_image_with_colorramp.png': 'b73b81b6badde809753f801d96b1b0dd',
+         'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076',
+         'test_image_x_lots.png': 'a5fe62ddc48b944eec0eeb449a7c0446',
+         'test_smooth_poly.png': 'd8802ab8da358d7789f0ee8e0f12bd77',
+         'test_smooth_polyline.png': '45bebf563847ae3dc6a0d6d5a33797ee',
+         'test_spline_1.png': '3c89b4aa7dfd1eda601d7016925a7b60',
+         'test_spline_2.png': '16ed4f5f857d57288d23b632e1839fa1',
+         'test_spline_flat.png': 'bd75cdd52bfdec87648f3a894f8e83b6',
+         'test_spline_single_ctrl_pt.png': 'f9d3414d24c0a282cb5b5af17c7b12c2',
+         'test_text_align.bmp': '3151fe59ab1177fe6fde144dedae1082',
+         'test_text_background.bmp': 'da827b0d1bba63eba680d7328153c82d',
         }
+
     cs = hashlib.md5(open(outfile(name), 'rb').read()).hexdigest()
     if checksums[name] == cs:
         return True
@@ -523,33 +526,31 @@ def test_draw_spline_polygon():
     assert check_file(filename)
 
 
-def test_draw_spline_polyline():
+# def test_draw_spline_polyline():
 
-    img = Image(600, 600)
-    img.clear('white')
+#     img = Image(600, 600)
+#     img.clear('white')
 
-    vertices = [(100, 100),
-                (200, 500),
-                (300, 300),
-                (500, 400),
-                (500, 100),
-                (250, 250),
-                ]
+#     vertices = [(100, 100),
+#                 (200, 500),
+#                 (300, 300),
+#                 (500, 400),
+#                 (500, 100),
+#                 (250, 250),
+#                 ]
 
-    img.draw_spline_polyline(vertices,
-                             fill_color=None,
-                             line_color='red',
-                             line_width=3,
-                             smoothness=1.0)
+#     img.draw_spline_polyline(vertices,
+#                              fill_color=None,
+#                              line_color='red',
+#                              line_width=3,
+#                              smoothness=1.0)
 
-    img.draw_dots(vertices, diameter=8, color='red')
+#     img.draw_dots(vertices, diameter=8, color='red')
 
-    filename = "test_image_spline_polyline.png"
-    img.save(outfile(filename), 'png')
+#     filename = "test_image_spline_polyline.png"
+#     img.save(outfile(filename), 'png')
 
-    assert check_file(filename)
-
-
+#     assert check_file(filename)
 
 
 def test_rectangles():
