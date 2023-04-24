@@ -13,6 +13,7 @@ Contents:
 
   introduction
   working_with_color
+  splines
   tutorials
   installing
   reference

@@ -17,8 +17,8 @@ anti-aliased drawing. If  you want the prettiest rendering possible, I encourage
 
 If you want something fast and simple -- `py_gd` may be for you.
 
-General Structure:
-------------------
+General Structure
+-----------------
 
 ``py_gd`` provides an Object-Oriented interface for rendering.
 
@@ -36,36 +36,36 @@ The image can be saved out in various formats::
 
     img.save('my_image.png', 'png')
 
-Parameters of Drawing:
-----------------------
+Parameters of Drawing
+---------------------
 
-Depedning in the object being draw, there are a number of parameters that can be set:
+Depending on the object being drawn, there are a number of parameters that can be set:
 
 For Lines:
 ..........
 
-| ``color``: string colorname
+| ``color``: string color name
 | ``line_width``: integer pixels
 
 
 For Solid Color Objects:
 ........................
 
-| ``color``: string colorname
+| ``color``: string color name
 
 For Objects with a Line and Fill:
 .................................
 
-| ``line_color``: string colorname
-| ``fill_color``: string colorname
+| ``line_color``: string color name
+| ``fill_color``: string color name
 | ``line_width``: integer pixels
 
-For Ojects Defined at a Single Point:
+For Objects Defined at a Single Point
 .....................................
 
-| ``point``: (x, y) tuple
+| ``point``: (x, y) tuple (or other 2-sequence)
 
-For Ojects Defined at a Multiple Points:
+For Objects Defined at a Multiple Points
 ........................................
 
 Polygon, Polyline
@@ -77,4 +77,5 @@ For Objects with a Width or Height:
 
 | ``width``: integer pixels
 | ``height``: integer pixels
+
 

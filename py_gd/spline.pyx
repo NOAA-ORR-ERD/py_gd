@@ -395,16 +395,16 @@ cdef c_bezier_curve(double x0, double x1,
 
 
 def find_control_points(cnp.ndarray[double, ndim=2, mode='c'] in_points,
-                        double smooth_value=0.5):
+                        double smoothness=0.5):
     """
     Find reasonable control points to make a smooth spline from a polyline / polygon
 
     :param points: Nx2 array of (x, y) points (np.float64)
 
-    :param smooth_value=0.5: amount to smooth -- should be between 0 and 1.0
+    :param smoothness=0.5: amount to smooth -- should be between 0 and 1.0
 
 
-    :returns ctrl_points: two points for each line segment
+    :returns ctrl_points: two points for each line seg
 
     Adapted from AGG code found here:
 
@@ -490,13 +490,13 @@ def find_control_points(cnp.ndarray[double, ndim=2, mode='c'] in_points,
         xm2 = xc2 + (xc3 - xc2) * k2
         ym2 = yc2 + (yc3 - yc2) * k2
 
-        # Resulting control points. Here smooth_value is mentioned
+        # Resulting control points. Here smoothness is mentioned
         # above coefficient K whose value should be in range [0...1].
-        ctrl1_x = xm1 + (xc2 - xm1) * smooth_value + x1 - xm1
-        ctrl1_y = ym1 + (yc2 - ym1) * smooth_value + y1 - ym1
+        ctrl1_x = xm1 + (xc2 - xm1) * smoothness + x1 - xm1
+        ctrl1_y = ym1 + (yc2 - ym1) * smoothness + y1 - ym1
 
-        ctrl2_x = xm2 + (xc2 - xm2) * smooth_value + x2 - xm2
-        ctrl2_y = ym2 + (yc2 - ym2) * smooth_value + y2 - ym2
+        ctrl2_x = xm2 + (xc2 - xm2) * smoothness + x2 - xm2
+        ctrl2_y = ym2 + (yc2 - ym2) * smoothness + y2 - ym2
 
         ctrl_points[2 * i, 0] = ctrl1_x
         ctrl_points[2 * i, 1] = ctrl1_y

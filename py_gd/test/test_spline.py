@@ -120,6 +120,38 @@ def test_poly_from_ctrl_points():
     assert check_file(filename)
 
 
+def test_poly_line():
+    points = np.array([(100, 100),
+                       (200, 500),
+                       (300, 300),
+                       (500, 400),
+                       (500, 100),
+                       (250, 250),
+                       ], dtype=np.float64)
+
+    ctrl_points = find_control_points(points)
+
+    print(f"{points=}")
+    print(f"{ctrl_points=}")
+
+    poly_points = poly_from_ctrl_points(points, ctrl_points)
+
+    print(ctrl_points)
+
+    img = Image(600, 600)
+    img.clear('white')
+
+    img.draw_polygon(points, 'black', line_width=2)
+    img.draw_polygon(poly_points, 'red', line_width=2)
+    img.draw_dots(points, diameter=8, color='red')
+    img.draw_dots(ctrl_points, diameter=10, color='blue')
+
+    filename = "test_smooth_polyline.png"
+    img.save(outfile(filename), 'png')
+
+    assert check_file(filename)
+
+
 def test_distance_pt_to_line():
     """
     A few quick checks -- points on either side should be same dist
@@ -221,6 +253,7 @@ def test_distance_pt_to_line_beyond():
     d3 = distance_pt_to_line(point, line_end, line_start)
 
     assert d3 == d1
+
 
 
 # if __name__ == "__main__":

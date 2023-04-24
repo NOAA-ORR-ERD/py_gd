@@ -839,7 +839,7 @@ cdef class Image:
     def draw_spline_polygon(self, points,
                             line_color=None, fill_color=None,
                             int line_width=1,
-                            double smooth_value=0.5,
+                            double smoothness=0.5,
                             ):
         """
         Draw a polygon
@@ -857,8 +857,8 @@ cdef class Image:
         :param line_width=1: width of line
         :type line_width: integer
 
-        :param smooth_value=0.5: smoothness of the corners -- usually between 0 and 1.0
-        :type smooth_value: float
+        :param smoothness=0.5: smoothness of the corners -- usually between 0 and 1.0
+        :type smoothness: float
         """
         cdef int n
         cdef cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] points_arr
@@ -874,7 +874,7 @@ cdef class Image:
         cdef cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] ctrl_points
         cdef cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] poly_points
 
-        ctrl_points = find_control_points(points_arr, smooth_value=smooth_value)
+        ctrl_points = find_control_points(points_arr, smoothness=smoothness)
         poly_points = poly_from_ctrl_points(points_arr, ctrl_points)
 
         self.draw_polygon(poly_points,

@@ -507,13 +507,13 @@ def test_draw_spline_polygon():
     img.draw_spline_polygon(vertices,
                             fill_color='blue',
                             line_color=None,
-                            smooth_value=0.5)
+                            smoothness=0.5)
 
     img.draw_spline_polygon(vertices,
                             fill_color=None,
                             line_color='red',
                             line_width=2,
-                            smooth_value=1.0)
+                            smoothness=1.0)
 
     # print(img.get_color_names())
     img.draw_dots(vertices, diameter=8, color='red')
@@ -521,6 +521,35 @@ def test_draw_spline_polygon():
     filename = "test_image_spline_polygon.png"
     img.save(outfile(filename), 'png')
     assert check_file(filename)
+
+
+def test_draw_spline_polyline():
+
+    img = Image(600, 600)
+    img.clear('white')
+
+    vertices = [(100, 100),
+                (200, 500),
+                (300, 300),
+                (500, 400),
+                (500, 100),
+                (250, 250),
+                ]
+
+    img.draw_spline_polyline(vertices,
+                             fill_color=None,
+                             line_color='red',
+                             line_width=3,
+                             smoothness=1.0)
+
+    img.draw_dots(vertices, diameter=8, color='red')
+
+    filename = "test_image_spline_polyline.png"
+    img.save(outfile(filename), 'png')
+
+    assert check_file(filename)
+
+
 
 
 def test_rectangles():
