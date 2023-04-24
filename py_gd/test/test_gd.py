@@ -105,7 +105,7 @@ def check_file(name):
          'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076',
          'test_image_x_lots.png': 'a5fe62ddc48b944eec0eeb449a7c0446',
          'test_smooth_poly.png': 'd8802ab8da358d7789f0ee8e0f12bd77',
-         'test_smooth_polyline.png': '45bebf563847ae3dc6a0d6d5a33797ee',
+         'test_smooth_polyline.png': 'a2babf2deb4cb01ad66ea84d47d0b2d6',
          'test_spline_1.png': '3c89b4aa7dfd1eda601d7016925a7b60',
          'test_spline_2.png': '16ed4f5f857d57288d23b632e1839fa1',
          'test_spline_flat.png': 'bd75cdd52bfdec87648f3a894f8e83b6',
