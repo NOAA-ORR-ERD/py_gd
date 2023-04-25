@@ -100,12 +100,13 @@ def check_file(name):
          'test_image_save.jpg': 'e6d5a45b093988240cbe3d0365c0675a',
          'test_image_save.png': '3067832d58ce76285b7e32d3f42e2659',
          'test_image_spline_polygon.png': 'f71ff8d679ed1860a0b032e71a473dc1',
+         'test_image_spline_polyline.png': 'af9c837b42d5ab88e175416edd7b0ce7',
          'test_image_text.bmp': 'a7b1fe64f4da978706d857c39ce5c026',
          'test_image_with_colorramp.png': 'b73b81b6badde809753f801d96b1b0dd',
          'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076',
          'test_image_x_lots.png': 'a5fe62ddc48b944eec0eeb449a7c0446',
-         'test_smooth_poly.png': 'd8802ab8da358d7789f0ee8e0f12bd77',
-         'test_smooth_polyline.png': 'a2babf2deb4cb01ad66ea84d47d0b2d6',
+         'test_smooth_poly.png': '49da823dd438bb9d3ae23781c535f870',
+         'test_smooth_polyline.png': '1a9d246927069c2e35142ec49de272b0',
          'test_spline_1.png': '3c89b4aa7dfd1eda601d7016925a7b60',
          'test_spline_2.png': '16ed4f5f857d57288d23b632e1839fa1',
          'test_spline_flat.png': 'bd75cdd52bfdec87648f3a894f8e83b6',
@@ -526,31 +527,28 @@ def test_draw_spline_polygon():
     assert check_file(filename)
 
 
-# def test_draw_spline_polyline():
+def test_draw_spline_polyline():
 
-#     img = Image(600, 600)
-#     img.clear('white')
+    img = Image(600, 600)
+    img.clear('white')
 
-#     vertices = [(100, 100),
-#                 (200, 500),
-#                 (300, 300),
-#                 (500, 400),
-#                 (500, 100),
-#                 (250, 250),
-#                 ]
+    vertices = [(100, 100),
+                (200, 300),
+                (400, 300),
+                (500, 400),
+                ]
 
-#     img.draw_spline_polyline(vertices,
-#                              fill_color=None,
-#                              line_color='red',
-#                              line_width=3,
-#                              smoothness=1.0)
+    img.draw_spline_polyline(vertices,
+                             line_color='blue',
+                             line_width=3,
+                             smoothness=1.0)
 
-#     img.draw_dots(vertices, diameter=8, color='red')
+    img.draw_dots(vertices, diameter=8, color='red')
 
-#     filename = "test_image_spline_polyline.png"
-#     img.save(outfile(filename), 'png')
+    filename = "test_image_spline_polyline.png"
+    img.save(outfile(filename), 'png')
 
-#     assert check_file(filename)
+    assert check_file(filename)
 
 
 def test_rectangles():

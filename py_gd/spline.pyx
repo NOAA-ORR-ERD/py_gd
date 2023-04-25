@@ -14,6 +14,10 @@ NOTE: This is bezier splines. Another option would be Catmull-Rom splines:
 
 https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
 
+and some code:
+
+https://dev.to/ndesmic/splines-from-scratch-catmull-rom-3m66
+
 Some timings:
 
 from py_gd.spline import bezier_curve2, bezier_curve
@@ -419,8 +423,11 @@ def find_control_points(cnp.ndarray[double, ndim=2, mode='c'] in_points,
     cdef cnp.ndarray[double, ndim=2, mode='c'] ctrl_points
 
     points = np.zeros((num_verts + 3, 2), dtype=np.float64)
-    points[:-3, :] = in_points
-    points[-3:] = in_points[:3]
+    # points[:-3, :] = in_points
+    # points[-3:] = in_points[:3]
+    points[0, :] = in_points[-1, :]
+    points[1:-2, :] = in_points[:, :]
+    points[-2:] = in_points[:2, :]
 
     ctrl_points = np.zeros((num_verts * 2, 2), dtype=np.float64)
 
@@ -514,16 +521,17 @@ def polygon_from_ctrl_points(cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] points
     for i in range(len(points) - 1):
         poly_points.extend(bezier_curve(points[i],
                                         points[i + 1],
-                                        ctrl_points[2 * i - 2],
-                                        ctrl_points[2 * i - 1]).tolist())
+                                        ctrl_points[2 * i],
+                                        ctrl_points[2 * i + 1]).tolist())
 
     poly_points.extend(bezier_curve(points[-1],
                                     points[0],
-                                    ctrl_points[-4],
-                                    ctrl_points[-3]).tolist())
+                                    ctrl_points[-2],
+                                    ctrl_points[-1]).tolist())
 
 
     return np.array(poly_points, dtype=np.float64)
+
 
 def polyline_from_ctrl_points(cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] points,
                               cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] ctrl_points):
@@ -534,8 +542,14 @@ def polyline_from_ctrl_points(cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] point
     for i in range(len(points) - 1):
         poly_points.extend(bezier_curve(points[i],
                                         points[i + 1],
-                                        ctrl_points[2 * i - 2],
-                                        ctrl_points[2 * i - 1]).tolist())
+                                        ctrl_points[2 * i],
+                                        ctrl_points[2 * i + 1]).tolist())
+
+    # for i in range(len(points) - 1):
+    #     poly_points.extend(bezier_curve(points[i],
+    #                                     points[i + 1],
+    #                                     ctrl_points[2 * i - 2],
+    #                                     ctrl_points[2 * i - 1]).tolist())
 
     # poly_points.extend(bezier_curve(points[-1],
     #                                 points[0],
@@ -544,3 +558,22 @@ def polyline_from_ctrl_points(cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] point
 
 
     return np.array(poly_points, dtype=np.float64)
+
+
+def catmull_rom_spline(points, t):
+    """
+    experimental catmul-rom spline code
+    """
+    p0 = points[0]
+    p1 = points[1]
+    p2 = points[2]
+    p3 = points[3]
+
+    q0 = (-1 * t ** 3) + (2 * t ** 2) + (-1 * t)
+    q1 = (3 * t ** 3) + (-5 * t ** 2) + 2
+    q2 = (-3 * t ** 3) + (4 * t ** 2) + t
+    q3 = t ** 3 - t ** 2
+
+    return (0.5 * ((p0[0] * q0) + (p1[0] * q1) + (p2[0] * q2) + (p3[0] * q3)),
+            0.5 * ((p0[1] * q0) + (p1[1] * q1) + (p2[1] * q2) + (p3[1] * q3)),
+            )

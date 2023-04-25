@@ -50,7 +50,7 @@ def test_bezier_curve_flat():
 
     spline_pts = bezier_curve(pt1, pt2, cp1, cp2)
 
-    print(spline_pts)
+    # print(spline_pts)
 
     img = Image(600, 600)
     img.clear('white')
@@ -73,7 +73,7 @@ def test_bezier_curve_single_ctrl_pt():
 
     spline_pts = bezier_curve(pt1, pt2, cp1, cp2)
 
-    print(spline_pts)
+    # print(spline_pts)
 
     img = Image(600, 600)
     img.clear('white')
@@ -99,7 +99,7 @@ def test_find_control_points():
 
     ctrl_points = find_control_points(points)
 
-    print(ctrl_points)
+    # print(ctrl_points)
 
     img = Image(600, 600)
     img.clear('white')
@@ -110,7 +110,7 @@ def test_find_control_points():
 
     filename = "test_control_points.png"
     img.save(outfile(filename), 'png')
-    # assert check_file(filename)
+    assert check_file(filename)
 
 
 def test_polygon_from_ctrl_points():
@@ -122,14 +122,12 @@ def test_polygon_from_ctrl_points():
                        (250, 250),
                        ], dtype=np.float64)
 
-    ctrl_points = find_control_points(points)
+    ctrl_points = find_control_points(points, smoothness=0.75)
 
-    print(f"{points=}")
-    print(f"{ctrl_points=}")
+    # print(f"{points=}")
+    # print(f"{ctrl_points=}")
 
     poly_points = polygon_from_ctrl_points(points, ctrl_points)
-
-    print(ctrl_points)
 
     img = Image(600, 600)
     img.clear('white')
@@ -150,17 +148,15 @@ def test_polyline_from_ctrl_points():
                        (300, 300),
                        (500, 400),
                        (500, 100),
-                       # (250, 250),
                        ], dtype=np.float64)
 
-    ctrl_points = find_control_points(points)
-    # ctrl_points = ctrl_points[1:-1, :]
-    ctrl_points[-2, :] = ctrl_points[-1, :]
-    ctrl_points[-5, :] = ctrl_points[-6, :]
-    # ctrl_points[6, :] = ctrl_points[7, :]
+    ctrl_points = find_control_points(points, smoothness=1.0)
+    ctrl_points = ctrl_points[:-2, :]
+    ctrl_points[0, :] = ctrl_points[1, :]
+    ctrl_points[-1, :] = ctrl_points[-2, :]
 
-    print(f"{len(points)=}")
-    print(f"{len(ctrl_points)=}")
+    # print(f"{len(points)=}")
+    # print(f"{len(ctrl_points)=}")
 
     poly_points = polyline_from_ctrl_points(points, ctrl_points)
 
@@ -192,7 +188,6 @@ def test_distance_pt_to_line():
 
     point = (6.0, 5.0)
     d1 = distance_pt_to_line(point, line_start, line_end)
-    print(d1)
 
     assert math.isclose(d1, 0.7071067811865476)
 

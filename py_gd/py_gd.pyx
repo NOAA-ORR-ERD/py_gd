@@ -920,6 +920,55 @@ cdef class Image:
 
             gdImageSetThickness(self._image, 1)
 
+
+    def draw_spline_polyline(self, points,
+                             line_color=None,
+                             int line_width=1,
+                             double smoothness=0.5,
+                             ):
+        """
+        Draw a smooth spline polyline
+
+        :param points: sequence of points
+        :type points: Nx2 array of integers (or somethign that can be turned
+                      into one)
+
+        :param line_color=None: the color of the outline
+        :type line_color=None:  color name or index
+
+        :param line_width=1: width of line
+        :type line_width: integer
+
+        :param smoothness=0.5: smoothness of the corners -- usually between 0 and 1.0
+        :type smoothness: float
+        """
+        cdef int n
+        cdef cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] points_arr
+
+        points_arr = asn2array(points, dtype=np.float64)
+
+        n = points_arr.shape[0]
+
+        if n < 3:
+            raise ValueError('There must be at least three points specified '
+                             'for a spline polyline')
+
+        cdef cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] ctrl_points
+        cdef cnp.ndarray[cnp.float64_t, ndim=2, mode='c'] poly_points
+
+        ctrl_points = find_control_points(points_arr, smoothness=smoothness)
+        # remove the extras
+        ctrl_points = ctrl_points[:-2, :]
+        # move the ends
+        ctrl_points[0, :] = ctrl_points[1, :]
+        ctrl_points[-1, :] = ctrl_points[-2, :]
+        poly_points = polyline_from_ctrl_points(points_arr, ctrl_points)
+
+        self.draw_polyline(poly_points,
+                           line_color=line_color,
+                           line_width=line_width)
+
+
     def draw_rectangle(self, pt1, pt2, line_color=None, fill_color=None,
                        int line_width=1):
         """
