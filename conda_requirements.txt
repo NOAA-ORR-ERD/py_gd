@@ -1,11 +1,5 @@
-python>=3.8
-cython
+python>=3.9
 numpy
 libgd
 
-# for development
-pytest
-
-# to build the docs
-sphinx
 

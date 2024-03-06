@@ -129,7 +129,7 @@ def test_asn2array():
     """
     arr = asn2array([(1, 2), (3, 4), (5, 6)], dtype=np.intc)
 
-    assert type(arr) == np.ndarray
+    assert isinstance(arr, np.ndarray)
     assert arr.shape == (3, 2)
     assert arr.dtype == np.intc
 

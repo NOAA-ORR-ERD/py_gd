@@ -106,7 +106,8 @@ ext_modules = [Extension("py_gd.py_gd",
                          libraries=libraries,
                          extra_compile_args=compile_args,
                          extra_link_args=link_args,
-                         )]
+                         ),
+                ]
 
 ext_modules = cythonize(
                   ext_modules,
@@ -138,8 +139,8 @@ setup(name="py_gd",
       ext_modules=cythonize(ext_modules),
       zip_safe=False,  # dont want a compiled extension in a zipfile...
       packages=['py_gd', 'py_gd.test'],
-      python_requires='>=3.8',
-      classifiers=["Development Status :: 2 - Pre-Alpha",
+      python_requires='>=3.10',
+      classifiers=["Development Status :: 5 - Production/Stable",
                    "Topic :: Utilities",
                    "License :: Public Domain",
                    "Intended Audience :: Developers",
