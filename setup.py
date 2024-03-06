@@ -139,7 +139,7 @@ setup(name="py_gd",
       ext_modules=cythonize(ext_modules),
       zip_safe=False,  # dont want a compiled extension in a zipfile...
       packages=['py_gd', 'py_gd.test'],
-      python_requires='>=3.10',
+      python_requires='>=3.9',
       classifiers=["Development Status :: 5 - Production/Stable",
                    "Topic :: Utilities",
                    "License :: Public Domain",
