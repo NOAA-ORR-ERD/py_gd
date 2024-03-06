@@ -8,7 +8,7 @@ jobs:
     strategy:
         matrix:
             os: ["ubuntu-latest", "windows-latest"]
-            pyver: ["3.8", "3.9", "3.10", "3.11"]
+            pyver: ["3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v2
       - uses: conda-incubator/setup-miniconda@v2
@@ -26,7 +26,7 @@ jobs:
       - name: Build
         shell: bash -l {0}
         run: |
-            conda install --file conda_requirements.txt --file conda_requirements_dev.txt
+            conda install python=${{ matrix.pyver }} --file conda_requirements.txt --file conda_requirements_dev.txt
             pip install .
 
       - name: Test
@@ -42,7 +42,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: lint
-          python-version: 3.9
+          python-version: 3.12
           auto-activate-base: false
       - shell: bash -l {0}
         run: |
