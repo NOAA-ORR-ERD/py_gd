@@ -171,7 +171,7 @@ def test_polyline_from_ctrl_points():
     for i, pt in enumerate(ctrl_points):
         img.draw_text(f"{i} ", pt,  align="r")
 
-    filename = "test_smooth_polyline.png"
+    filename = "test_polyline_from_ctrl_points.png"
     img.save(outfile(filename), 'png')
 
     assert check_file(filename)

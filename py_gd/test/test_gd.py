@@ -105,6 +105,7 @@ def check_file(name):
          'test_image_with_colorramp.png': 'b73b81b6badde809753f801d96b1b0dd',
          'test_image_x_large.png': 'e57caa7c4304f3806eb3f327ff717076',
          'test_image_x_lots.png': 'a5fe62ddc48b944eec0eeb449a7c0446',
+         'test_polyline_from_ctrl_points.png': 'cc0ca4db098d7c8e54e0d2bdca0482e9',
          'test_smooth_poly.png': '49da823dd438bb9d3ae23781c535f870',
          'test_smooth_polyline.png': '1a9d246927069c2e35142ec49de272b0',
          'test_spline_1.png': '3c89b4aa7dfd1eda601d7016925a7b60',
