@@ -26,7 +26,8 @@ jobs:
       - name: Build
         shell: bash -l {0}
         run: |
-            conda install --file conda_requirements.txt --file conda_requirements_dev.txt
+            conda list
+            conda install python={{ matrix.pyver }} --file conda_requirements.txt --file conda_requirements_dev.txt
             pip install .
 
       - name: Test
@@ -42,7 +43,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: lint
-          python-version: 3.9
+          python-version: ${{ matrix.pyver }}
           auto-activate-base: false
       - shell: bash -l {0}
         run: |

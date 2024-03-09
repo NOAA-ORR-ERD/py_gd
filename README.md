@@ -6,6 +6,12 @@ Welcome to the `py_gd` project.
 
 py-gd aims to provide nice Pythonic wrappers around libgd -- a robust, fast, and simple drawing lib:
 
+Docs here:
+
+https://noaa-orr-erd.github.io/py_gd/
+
+Code here:
+
 https://github.com/libgd/libgd/
 
 ## Why gd?
