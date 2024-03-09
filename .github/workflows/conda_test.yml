@@ -27,7 +27,7 @@ jobs:
         shell: bash -l {0}
         run: |
             conda list
-            conda install python={{ matrix.pyver }} --file conda_requirements.txt --file conda_requirements_dev.txt
+            conda install python=${{ matrix.pyver }} --file conda_requirements.txt --file conda_requirements_dev.txt
             pip install .
 
       - name: Test
