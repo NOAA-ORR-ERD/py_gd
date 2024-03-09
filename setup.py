@@ -83,20 +83,30 @@ class cleanall(clean):
                 if err.errno != 2:  # ignore the not-found error
                     raise
 
-
 # This setup requires libgd and its dependent libs
 # It expects to find them in the "usual" locations
 #   or where conda puts it...
 
-ext_modules = [Extension("py_gd.py_gd",
-                         ["py_gd/py_gd.pyx"],
-                         include_dirs=include_dirs,
-                         library_dirs=library_dirs,
-                         libraries=libraries,
-                         extra_compile_args=compile_args,
-                         extra_link_args=link_args,
-                         ),
-                ]
+ext_modules = [
+    Extension(
+        "py_gd.py_gd",
+        ["py_gd/py_gd.pyx"],
+        include_dirs=include_dirs,
+        library_dirs=library_dirs,
+        libraries=libraries,
+        extra_compile_args=compile_args,
+        extra_link_args=link_args,
+    ),
+    Extension(
+        "py_gd.spline",
+        ["py_gd/spline.pyx"],
+        include_dirs=include_dirs,
+        library_dirs=library_dirs,
+        libraries=libraries,
+        extra_compile_args=compile_args,
+        extra_link_args=link_args,
+    )
+]
 
 ext_modules = cythonize(
                   ext_modules,

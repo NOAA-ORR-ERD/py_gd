@@ -1,4 +1,4 @@
-cython
+cython>=3
 pytest
 sphinx
 

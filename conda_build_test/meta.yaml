@@ -1,0 +1,53 @@
+{% set version = "2.0.4" %}
+{% set sha256 = "6d07c5af5fb84a87bddd64aaaaf473a0062f3243b76afb791eabd511a7b60917" %}
+{% set libgd_version = "2.3.*" %}
+
+package:
+  name: py_gd
+  version: {{ version }}
+
+# source:
+#   fn: py_gd-{{ version }}.tar.gz
+#   url: https://github.com/NOAA-ORR-ERD/py_gd/archive/v{{ version }}.tar.gz
+#   sha256: {{ sha256 }}
+source:
+  path: ../
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv
+  skip: True  # [py<39 or py>311 or pypython_impl == 'pypy']
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+  host:
+    - python
+    - pip
+    - libgd {{ libgd_version }}
+    - cython
+    - numpy
+
+  run:
+    - python
+    - {{ pin_compatible('libgd') }}
+    - {{ pin_compatible('numpy') }}
+
+test:
+  requires:
+    - pytest
+  imports:
+    - py_gd
+  commands:
+    - py.test --pyargs py_gd
+
+about:
+  home: https://github.com/NOAA-ORR-ERD/py_gd
+  license: CC0-1.0
+  summary: Pythonic wrappers for the libgd graphics rendering library
+
+extra:
+  recipe-maintainers:
+    - ChrisBarker-NOAA
+    - jay-hennen
+    - JamesMakela-NOAA
