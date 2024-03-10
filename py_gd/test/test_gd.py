@@ -138,14 +138,14 @@ def test_asn2array():
     """
     arr = asn2array([(1, 2), (3, 4), (5, 6)], dtype=np.intc)
 
-    assert type(arr) == np.ndarray
+    assert isinstance(arr, np.ndarray)
     assert arr.shape == (3, 2)
     assert arr.dtype == np.intc
 
 
 def test_asn2array_fail():
     """
-    check if it fails when wrong imput is used
+    check if it fails when wrong input is used
     """
     with pytest.raises(ValueError):
         _arr = asn2array([(1, 2, 3), (3, 4, 5), (5, 6, 7)], dtype=np.intc)  # noqa: F841
