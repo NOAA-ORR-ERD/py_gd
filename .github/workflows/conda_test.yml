@@ -6,6 +6,7 @@ jobs:
     name: Miniconda ${{ matrix.os }} Py${{ matrix.pyver }}
     runs-on: ${{ matrix.os }}
     strategy:
+        fail-fast: false
         matrix:
             os: ["ubuntu-latest", "windows-latest"]
             pyver: ["3.9", "3.10", "3.11", "3.12"]
