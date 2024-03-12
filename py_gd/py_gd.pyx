@@ -78,11 +78,7 @@ cdef FILE* open_file(file_path) except *:
 
     IF UNAME_SYSNAME == 'Windows':
         cdef bytes bytes_flag = "wb".encode('utf-16')
-        cdef char* char_flag = bytes_flag
-
         cdef bytes bytes_filepath = file_path.encode('utf-16')
-        # cdef char* char_filename = bytes_filepath
-
         fp = _wfopen(<wchar_t*> char_filename, <wchar_t*> char_flag)
     ELSE:
         cdef bytes bytes_flag = "wb".encode('ascii')
