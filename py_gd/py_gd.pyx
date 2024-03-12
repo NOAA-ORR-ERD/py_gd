@@ -76,16 +76,18 @@ cdef FILE* open_file(file_path) except *:
 
     fp = NULL
 
-    open_flag = "wb"
     IF UNAME_SYSNAME == 'Windows':
-        # convert pystring to wchar
-        # doing in two steps -- neccesary? it seems so.
-        # (Cython knows how to cast a bytes to a char*)
-        cdef char* windows_filename = file_path.encode('utf-16')
-        cdef char* open_flag = "wb".encode('utf-16')
-        fp = _wfopen(<wchar_t*> windows_filename, <wchar_t*> flag)
+        bytes_flag = "wb".encode('utf-16')
+        cdef wchar_t* flag = bytes_flag
+
+        bytes_filepath = file_path.encode('utf-16')
+        cdef wchar_t* windows_filename = bytes_filepath
+
+        fp = _wfopen(windows_filename, flag)
     ELSE:
-        fp = fopen(file_path.encode('utf-8'), open_flag)
+        bytes_flag = "wb".encode('ascii')
+        cdef char* flag = bytes_flag
+        fp = fopen(file_path.encode('utf-8'), flag)
 
     if fp is NULL:
         raise OSError('could not open the file: {}'.format(file_path))
