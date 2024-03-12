@@ -32,6 +32,9 @@ w, h = r1 * 4.8, r1 * 4.8
 img = py_gd.Image(w, h)
 img.clear('white')
 
+print("Vertices of Star")
+print(vertices)
+
 for c, smooth in zip(centers, (0.25, 0.5, 0.75, 1.0)):
     verts = vertices + c
     img.draw_spline_polygon(verts,
