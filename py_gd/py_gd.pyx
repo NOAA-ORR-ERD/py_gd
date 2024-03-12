@@ -80,8 +80,9 @@ cdef FILE* open_file(file_path) except *:
     IF UNAME_SYSNAME == 'Windows':
         # convert pystring to wchar
         cdef wchar_t* windows_filename
+        cdef wchar_t* flag = <wchar_t*> "wb".encode('utf-16')
         windows_filename = <wchar_t*> file_path.encode('utf-16')
-        fp = _wfopen(windows_filename, "wb")
+        fp = _wfopen(windows_filename, flag)
     ELSE:
         fp = fopen(file_path.encode('utf-8'), 'wb')
 
