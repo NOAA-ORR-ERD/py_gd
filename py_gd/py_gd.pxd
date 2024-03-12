@@ -8,9 +8,10 @@ import cython
 
 from libc.stdio cimport FILE
 IF UNAME_SYSNAME == "Windows":
+    from libc.stddef cimport wchar_t
     cdef extern from "<windows.h>":
 #        ctypedef Py_UNICODE wchar_t
-        wchar_t
+#        ctypedef WCHAR wchar_t
         FILE *_wfopen(const wchar_t *filename, const wchar_t *mode)
 
 ## access the gd header files:
