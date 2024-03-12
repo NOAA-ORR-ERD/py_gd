@@ -77,17 +77,16 @@ cdef FILE* open_file(file_path) except *:
     fp = NULL
 
     IF UNAME_SYSNAME == 'Windows':
-        bytes_flag = "wb".encode('utf-16')
+        cdef bytes bytes_flag = "wb".encode('utf-16')
         cdef char* char_flag = bytes_flag
 
-        bytes_filepath = file_path.encode('utf-16')
-        cdef char* char_filename = bytes_filepath
+        cdef bytes bytes_filepath = file_path.encode('utf-16')
+        # cdef char* char_filename = bytes_filepath
 
         fp = _wfopen(<wchar_t*> char_filename, <wchar_t*> char_flag)
     ELSE:
-        bytes_flag = "wb".encode('ascii')
-        cdef char* flag = bytes_flag
-        fp = fopen(file_path.encode('utf-8'), flag)
+        cdef bytes bytes_flag = "wb".encode('ascii')
+        fp = fopen(file_path.encode('utf-8'), bytes_flag)
 
     if fp is NULL:
         raise OSError('could not open the file: {}'.format(file_path))
