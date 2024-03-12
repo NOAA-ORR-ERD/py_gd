@@ -10,6 +10,7 @@ from libc.stdio cimport FILE
 IF UNAME_SYSNAME == "Windows":
     cdef extern from "<windows.h>":
 #        ctypedef Py_UNICODE wchar_t
+        wchar_t
         FILE *_wfopen(const wchar_t *filename, const wchar_t *mode)
 
 ## access the gd header files:
