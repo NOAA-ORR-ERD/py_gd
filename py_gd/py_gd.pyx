@@ -63,24 +63,26 @@ cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
 
     return arr
 
+
 cdef FILE* open_file(file_path) except *:
     """
-    opens a file
+    opens a file for writing
 
     :param path: python str or PathLike
 
     :returns: File Pointer
 
     Note: On Windows, it uses a wchar, UTC-16 encoded
-          On other platforms (Mac and Linux), it assumes utf-8
+          On other platforms (Mac and Linux), it assumes utf-8.
+
+          If the file system is not utf-8 encoded, this will only
+          work for ascii file paths.
     """
     cdef FILE* fp = NULL
 
     file_path = os.fspath(file_path)
 
     IF UNAME_SYSNAME == 'Windows':
-        #cdef bytes bytes_flag = "wb".encode('utf-16')
-        #cdef bytes bytes_filepath = file_path.encode('utf-16').bytes
         cdef Py_ssize_t length
         cdef wchar_t *wchar_flag = PyUnicode_AsWideCharString("wb", &length)
         cdef wchar_t *wchar_filepath = PyUnicode_AsWideCharString(file_path, &length)
@@ -90,8 +92,7 @@ cdef FILE* open_file(file_path) except *:
         PyMem_Free(<void *>wchar_filepath)
         PyMem_Free(<void *>wchar_flag)
     ELSE:
-        cdef bytes bytes_flag = "wb".encode('ascii')
-        fp = fopen(file_path.encode('utf-8'), bytes_flag)
+        fp = fopen(file_path.encode('utf-8'), "wb")
 
     if fp is NULL:
         raise OSError('could not open the file: {}'.format(file_path))
