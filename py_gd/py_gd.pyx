@@ -16,6 +16,7 @@ from cython cimport view
 
 from py_gd cimport *
 
+from cpython.mem cimport PyMem_Free
 from libc.stdio cimport FILE, fopen, fclose
 from libc.string cimport memcpy, strlen
 from libc.stdlib cimport malloc, free
@@ -73,11 +74,9 @@ cdef FILE* open_file(file_path) except *:
     Note: On Windows, it uses a wchar, UTC-16 encoded
           On other platforms (Mac and Linux), it assumes utf-8
     """
-    cdef FILE* fp
+    cdef FILE* fp = NULL
 
     file_path = os.fspath(file_path)
-
-    fp = NULL
 
     IF UNAME_SYSNAME == 'Windows':
         #cdef bytes bytes_flag = "wb".encode('utf-16')
@@ -87,6 +86,9 @@ cdef FILE* open_file(file_path) except *:
         cdef wchar_t *wchar_filepath = PyUnicode_AsWideCharString(file_path, &length)
 
         fp = _wfopen(wchar_filepath, wchar_flag)
+
+        PyMem_Free(<void *>wchar_filepath)
+        PyMem_Free(<void *>wchar_flag)
     ELSE:
         cdef bytes bytes_flag = "wb".encode('ascii')
         fp = fopen(file_path.encode('utf-8'), bytes_flag)
