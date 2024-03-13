@@ -7,6 +7,9 @@ NOTE: pixel coordinates are defined as c ints -- if you pass in values
       larger than a c int can take (usually ~ 2**31 - 1), it will overflow,
       and who knows what you'll get.
 """
+import os
+import sys
+import operator
 
 import cython
 from cython cimport view
@@ -16,10 +19,10 @@ from py_gd cimport *
 from libc.stdio cimport FILE, fopen, fclose
 from libc.string cimport memcpy, strlen
 from libc.stdlib cimport malloc, free
+from libc.stddef cimport wchar_t
 
-import os
-import sys
-import operator
+cdef extern from "Python.h":
+    wchar_t* PyUnicode_AsWideCharString(object, Py_ssize_t *)
 
 import numpy as np
 cimport numpy as cnp
@@ -77,9 +80,13 @@ cdef FILE* open_file(file_path) except *:
     fp = NULL
 
     IF UNAME_SYSNAME == 'Windows':
-        cdef bytes bytes_flag = "wb".encode('utf-16')
-        cdef bytes bytes_filepath = file_path.encode('utf-16')
-        fp = _wfopen(<wchar_t*> char_filename, <wchar_t*> char_flag)
+        #cdef bytes bytes_flag = "wb".encode('utf-16')
+        #cdef bytes bytes_filepath = file_path.encode('utf-16').bytes
+        cdef Py_ssize_t length
+        cdef wchar_t *wchar_flag = PyUnicode_AsWideCharString("wb", &length)
+        cdef wchar_t *wchar_filepath = PyUnicode_AsWideCharString(file_path, &length)
+
+        fp = _wfopen(wchar_filepath, wchar_flag)
     ELSE:
         cdef bytes bytes_flag = "wb".encode('ascii')
         fp = fopen(file_path.encode('utf-8'), bytes_flag)
