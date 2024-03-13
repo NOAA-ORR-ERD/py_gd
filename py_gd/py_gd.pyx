@@ -79,7 +79,7 @@ cdef FILE* open_file(file_path) except *:
     IF UNAME_SYSNAME == 'Windows':
         cdef bytes bytes_flag = "wb".encode('utf-16')
         cdef bytes bytes_filepath = file_path.encode('utf-16')
-        fp = _wfopen(<wchar_t*> bytes_filename, <wchar_t*> bytes_flag)
+        fp = _wfopen(<wchar_t*> bytes_filepath, <wchar_t*> bytes_flag)
     ELSE:
         cdef bytes bytes_flag = "wb".encode('ascii')
         fp = fopen(file_path.encode('utf-8'), bytes_flag)
