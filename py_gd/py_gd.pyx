@@ -79,7 +79,6 @@ cdef FILE* open_file(file_path, str mode) except *:
           work for ascii file paths.
     """
     cdef FILE* fp = NULL
-    cdef bytes bmode = mode.encode('ascii')
 
     file_path = os.fspath(file_path)
 

@@ -30,7 +30,7 @@ def test_open_file(filename):
 
     # try to read it (which implies it could be opened)
 
-    results = py_gd.py_gd._read_text_file(filename, encoding="utf-8")
+    results = py_gd.py_gd._read_text_file(path, encoding="utf-8")
 
     assert results == contents
 
