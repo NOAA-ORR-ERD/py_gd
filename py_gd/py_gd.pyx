@@ -17,7 +17,7 @@ from cython cimport view
 from py_gd cimport *
 
 from cpython.mem cimport PyMem_Free
-from libc.stdio cimport FILE, fopen, fclose
+from libc.stdio cimport FILE, fopen, fclose, fread
 from libc.string cimport memcpy, strlen
 from libc.stdlib cimport malloc, free
 from libc.stddef cimport wchar_t
@@ -98,6 +98,33 @@ cdef FILE* open_file(file_path) except *:
         raise OSError('could not open the file: {}'.format(file_path))
 
     return fp
+
+
+def _read_text_file(filepath, encoding="utf-8"):
+    """
+    Read the content of the text file, decoded with the specified
+    decoding.
+
+    NOTE: this is only here so that open_file can be tested from Python
+
+    it will only read 1025 bytes
+    """
+    cdef FILE* fp
+    cdef Py_ssize_t length = 0
+    cdef char buffer[1024]
+
+    print("trying to read:", filepath)
+    fp = open_file(filepath)
+
+    # read the bytes into the buffer
+    length = fread(buffer, 1, sizeof(buffer), fp)
+    print("read: ", length, "bytes")
+
+    # decode into Python string
+    ustring = buffer[:length].decode(encoding)
+
+    print("contents", ustring)
+    return ustring
 
 
 cdef draw_single_dot(gdImagePtr image,
