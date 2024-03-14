@@ -14,7 +14,7 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 
 
 @pytest.mark.parametrize("filename", ["simple_ascii.txt",
-#                                      "file\u2014name_with_unicode.txt",  # u2014 is an EmDash])
+                                      "file\u2014name_with_unicode.txt",  # u2014 is an EmDash])
                                       ])
 def test_open_file(filename):
     """
@@ -30,7 +30,7 @@ def test_open_file(filename):
 
     # try to read it (which implies it could be opened)
 
-    results = py_gd.py_gd._read_text_file(filename, encoding="utf-8")
+    results = py_gd.py_gd._read_text_file(path, encoding="utf-8")
 
     assert results == contents
 

@@ -79,24 +79,25 @@ cdef FILE* open_file(file_path, str mode) except *:
           work for ascii file paths.
     """
     cdef FILE* fp = NULL
-    cdef bytes bmode = mode.encode('ascii')
+
+    mode = mode + ", ccs=UTF-8" # for Windows fopen
 
     file_path = os.fspath(file_path)
 
-    IF UNAME_SYSNAME == 'Windows':
-        cdef Py_ssize_t length
-        cdef wchar_t *wchar_flag = PyUnicode_AsWideCharString(mode, &length)
-        cdef wchar_t *wchar_filepath = PyUnicode_AsWideCharString(file_path, &length)
+    # IF UNAME_SYSNAME == 'Windows':
+    #     cdef Py_ssize_t length
+    #     cdef wchar_t *wchar_flag = PyUnicode_AsWideCharString(mode, &length)
+    #     cdef wchar_t *wchar_filepath = PyUnicode_AsWideCharString(file_path, &length)
 
-        fp = _wfopen(wchar_filepath, wchar_flag)
+    #     fp = _wfopen(wchar_filepath, wchar_flag)
 
-        PyMem_Free(<void *>wchar_filepath)
-        PyMem_Free(<void *>wchar_flag)
-    ELSE:
-        fp = fopen(file_path.encode('utf-8'), mode.encode('ascii'))
+    #     PyMem_Free(<void *>wchar_filepath)
+    #     PyMem_Free(<void *>wchar_flag)
+    # ELSE:
+    fp = fopen(file_path.encode('utf-8'), mode.encode('ascii'))
 
     if fp is NULL:
-        raise OSError('could not open the file: {}'.format(file_path))
+        raise OSError('Could not open the file: {}'.format(file_path))
 
     return fp
 
@@ -114,17 +115,13 @@ def _read_text_file(filepath, encoding="utf-8"):
     cdef Py_ssize_t length = 0
     cdef char buffer[1024]
 
-    print("trying to read:", filepath)
     fp = open_file(filepath, "r")
 
     # read the bytes into the buffer
     length = fread(buffer, 1, sizeof(buffer), fp)
-    print("read: ", length, "bytes")
-
     # decode into Python string
     ustring = buffer[:length].decode(encoding)
 
-    print("contents", ustring)
     return ustring
 
 
