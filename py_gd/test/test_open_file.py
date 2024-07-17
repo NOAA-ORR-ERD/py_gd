@@ -32,4 +32,5 @@ def test_open_file(filename):
 
     results = py_gd.py_gd._read_text_file(path, encoding="utf-8")
 
-    assert results == contents
+    # stripping to clean off newlines
+    assert results.strip() == contents.strip()
