@@ -17,7 +17,7 @@ from cython cimport view
 from py_gd cimport *
 
 from cpython.mem cimport PyMem_Free
-from libc.stdio cimport FILE, fopen, fclose
+from libc.stdio cimport FILE, fopen, fclose, fread
 from libc.string cimport memcpy, strlen
 from libc.stdlib cimport malloc, free
 from libc.stddef cimport wchar_t
@@ -64,7 +64,7 @@ cpdef cnp.ndarray[int, ndim=2, mode='c'] asn2array(obj, dtype):
     return arr
 
 
-cdef FILE* open_file(file_path) except *:
+cdef FILE* open_file(file_path, str mode) except *:
     """
     opens a file for writing
 
@@ -84,7 +84,7 @@ cdef FILE* open_file(file_path) except *:
 
     IF UNAME_SYSNAME == 'Windows':
         cdef Py_ssize_t length
-        cdef wchar_t *wchar_flag = PyUnicode_AsWideCharString("wb", &length)
+        cdef wchar_t *wchar_flag = PyUnicode_AsWideCharString(mode, &length)
         cdef wchar_t *wchar_filepath = PyUnicode_AsWideCharString(file_path, &length)
 
         fp = _wfopen(wchar_filepath, wchar_flag)
@@ -92,12 +92,39 @@ cdef FILE* open_file(file_path) except *:
         PyMem_Free(<void *>wchar_filepath)
         PyMem_Free(<void *>wchar_flag)
     ELSE:
-        fp = fopen(file_path.encode('utf-8'), "wb")
+        fp = fopen(file_path.encode('utf-8'), mode.encode('ascii'))
 
     if fp is NULL:
         raise OSError('could not open the file: {}'.format(file_path))
 
     return fp
+
+
+def _read_text_file(filepath, encoding="utf-8"):
+    """
+    Read the content of the text file, decoded with the specified
+    decoding.
+
+    NOTE: this is only here so that open_file can be tested from Python
+
+    it will only read up to 1024 bytes
+    """
+    cdef FILE* fp
+    cdef Py_ssize_t length = 0
+    cdef char buffer[1024]
+
+    print("trying to read:", filepath)
+    fp = open_file(filepath, "r")
+
+    # read the bytes into the buffer
+    length = fread(buffer, 1, sizeof(buffer), fp)
+    print("read: ", length, "bytes")
+
+    # decode into Python string
+    ustring = buffer[:length].decode(encoding)
+
+    print("contents", ustring)
+    return ustring
 
 
 cdef draw_single_dot(gdImagePtr image,
@@ -516,7 +543,7 @@ cdef class Image:
             raise ValueError('file_type must be one of: {}'
                              .format(file_type_codes))
 
-        fp = open_file(file_name)
+        fp = open_file(file_name, "wb")
         # open the file here:
 
         # then call the right writer:
@@ -1394,7 +1421,7 @@ cdef class Animation:
 
         if self._has_closed == 1:
             raise RuntimeError('Cannot re-begin closed animation')
-        self._fp = open_file(self._file_path)
+        self._fp = open_file(self._file_path, "wb")
 
         self.cur_frame = Image(first.width, first.height)
         self.cur_frame.copy(first)
