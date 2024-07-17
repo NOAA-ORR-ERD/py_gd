@@ -99,6 +99,29 @@ cdef FILE* open_file(file_path, str mode) except *:
 
     return fp
 
+# NOTE: IF is dperecated -- advise on the mailing list was to do:
+# You can do this at C preprocessor level with cdef extern from * and
+# then "import" it into Cython e.g.:
+
+# https://github.com/flintlib/python-flint/blob/1ce152dffc356af69b1d4c2ea0eb08854f3d733b/src/flint/flintlib/fmpz_mod_mat.pxd#L21-L102
+
+# For your case that would be something like
+
+# cdef extern from *
+#     """
+#      #if WINDOWS /* Not sure what variable to check here */
+#      FILE* myfunc() { stuff... }
+#      #else
+#      FILE* myfunc() { other stuff ...}
+#      #endif
+#      """
+
+# cdef extern from somewhere:
+#     FILE* myfunc()
+
+# The first part adds preprocessor defines to the generated C code. The
+# second part convinces Cython that a C-level function called myfunc
+# with the given signature exists somewhere in the C code.
 
 def _read_text_file(filepath, encoding="utf-8"):
     """
