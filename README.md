@@ -19,15 +19,15 @@ https://github.com/libgd/libgd/
 For the project at hand we needed fast and simple drawing -- 8-bit color, no anti-aliasing.
 We also wanted a nice simple API to work with. There are a number of newer drawing libs (AGG, Skia)
 that produce some pretty results, but are not as simple to use, and are focused on 32 bit fully
-anti-aliased drawing. If  you want the prettiest rendering possible, I encourage you to check those out.
+anti-aliased drawing. If you want the prettiest rendering possible, I encourage you to check those out.
 
 If you want something fast and simple -- `py_gd` may be for you.
 
 ## Why a new python wrapper for gd?
 
-`gdmodule` (recently moved to gitHub: https://github.com/Solomoriah/gdmodule) is a wrapper
+`gdmodule` (gitHub: https://github.com/Solomoriah/gdmodule) is a wrapper
 for gd that has been around along time. However:
- - It appears to be minimally maintained
+ - It appears to be minimally maintained (last touched 9 years ago as of this writing)
  - It is a pretty direct wrapper around the gd old-style-C API
  - It is hand-written C extension code -- more or less the state of the art for 1995
    when it was first written, but I really don't want to work on that code!
@@ -53,6 +53,10 @@ numpy is used to allow you to efficiently pass in data structures for things lik
 
 In order to build `py_gd`, the Cython package is also required: http://cython.org/
 
+Most critically, `py_gd` requires the `libgd` libary, which itself requires a number of other libs, such as `libpng`, `libjpeg`, etc, etc...
+
+This makes it a challenge to build on any platform other than Linux. Which is why we use the conda-forge system -- it provides `lib_gd` for us.
+
 ## Is `py_gd` a complete wrapper around gd?
 
 In a word: no.
@@ -64,6 +68,7 @@ Major Working features:
  * transparent background
  * built-in fonts for text
  * lines, polygons, arcs
+ * experimental spline support (not in libgd itself)
  * copying between images
  * saving as gif, bmp, png, jpeg, and animated gif.
  * numpy arrays for input and image buffer exchange.
@@ -93,7 +98,7 @@ Here's what you need to do:
 
 # Install
 
-`py_gd` depends on libgd which, in turn, depends on libpng, and others -- this makes it a major pain to build yourself. we suggest using conda via Anaconda or miniconda, and the conda packages found in the conda-forge channel. It should be as easy as:
+`py_gd` depends on libgd which, in turn, depends on libpng, and others -- this makes it a major pain to build yourself. we suggest using conda via miniconda, miniforge, or pixi, and the conda packages found in the conda-forge channel. It should be as easy as:
 
 ```
 conda install -c https://conda.anaconda.org/conda-forge py_gd
@@ -103,7 +108,7 @@ This currently works on Mac, Windows and Linux
 
 ## pip installing
 
-We try to maintain pacakges on PyPi, but they are only source packages -- they will need to be built to work. This is fairly straightforward on Linux, but a serious challenge on Windows and Mac. NOTE: contributions of wheels would be happily accepted.
+We try to maintain packages on PyPi, but they are only source packages -- they will need to be built to work. This is fairly straightforward on Linux, but a serious challenge on Windows and Mac. NOTE: contributions of wheels would be happily accepted.
 
 # Building
 
@@ -132,11 +137,13 @@ apt-get install libgd, libgd-dev
 ```
 or similar yum command (maybe just ``gd`` rather than ``libgd``
 
-### (CentOS 7)
+### If you dont have a recent libgd
 
-centoOS 7 only has version 2.0 in it's standard repos, as of 10/22/2015, so you need to download the source and build it yourself.
+If your distro doesn't have a recent version, you'll need to download the source and build it yourself.
 
- * Download the libgd version 2.1.1 tar file from [bitbucket](https://bitbucket.org/libgd/gd-libgd/downloads) (there are also tarballs on GitHub, but these don't have a configure script ready to go)
+(not tested recently)
+
+ * Download the source code from [GitHub](https://github.com/libgd/libgd/releases/)
  * Build the tar file from source and install it. The usual:
 
 ```bash
@@ -152,7 +159,7 @@ export LD_LIBRARY_PATH='/usr/local/lib'
 ```
 (or set that globally) It needs to be set whenever you are running `py_gd`.
 
-Note: If you determine that you lack jpeg support these libs are known to be compatible and can be installed through yum:
+Note: If you determine that you lack jpeg support -- yu should be able to install jpeg libs with your distro package mamager, e.g.
 
 * libjpeg-turbo-devel
 * libjpeg-turbo
@@ -160,7 +167,7 @@ Note: If you determine that you lack jpeg support these libs are known to be com
 ## Building `py_gd`
 
  * Clone the [`py_gd` repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
- * Create a virtualenv or conda environemnt to scope your python installations to this project (<i>optional</i>)
+ * Create a virtualenv or conda environment to scope your python installations to this project (<i>optional</i>)
 
  * with conda:
    - `conda install --file conda_requirements.txt --file conda_requirements_dev.txt`
@@ -175,9 +182,9 @@ Note: If you determine that you lack jpeg support these libs are known to be com
 $ pip install ./
 ```
 
- * pip install pytest and run py.test to see that everything is working:
+ * pip install pytest and run pytest to see that everything is working:
 
 ```bash
-$ py.test --pyargs py_gd 
+$ pytest --pyargs py_gd
 ```
  
