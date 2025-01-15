@@ -32,16 +32,24 @@ SETUP_PATH = os.path.dirname(os.path.abspath(__file__))
 
 include_dirs = [numpy.get_include()]
 library_dirs = []
-libraries = ['gd']
+libraries = ['libgd']
 compile_args = []
 link_args = []
 
 if sys.platform.startswith('win'):
     # need the library and include for Windows Anaconda... <PREFIX>/Library
     include_dirs.append(os.path.join(sys.prefix, r'Library\include'))
+    #incpath = r'..\vcpkg\installed\x64-windows\include'
+    incpath = r'D:\WebGnome\vcpkg\installed\x64-windows\include'
+    include_dirs.append(os.path.join(sys.prefix, incpath))
+    print(" >>**<< INCLUDE PATH: ", os.path.join(sys.prefix, incpath)) 
+     
     # dlls go in bin, rather than lib (??)
     library_dirs.append(os.path.join(sys.prefix, r'Library\lib'))
-
+    libpath = r'D:\WebGnome\vcpkg\installed\x64-windows\lib'
+    library_dirs.append(os.path.join(sys.prefix, libpath))
+    print(" >>**<< LIB PATH: ", os.path.join(sys.prefix, libpath)) 
+    
     compile_args.append('-EHsc')
     link_args.append('/MANIFEST')
 elif sys.platform.startswith('linux'):
