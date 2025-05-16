@@ -1032,7 +1032,8 @@ def test__array__no_copy():
     arr = img.__array__(copy=True)
 
     with pytest.raises(ValueError):
-        arr = img.__array__(copy=False)
+        arr = img.__array__(copy=False) # noqa
+
 
 def test__array__dtype():
     """
