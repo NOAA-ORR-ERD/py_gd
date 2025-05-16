@@ -1018,6 +1018,38 @@ def test_colors():
         img.get_color_index(['a', 'random', 4])
 
 
+def test__array__no_copy():
+    """
+    an Image can't be made into an array without copying
+
+    trying to do so should raise an error
+    """
+    img = Image(10, 5)
+
+    img.draw_line((0, 0), (9, 4), 'black', line_width=1)
+
+    # copy == True should work
+    arr = img.__array__(copy=True)
+
+    with pytest.raises(ValueError):
+        arr = img.__array__(copy=False)
+
+def test__array__dtype():
+    """
+    an Image can't be made into an array without copying
+
+    trying to do so should raise an error
+    """
+    img = Image(10, 5)
+
+    img.draw_line((0, 0), (9, 4), 'black', line_width=1)
+
+    # copy == True should work
+    arr = img.__array__(dtype=np.int16)
+
+    assert arr.dtype == np.int16
+
+
 def test_array():
     img = Image(10, 5)
 
@@ -1025,6 +1057,9 @@ def test_array():
     print("result from __array__", img.__array__())
 
     arr = np.asarray(img)
+
+    assert arr.dtype == np.uint8
+
     assert np.array_equal(arr, [[1, 0, 0, 0, 0],
                                 [1, 0, 0, 0, 0],
                                 [0, 1, 0, 0, 0],

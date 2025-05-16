@@ -396,7 +396,7 @@ cdef class Image:
         return indexes
 
     @cython.boundscheck(False)
-    def __array__(self):
+    def __array__(self, dtype=None, copy=None):
         """
         :returns arr: numpy array object with a copy of the data
 
@@ -404,6 +404,9 @@ cdef class Image:
         with image conventions, but not array conventions. data is
         in Fortran order
         """
+        if copy is False:
+            raise ValueError("A py_gd.Image cannot be made into an array without copying")
+
         cdef cnp.ndarray[cnp.uint8_t, ndim=2, mode='fortran'] arr
         arr = np.zeros((self.width, self.height), dtype=np.uint8, order='F')
 
@@ -413,7 +416,13 @@ cdef class Image:
         for col in range(self.height):
             memcpy(&arr[0, col], self._image.pixels[col], self.width)
 
-        return arr
+        if dtype is None:
+            return arr
+        else:
+            # maybe not the most efficient -- but not bad
+            #  -- if we do it any other way, we can't memcpy
+            return np.asarray(arr, dtype=dtype)
+
 
     def set_data(self, char[:, :] arr not None):
         """

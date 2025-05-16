@@ -3,7 +3,7 @@
 """
 py_gd package -- wrappers around the libgd graphics drawing package
 
-The "real" code is in the cython file: py_gd.pyx
+The "real" code is in the Cython file: py_gd.pyx
 
 This __init__ does some kludges to load libraries, and then does an
 
