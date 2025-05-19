@@ -101,7 +101,7 @@ After adding the color, it can be used by name::
 Color Ramps:
 ------------
 
-A color ramp (also called a color gradient) is continuous colr scheme that maps a color to a value. They can be used to draw a "heat map", or other image where the color is a function of some value.
+A color ramp (also called a color gradient) is continuous color scheme that maps a color to a value. They can be used to draw a "heat map", or other image where the color is a function of some value.
 
 To work with a color ramp, you need to have a continuous set of colors to pick from, and a way to map a value to particular color. The :class:`~py_gd.color_ramp.ColorRamp` class provided a way to make all this easy.
 
@@ -115,24 +115,21 @@ Colors:
     What colors to use -- this needs to be a sequence of RGB colors that form a continuum of some sort. ``py_gd`` provides a set of color ramps borrowed from the Matplotlib package -- these have been carefully designed by the MPL folks.
 
 Range of values:
-    in order to map a color to a value, you need to specify what the highest and lowest values that you want to consider are. These are specified by the ``min_value`` and ``max_value`` parameters -- the first color will be mapped to the ``min_value``, and the last color will be mapped to the ``max_value``, with value in between liniearly interpolated to the closest color.
+    in order to map a color to a value, you need to specify what the highest and lowest values that you want to consider are. These are specified by the ``min_value`` and ``max_value`` parameters -- the first color will be mapped to the ``min_value``, and the last color will be mapped to the ``max_value``, with value in between linearly interpolated to the closest color.
 
-
-                 num_colors=None,
-                 reversed=False,
-                 base_colorscheme='BW'):
+::
+    cr = ColorRamp('inferno', 100, 1000, num_colors=250)
 
 The Trick of 8-bit Color
 ........................
 
-``py_gd`` (currently) only support 8-bit color, which means there can be only 256 total colors in a given image. This works fine for the most part 256 colors is enough to create about as much distinction as a person can see (particularly on a computer screen). However, in a given m image, you may want the color ramp, but also a few other colors, such as black and white, etc that can be used to draw other things in the image, so you need a color ramp that can use an arbitrary number of colors.
+``py_gd`` (currently) only support 8-bit color, which means there can be only 256 total colors in a given image. This works fine for the most part: 256 colors is enough to create about as much distinction as a person can see (particularly on a computer screen). However, in a given image, you may want the color ramp, but also a few other colors, such as black and white, etc. that can be used to draw other things in the image, so you need a color ramp that can use an arbitrary number of colors.
 
 To accommodate this, the :class:`~py_gd.color_ramp.ColorRamp` class allows you to set the number of colors you want to use for the ramp, either explicitly by setting ``num_colors`` parameter, or specifying the color scheme currently used (or specifying how many colors have been reserved already).
 
 Once a :class:`~py_gd.color_ramp.ColorRamp` has been defined, you can get the color indexes corresponding to given values with the ``get_colors_indices()`` method, and the full set of colors used with the ``colorlist`` property.
 
 For an example of using a ColorRamp, see: :ref:`tutorial_colorramp`
-
 
 
 Builtin ColorSchemes:
