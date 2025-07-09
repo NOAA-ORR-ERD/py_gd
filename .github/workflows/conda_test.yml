@@ -54,5 +54,5 @@ jobs:
         run: |
             conda install flake8
             # flake8 config in setup.cfg
-#            python -m flake8  --exit-zero --statistics py_gd/
+            # python -m flake8  --exit-zero --statistics py_gd/
             python -m flake8 --statistics py_gd/
