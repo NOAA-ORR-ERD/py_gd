@@ -1,3 +1,5 @@
+pip
+setuptools
 cython>=3
 pytest
 sphinx
