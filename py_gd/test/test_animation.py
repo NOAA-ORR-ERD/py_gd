@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 
 from py_gd import Image, Animation, asn2array, from_array  # noqa: F821
-
+from py_gd.color_ramp import ColorRamp
 
 HERE = Path(__file__).parent
 
@@ -107,15 +107,23 @@ def test_animation_multi_images_colors():
     # Initial frame:
     first_frame = Image(200, 200)
 
+    existing_colors = first_frame.get_color_names()
+
+    print(existing_colors)
+
+    cr = ColorRamp('inferno', 0, 36, base_colorscheme=len(existing_colors))
+    first_frame.add_colors(cr.colorlist)
+
+    # Initial frame:
     anim = Animation(outfile("test_animation_multi_colors.gif"))
 
     anim.begin_anim(first_frame, 0)
 
     count = 0
     for points in rotating_line(200):
-
+        color = cr.get_color_indices([count])[0]
         next_frame = Image(200, 200)
-        next_frame.draw_line(points[0], points[1], 'red')
+        next_frame.draw_line(points[0], points[1], color)
         anim.add_frame(next_frame)
         count += 1
 
