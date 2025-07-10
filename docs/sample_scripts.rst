@@ -25,7 +25,7 @@ Mandlebrot:
 moderate_complex.png
 
 A pretty picture:
-  A script to draw a Mandelbrot set by setting individual pixels:
+  A script to draw a simple picture with basic drawing methods:
   :download:`examples/moderate_complex.py`
 
 .. image:: examples/moderate_complex.png

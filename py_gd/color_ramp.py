@@ -104,4 +104,7 @@ class ColorRamp():
         """
         returns a list of colors as needed by Image.add_colors
         """
-        return [(str(tuple(c)), tuple(c)) for c in self.color_index]
+        def make_str(color):
+            return str(color)
+        return [(make_str(c), tuple(c)) for c in self.color_index]
+

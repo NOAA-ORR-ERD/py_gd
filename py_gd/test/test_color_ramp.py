@@ -3,11 +3,17 @@
 # This is for when you want to use a continuous color map
 # with the colors changing value
 
+from pathlib import Path
+
 import numpy as np
 
-from py_gd.colors import colorschemes
+from py_gd.colors import colorschemes, colorscheme_names
 from py_gd.color_ramp import ColorRamp
 
+from py_gd import Image
+from .test_gd import outfile, check_file
+
+import pytest
 
 def test_color_index():
     colors = [(i, i+5, 1+10) for i in range(25)]
@@ -95,9 +101,6 @@ def test_image_with_colorramp():
     """
     generate an image using a colorramp
     """
-    from py_gd import Image
-    from .test_gd import outfile, check_file
-
     w, h, = 500, 500
     img = Image(w, h, preset_colors='BW')
 
@@ -120,3 +123,34 @@ def test_image_with_colorramp():
     img.save(outfile("test_image_with_colorramp.png"), 'png')
 
     assert check_file("test_image_with_colorramp.png")
+
+schemes = [name[0] for name in colorscheme_names if name[1] == 'continuous']
+@pytest.mark.parametrize("scheme", schemes)
+def test_image_with_all_colorramps(scheme):
+    """
+    Make sure an image can be generated with all the included color ramps
+
+    NOTE: This does not test that they are rendered properly,
+          Just that they can be created.
+    """
+    w, h, = 500, 500
+    img = Image(w, h, preset_colors='BW')
+
+    points = np.array([(x, y) for x in range(0, w, 10) for y in range(0, h, 10)])
+
+    values = np.hypot(points[:, 0], points[:, 1])
+
+    existing_colors = img.get_color_names()
+
+    cr = ColorRamp(scheme, 0, np.hypot(500, 500), base_colorscheme=existing_colors)
+
+    img.add_colors(cr.colorlist)
+
+    color_idx = cr.get_color_indices(values)
+
+    img.draw_dots(points, diameter=10, color=color_idx)
+
+    img.save(outfile("test_image_with_colorramp.png"), 'png')
+
+    assert Path(outfile("test_image_with_colorramp.png")).is_file()
+

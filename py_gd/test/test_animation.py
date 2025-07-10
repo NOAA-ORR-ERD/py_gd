@@ -105,29 +105,37 @@ def test_animation_multi_images_colors():
     and different colors!
     """
     # Initial frame:
-    first_frame = Image(200, 200)
+    first_frame = Image(200, 200, preset_colors='BW')
 
-    existing_colors = first_frame.get_color_names()
+    existing_colors = first_frame.get_colors()
 
     print(existing_colors)
 
-    cr = ColorRamp('inferno', 0, 36, base_colorscheme=len(existing_colors))
-    first_frame.add_colors(cr.colorlist)
+    cr = ColorRamp('viridis', 0, 36, base_colorscheme=existing_colors)
+    ramp_colors = cr.colorlist
+    print(ramp_colors)
+    print(len(ramp_colors))
+    print(len(set(ramp_colors)))
+
+    first_frame.add_colors(ramp_colors)
 
     # Initial frame:
-    anim = Animation(outfile("test_animation_multi_colors.gif"))
+    # file_name, delay=50, global_colormap=1
+    anim = Animation(outfile("test_animation_multi_colors.gif"), delay=100, global_colormap=0)
 
     anim.begin_anim(first_frame, 0)
 
     count = 0
     for points in rotating_line(200):
         color = cr.get_color_indices([count])[0]
-        next_frame = Image(200, 200)
-        next_frame.draw_line(points[0], points[1], color)
+        next_frame = Image(200, 200, preset_colors='BW')
+        next_frame.add_colors(ramp_colors)
+        next_frame.draw_line(points[0], points[1], color, line_width=3)
         anim.add_frame(next_frame)
         count += 1
 
-    last_frame = Image(200, 200)
+    last_frame = Image(200, 200, preset_colors='BW')
+    last_frame.add_colors(ramp_colors)
     last_frame.draw_line(np.array((0, 100)), np.array((200, 100)), 'green')
     anim.add_frame(last_frame)
     count += 1
