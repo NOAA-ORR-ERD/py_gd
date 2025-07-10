@@ -1,5 +1,10 @@
 """
-Drawing a star with a spline
+Smooth Polygon
+
+This example draws a star with rounded points, with varying roundedness.
+
+It uses a "Spline Polygon:
+
 """
 
 import numpy as np

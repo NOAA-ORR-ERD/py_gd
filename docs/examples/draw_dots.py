@@ -1,5 +1,5 @@
 """
-draw_dots.py
+Animation Example
 
 
 This draws a bunch of dots in different colors
@@ -26,11 +26,11 @@ points = (np.random.random((N, 2)) * w).astype(np.int32)
 img.draw_dots(points, diameter=10, color=colors)
 
 #  Save the first frame as a PNG
-img.save('dots.png', 'png')
+img.save('draw_dots.png', 'png')
 
 
 # create the animation
-anim = Animation('dots.gif',
+anim = Animation('draw_dots.gif',
                  delay=10,  # in 1/100s
                  )
 

@@ -1,15 +1,18 @@
 """
+Example with Moderate Complexity
+
 py_gd demo with moderate complexity -- showing a number of the features
 
-CAn you tell what's being drawn without looking at the results?
+Can you tell what's being drawn from the code without looking at the results?
 
 """
 
 # Everything you need is in the Image object
+from py_gd import Image
 
+# Need some math ...
 from math import sin, cos, radians
 
-from py_gd import Image
 
 img = Image(width=800, height=600, preset_colors='xkcd')
 

@@ -1,7 +1,8 @@
 #specific to this repo:
 
 py_gd/py_gd.c
-docs/examples/Mandelbrot.png
+docs/examples/*.png
+docs/examples/*.gif
 
 
 # mac files

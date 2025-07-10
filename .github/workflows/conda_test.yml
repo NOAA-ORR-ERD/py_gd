@@ -1,4 +1,4 @@
-name: Run tests with miniconda
+name: Run tests with miniforge
 on: [push]
 
 jobs:
@@ -35,6 +35,11 @@ jobs:
         shell: bash -l {0}
         run: |
             pytest --pyargs py_gd
+
+      - name: Test Examples
+        shell: bash -l {0}
+        run: |
+            python docs/examples/run_all_examples.py
 
   lint:
     name: Flake8 linting

@@ -34,5 +34,5 @@ It uses a method `developed by the AGG <https://agg.sourceforge.net/antigrain.co
 
 For examples, see:
 
-:download:`draw_star.py <examples/draw_star.py>`
+:download:`spline_star.py <examples/spline_star.py>`
 
