@@ -15,6 +15,7 @@ from .test_gd import outfile, check_file
 
 import pytest
 
+
 def test_color_index():
     colors = [(i, i+5, 1+10) for i in range(25)]
 
@@ -102,6 +103,7 @@ def test_colorlist():
     # Image doesn't let you add duplicate color names
     assert len(set(colorlist)) == len(colorlist)
 
+
 def test_image_with_colorramp():
     """
     generate an image using a colorramp
@@ -129,7 +131,10 @@ def test_image_with_colorramp():
 
     assert check_file("test_image_with_colorramp.png")
 
+
 schemes = [name[0] for name in colorscheme_names if name[1] == 'continuous']
+
+
 @pytest.mark.parametrize("scheme", schemes)
 def test_image_with_all_colorramps(scheme):
     """
@@ -158,4 +163,3 @@ def test_image_with_all_colorramps(scheme):
     img.save(outfile("test_image_with_colorramp.png"), 'png')
 
     assert Path(outfile("test_image_with_colorramp.png")).is_file()
-

@@ -15,7 +15,7 @@ import numpy as np
 
 import pytest
 
-from py_gd import Image, Animation, asn2array, from_array  # noqa: F821
+from py_gd import Image, asn2array, from_array  # noqa: F821
 
 
 HERE = Path(__file__).parent

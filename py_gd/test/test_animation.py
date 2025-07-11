@@ -5,14 +5,12 @@ unit tests for Animation features of py_gd
 designed to be run with pytest:
 """
 
-import sys
 import hashlib
 from pathlib import Path
 import numpy as np
 
-import pytest
 
-from py_gd import Image, Animation, asn2array, from_array  # noqa: F821
+from py_gd import Image, Animation  # noqa: F821
 from py_gd.color_ramp import ColorRamp
 
 HERE = Path(__file__).parent
@@ -51,6 +49,7 @@ def check_file(name):
     else:
         print("Checksum did not match for file:", name)
         return False
+
 
 def rotating_line(size=200):
     """
@@ -156,7 +155,6 @@ def test_animation_multi_images_colors():
     assert anim.frames_written == count
 
     # should check the checksum
-
 
 
 def test_static_animation():
