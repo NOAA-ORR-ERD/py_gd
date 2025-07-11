@@ -36,7 +36,7 @@ jobs:
       - name: Build_Docs
         shell: bash -l {0}
         run: |
-            pip install sphinx
+            pip install sphinx ipython
             cd docs 
             make html         
       - name: Upload artifact
