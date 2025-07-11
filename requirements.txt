@@ -1,0 +1,4 @@
+numpy
+cython>=3
+pytest
+sphinx
