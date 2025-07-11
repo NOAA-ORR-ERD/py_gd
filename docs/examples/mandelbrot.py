@@ -37,4 +37,4 @@ def Mandelbrot(size):
 
 im = Mandelbrot(400)
 
-im.save ("Mandelbrot.png", file_type="png")
+im.save ("mandelbrot.png", file_type="png")
