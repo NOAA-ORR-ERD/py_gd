@@ -13,3 +13,5 @@ exclude =
   conf.py
   build
   dist
+  ./build_gd.py
+  checksums.py
