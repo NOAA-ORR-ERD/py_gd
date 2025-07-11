@@ -160,6 +160,6 @@ def test_image_with_all_colorramps(scheme):
 
     img.draw_dots(points, diameter=10, color=color_idx)
 
-    img.save(outfile("test_image_with_colorramp.png"), 'png')
+    img.save(outfile("test_image_with_all_colorramps.png"), 'png')
 
-    assert Path(outfile("test_image_with_colorramp.png")).is_file()
+    assert Path(outfile("test_image_with_all_colorramps.png")).is_file()
