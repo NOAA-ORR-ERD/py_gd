@@ -1,7 +1,7 @@
 """
-Using py_gd to draw a Madelbrot set
+Drawing a Madelbrot set
 
-This sets the colors pixel by pixel
+Draws a Madelbrot by setting colors pixel by pixel
 """
 
 import numpy as np

@@ -15,7 +15,11 @@ from pprint import pprint
 images_dir = "test_images_output"
 checksums = {}
 for name in os.listdir("test_images_output"):
+    if ".DS_Store" in name:
+        continue
     n = os.path.join("test_images_output", name)
     checksums[name] = hashlib.md5(open(n, 'rb').read()).hexdigest()
 
-pprint(checksums)
+with open("checksums.py", 'w', encoding='utf-8') as outfile:
+    outfile.write("checksums = ")
+    pprint(checksums, stream=outfile)

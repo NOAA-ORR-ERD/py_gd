@@ -3,7 +3,7 @@
 Ultra Simple Example
 ====================
 
-Full script here:  :download:`ultra_simple.py <examples/ultra_simple.py>`
+Full script here:  :download:`ultra_simple.py <examples/0-ultra_simple.py>`
 
 For a first introduction to the py_gd, we create a very simple image with a single line on it:
 
@@ -49,7 +49,7 @@ The image can be saved in a number of formats. BMP is the default. Other formats
 
 Note that the default background is transparent.
 
-.. image:: examples/my_image.png
+.. image:: examples/0-ultra_simple.png
    :width: 200
    :align: center
 

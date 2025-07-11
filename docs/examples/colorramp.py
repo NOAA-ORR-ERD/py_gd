@@ -1,9 +1,9 @@
 """
-colorramp.py
+Using a Color Ramp
 
 Example of how to use a colorramp
 
-IN this case, we plot a "Heatmap" of a surface from the equation:
+In this case, we plot a "Heatmap" of a surface from the equation:
 
 z = sin(x) + sin(y)
 """

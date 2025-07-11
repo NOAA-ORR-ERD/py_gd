@@ -1,5 +1,5 @@
 """
-ultra_simple_example.py
+Ultra Simple Example
 
 About the simplest example for py_gd
 
@@ -12,5 +12,5 @@ img = Image(width=400, height=400)
 
 img.draw_line((1, 1), (400, 300), color='red', line_width=10)
 
-img.save('ultra_simple.png', 'png')
+img.save('0-ultra_simple.png', 'png')
 

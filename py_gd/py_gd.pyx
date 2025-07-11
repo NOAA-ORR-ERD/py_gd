@@ -1503,7 +1503,7 @@ cdef class Animation:
         else:
             if self.prev_frame is not None:
                 prev = self.prev_frame._image
-            # really wierd gd flag values!
+            # really weird gd flag values!
             local_colormap = 0 if self._global_colormap == 1 else 1
             gdImageGifAnimAdd(self.cur_frame._image,
                               self._fp,

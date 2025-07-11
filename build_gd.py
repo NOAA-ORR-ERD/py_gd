@@ -11,7 +11,6 @@ the py_gd Python package.
 look in the "if __name__" clause at the bottom:
   you can turn on and off different libs, and different parts of the process
 
-
 """
 
 import os
@@ -24,7 +23,7 @@ prefix = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'static_libs'
 # use this if you want the full install of hdf and netcdf available on your system
 # prefix = "/usr/local"
 
-print "Installing libs to:", prefix
+print("Installing libs to:", prefix)
 
 if not os.path.exists(prefix):
     os.mkdir(prefix)
@@ -37,7 +36,7 @@ def download(name):
     
     # see if it's already there:
     if os.path.isfile(name):
-        print "%s already there -- not downloading again"%name
+        print("%s already there -- not downloading again"%name)
         return 
 
     ## note: bitbucket does not seem t o support direct download links liek this
@@ -53,18 +52,18 @@ def download(name):
         cmd = 'curl -L --output {0} http://sourceforge.net/projects/libpng/files/libpng16/1.6.3/libpng-1.6.3.tar.gz'.format(name)
     else:
         raise Exception("I don't know how to download: %s"%name)
-    print "downloading:", name
-    print cmd
+    print("downloading:", name)
+    print(cmd)
 
     os.system(cmd)
 
 def unpack(lib):
     if os.path.isdir(lib):
-        print "%s already unpacked, not unpacking again"%lib
+        print("%s already unpacked, not unpacking again"%lib)
         return 
     lib = lib +'.tar.gz'
     cmd = "tar -xvf "+lib
-    print "Unpacking:", cmd
+    print("Unpacking:", cmd)
     os.system( cmd )
 
 def configure(lib):
@@ -83,7 +82,7 @@ def configure(lib):
     conf = './configure ' + ' '.join(flags)
 
     os.chdir(lib)
-    print conf
+    print(conf)
     os.system("make clean")
     if os.system(conf):
         os.chdir(cwd)

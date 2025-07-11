@@ -28,10 +28,12 @@ import sys, os
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.todo',
               'sphinx.ext.coverage',
+              'IPython.sphinxext.ipython_directive'
               # 'sphinx.ext.pngmath',
               # 'sphinx.ext.mathjax',
               ]
-
+# extensions = ['IPython.sphinxext.ipython_console_highlighting',
+#               'IPython.sphinxext.ipython_directive']
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
