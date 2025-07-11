@@ -42,13 +42,13 @@ class ColorRamp():
             self.start_index = len(base_colorscheme)
         except TypeError:  # it should be an integer now
             self.start_index = base_colorscheme
-        # else:
-        #     self.start_index = len(base_colorscheme)
 
         self._num_colors = 256 - self.start_index if num_colors is None else num_colors
         self._delta = (self.max_value - self.min_value) / self._num_colors
 
+        self.name = 'custom'
         if isinstance(colors, str):
+            self.name = colors
             colors = [c[1] for c in colorschemes[colors]]
             # otherwise assume it's in the right form
         if reversed:
@@ -104,7 +104,11 @@ class ColorRamp():
         """
         returns a list of colors as needed by Image.add_colors
         """
-        def make_str(color):
-            return str(color)
-        return [(make_str(c), tuple(c)) for c in self.color_index]
+        colorlist = [(f"{self.name}-{i}", tuple(int(i) for i in c)) for i, c in enumerate(self.color_index)]
 
+        # for i, c in enumerate(self.color_index):
+        #     values = tuple(int(i) for i in c)
+        #     name = f"{self.name}-{i}"
+        #     colorlist.append((name, values))
+
+        return colorlist

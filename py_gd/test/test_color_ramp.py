@@ -92,10 +92,15 @@ def test_colorlist():
 
     colorlist = cr.colorlist
 
+    print(colorlist)
+
     for c in colorlist:
         assert isinstance(c[0], str)
         assert len(c[1]) == 3
 
+    # make sure there aren't any duplicates
+    # Image doesn't let you add duplicate color names
+    assert len(set(colorlist)) == len(colorlist)
 
 def test_image_with_colorramp():
     """

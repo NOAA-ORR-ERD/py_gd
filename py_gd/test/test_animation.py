@@ -113,15 +113,22 @@ def test_animation_multi_images_colors():
 
     cr = ColorRamp('viridis', 0, 36, base_colorscheme=existing_colors)
     ramp_colors = cr.colorlist
-    print(ramp_colors)
-    print(len(ramp_colors))
-    print(len(set(ramp_colors)))
 
     first_frame.add_colors(ramp_colors)
 
-    # Initial frame:
-    # file_name, delay=50, global_colormap=1
-    anim = Animation(outfile("test_animation_multi_colors.gif"), delay=100, global_colormap=0)
+    # Initial frame: file_name, delay=50, global_colormap=1
+
+    # fixme: this could use a global colormap, but we'd need to make sure to
+    #        copy it correctly. From the ligd docs:
+
+    # gdImageGifAnimAdd
+    # Setting the LocalCM flag to 1 adds a local palette for this image to the
+    # animation.  Otherwise the global palette is assumed and the user must
+    # make sure the palettes match.  Use gdImagePaletteCopy to do that.
+
+    anim = Animation(outfile("test_animation_multi_colors.gif"),
+                     delay=20,
+                     global_colormap=0)
 
     anim.begin_anim(first_frame, 0)
 
@@ -136,7 +143,7 @@ def test_animation_multi_images_colors():
 
     last_frame = Image(200, 200, preset_colors='BW')
     last_frame.add_colors(ramp_colors)
-    last_frame.draw_line(np.array((0, 100)), np.array((200, 100)), 'green')
+    last_frame.draw_line(np.array((0, 100)), np.array((200, 100)), cr.get_color_indices([count+1])[0])
     anim.add_frame(last_frame)
     count += 1
 
