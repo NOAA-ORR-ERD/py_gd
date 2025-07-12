@@ -46,13 +46,19 @@ input = "py_gd/__init__.py"
 build-frontend = "build[uv]"
 test-groups = ["test"]
 test-command = "pytest --pyargs py_gd"
-before-all = [
+skip = ["*musl*"]
+linux.before-all = [
+   "dnf install -y gd-devel",
+]
+windows.before-all = [
+   "vcpkg install libgd",
+]
+macos.before-all = [
   "git clone https://github.com/libgd/libgd.git --branch gd-2.3.3 --depth 1",
   "cmake -Slibgd -Bbuild-libgd -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=./install",
   "cmake --build build-libgd",
   "cmake --install build-libgd",
 ]
-config-settings = { "cmake.define.GD_ROOT" = "./install"}
-#repair-wheel-command = ""
+macos.config-settings = { "cmake.define.GD_ROOT" = "./install"}
 
 
