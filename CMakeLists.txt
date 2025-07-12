@@ -15,25 +15,20 @@ include(UseCython)
 
 # FetchContent_MakeAvailable(gd)
 
-find_library (libgd
-              gd
-              REQUIRED
-              )
-message (STATUS "libgd found at ${libgd}")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake"
+    )
 
-find_path (gd_include_path
-           "gd.h"
-           REQUIRED)
-
-message (STATUS "gd.h found at ${gd_include_path}")
+find_package(GD
+             MODULE
+             REQUIRED
+             )
 
 cython_transpile(py_gd/py_gd.pyx
    LANGUAGE C
    OUTPUT_VARIABLE py_gd_c)
 
 python_add_library(py_gd MODULE "${py_gd_c}" WITH_SOABI)
-target_link_libraries(py_gd PUBLIC "${libgd}" Python::NumPy)
-target_include_directories(py_gd PUBLIC "${gd_include_path}")
+target_link_libraries(py_gd PUBLIC GD::GD Python::NumPy)
 install(TARGETS py_gd DESTINATION py_gd)
 
 
