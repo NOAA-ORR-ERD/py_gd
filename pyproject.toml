@@ -1,0 +1,39 @@
+[build-system]
+requires = ["scikit-build-core", "cython", "numpy", "cython-cmake"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "py-gd"
+dynamic = ["version"]
+description = "python wrappers around libgd graphics lib"
+readme = "README.md"
+license = "CC0-1.0"
+license-files = ["LICENSE.txt"]
+requires-python = ">=3.10"
+authors = [
+    { name = "Christopher H. Barker", email = "chris.barker@noaa.gov" },
+]
+keywords = [
+    "cython",
+    "drawing",
+    "graphics",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Cython",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://github.com/NOAA-ORR-ERD/py_gd"
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "py_gd/__init__.py"
+
+
