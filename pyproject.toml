@@ -56,3 +56,7 @@ linux.before-all = [
 macos.config-settings = { "cmake.define.BUILD_DEPS" = "ON"}
 macos.environment.MACOSX_DEPLOYMENT_TARGET = "13"
 
+# Use delvewheel on windows
+[tool.cibuildwheel.windows]
+before-build = "pip install delvewheel"
+repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel}"
