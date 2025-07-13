@@ -6,20 +6,15 @@ endif()
 find_path(GD_INCLUDE_DIR
   NAMES gd.h
   HINTS "${PC_GD_INCLUDE_DIRS}"
-  REQUIRED
 )
 
 find_library(GD_LIBRARY
   NAMES gd
   HINTS "${PC_GD_INCLUDE_DIRS}"
-  REQUIRED
 )
 
 cmake_path(ABSOLUTE_PATH GD_LIBRARY)
 cmake_path(ABSOLUTE_PATH GD_INCLUDE_DIR)
-get_filename_component(GD_LIBRARY_DIR "${GD_LIBRARIES}" DIRECTORY)
-
-message (STATUS "libgd found at ${GD_LIBRARY}, ${GD_INCLUDE_DIR}")
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GD
@@ -41,7 +36,6 @@ if(GD_FOUND AND NOT TARGET GD::GD)
     IMPORTED_LOCATION "${GD_LIBRARY}"
     INTERFACE_COMPILE_OPTIONS "${PC_GD_CFLAGS_OTHER}"
     INTERFACE_INCLUDE_DIRECTORIES "${GD_INCLUDE_DIR}"
-    INTERFACE_LINK_DIRECTORIES "${GD_LIBRARY_DIR}"
   )
 endif()
 
