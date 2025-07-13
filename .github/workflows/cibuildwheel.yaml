@@ -59,7 +59,8 @@ jobs:
       - name: Setup deps (Windows)
         if: runner.os == 'Windows'
         run: |
-          vcpkg install pkgconf vcpkg-cmake vcpkg-cmake-config libgd
+          vcpkg new --application
+          vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
 
       - uses: astral-sh/setup-uv@v6
 

@@ -54,5 +54,5 @@ linux.before-all = [
    "dnf install -y gd-devel",
 ]
 macos.config-settings = { "cmake.define.BUILD_DEPS" = "ON"}
-macos.environment.MACOSX_DEPLOYMENT_TARGET = "10.13"
+macos.environment.MACOSX_DEPLOYMENT_TARGET = "13"
 
