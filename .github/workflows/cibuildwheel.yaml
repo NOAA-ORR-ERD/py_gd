@@ -48,13 +48,13 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - name: set vcpck vars
+      - name: set vcpkg vars
         if: runner.os == 'Windows'
         shell: bash
         run: |
           echo "VCPKG_INSTALLATION_ROOT=$VCPKG_INSTALLATION_ROOT"
           echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
-
+          echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake"
       - uses: astral-sh/setup-uv@v6
 
       - uses: pypa/cibuildwheel@v3.0
