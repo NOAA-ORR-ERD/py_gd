@@ -48,11 +48,12 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - run: |
+      - name: set vcpck vars
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
           echo "VCPKG_INSTALLATION_ROOT=$VCPKG_INSTALLATION_ROOT"
           echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
-        if: runner.os == "Windows"
-        shell: bash
 
       - uses: astral-sh/setup-uv@v6
 
