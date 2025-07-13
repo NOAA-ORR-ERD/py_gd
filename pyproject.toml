@@ -59,4 +59,4 @@ macos.environment.MACOSX_DEPLOYMENT_TARGET = "13"
 # Use delvewheel on windows
 [tool.cibuildwheel.windows]
 before-build = "pip install delvewheel"
-repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel} --add-path .vcpkg/vcpkg_installed/"
+repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel} --add-path C:/vcpkg/vcpkg_installed/"
