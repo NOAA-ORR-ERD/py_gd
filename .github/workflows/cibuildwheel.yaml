@@ -61,7 +61,7 @@ jobs:
         run: |
           vcpkg new --application
           vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
-          dir
+          dir /a:h
       - uses: astral-sh/setup-uv@v6
 
       - uses: pypa/cibuildwheel@v3.0
