@@ -55,14 +55,15 @@ jobs:
           echo "VCPKG_INSTALLATION_ROOT=$VCPKG_INSTALLATION_ROOT"
           echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
           echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
-
+          echo $CMAKE_BINARY_DIR
       - name: Setup deps (Windows)
         if: runner.os == 'Windows'
         run: |
           vcpkg new --application
           vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
-          dir /a
+          dir py_gd /a
           dir C:/vcpkg/
+          dir $CMAKE_BINARY_DIR
       - uses: astral-sh/setup-uv@v6
 
       - uses: pypa/cibuildwheel@v3.0
