@@ -61,7 +61,7 @@ jobs:
         run: |
           vcpkg new --application
           vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
-          dir py_gd /a
+          dir /a py_gd
           dir C:/vcpkg/
           dir $CMAKE_BINARY_DIR
       - uses: astral-sh/setup-uv@v6
