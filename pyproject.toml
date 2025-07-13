@@ -55,6 +55,8 @@ linux.before-all = [
 ]
 windows.before-all = [
    "vcpkg install libgd",
+   "vcpkg install vcpkg-cmake",
+   "vcpkg install vcpkg-cmake-config",
 ]
 macos.config-settings = { "cmake.define.BUILD_DEPS" = "ON"}
 
