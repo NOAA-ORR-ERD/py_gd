@@ -1,5 +1,7 @@
-cmake_minimum_required(VERSION 3.20...4.0)
+cmake_minimum_required(VERSION 3.24...4.0)
 project(${SKBUILD_PROJECT_NAME} LANGUAGES C)
+
+option(BUILD_DEPS OFF)
 
 find_package(
   Python
@@ -7,9 +9,20 @@ find_package(
   REQUIRED)
 
 include(UseCython)
+include(GNUInstallDirs)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-find_package(GD MODULE REQUIRED)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
+if(ENV{VCPKG_ROOT})
+  set(CMAKE_TOOLCHAIN_FILE "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+endif()
+
+# We do not use FetchContent because the CMakeLists of GD is terrible
+if(BUILD_DEPS)
+    include(BuildGD)
+else()
+    find_package(GD MODULE REQUIRED)
+endif()
 
 cython_transpile(py_gd/py_gd.pyx LANGUAGE C OUTPUT_VARIABLE py_gd_c)
 python_add_library(py_gd MODULE "${py_gd_c}" WITH_SOABI)
