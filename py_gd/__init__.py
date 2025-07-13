@@ -33,14 +33,15 @@ if sys.platform.startswith('win'):
     #                        "This kludge is only written to support Anaconda installs")
 
     # alternative ugly kludge: add lib dir to PATH:
-    if not (os.path.isfile(os.path.join(libpath, 'libpng16.dll')) and
+    if (os.path.isfile(os.path.join(libpath, 'libpng16.dll')) and
             os.path.isfile(os.path.join(libpath, 'zlib.dll')) and
             os.path.isfile(os.path.join(libpath, 'libgd.dll'))):
-        raise RuntimeError("Can't find dlls for libgd, libpng, and libz.\n"
-                           "This kludge is only written to support Anaconda installs\n",
-                           "you may need to add some logic for other library locations",
-                           )
-    os.environ['PATH'] = libpath + os.pathsep + os.environ['PATH']
+        os.environ['PATH'] = libpath + os.pathsep + os.environ['PATH']
+
+        # raise RuntimeError("Can't find dlls for libgd, libpng, and libz.\n"
+        #                    "This kludge is only written to support Anaconda installs\n",
+        #                    "you may need to add some logic for other library locations",
+        #                    )
 try:
     from .py_gd import *  # noqa: F401
 
