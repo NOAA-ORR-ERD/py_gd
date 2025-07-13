@@ -14,6 +14,7 @@ include(GNUInstallDirs)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 if(ENV{VCPKG_ROOT})
+  message(STATUS "VCPKG_ROOT: $ENV{VCPKG_ROOT}")
   set(CMAKE_TOOLCHAIN_FILE "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 endif()
 
