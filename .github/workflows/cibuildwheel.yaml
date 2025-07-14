@@ -63,10 +63,6 @@ jobs:
         # why not have the vcpkg.json committed to the repo?
           vcpkg new --application
           vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
-          dir /a py_gd
-          dir C:/vcpkg/
-          echo "CMAKE BIN DIR is : $CMAKE_BINARY_DIR"
-          dir "$CMAKE_BINARY_DIR"
       - uses: astral-sh/setup-uv@v6
 
       - uses: pypa/cibuildwheel@v3.0
