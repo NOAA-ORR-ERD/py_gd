@@ -63,6 +63,7 @@ jobs:
           vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
           dir /a py_gd
           dir C:/vcpkg/
+          echo "CMAKE BIN DIR is : $CMAKE_BINARY_DIR"
           dir $CMAKE_BINARY_DIR
       - uses: astral-sh/setup-uv@v6
 
