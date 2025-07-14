@@ -19,10 +19,10 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          activate-environment: test
+#          activate-environment: test
           miniforge-version: latest
           python-version: ${{ matrix.pyver }}
-          auto-activate-base: false
+#          auto-activate-base: false
           conda-remove-defaults: true
 
       - name: Setup environment
