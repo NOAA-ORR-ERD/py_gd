@@ -4,4 +4,8 @@ cython>=3
 pytest
 sphinx
 ipython  # nice to have, and used to help render the docs
-
+cmake
+ninja
+scikit-build-core
+cython-cmake
+python-build
