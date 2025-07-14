@@ -55,12 +55,12 @@ jobs:
           echo "VCPKG_INSTALLATION_ROOT=$VCPKG_INSTALLATION_ROOT"
           echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
           echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
-          echo $CMAKE_BINARY_DIR
-#          echo "where vcpkg" >> VCPKG_ROOT
-          echo $VCPKG_ROOT
+          echo CMAKE_BINARY_DIR is: "$CMAKE_BINARY_DIR"
+          echo "VCPKG_ROOT $VCPKG_ROOT"
       - name: Setup deps (Windows)
         if: runner.os == 'Windows'
         run: |
+        # why not have the vcpkg.json committed to the repo?
           vcpkg new --application
           vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
           dir /a py_gd
