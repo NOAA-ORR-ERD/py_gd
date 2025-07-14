@@ -9,3 +9,4 @@ ninja
 scikit-build-core
 cython-cmake
 python-build
+flake8
