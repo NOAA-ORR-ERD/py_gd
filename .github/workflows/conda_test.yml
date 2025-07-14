@@ -19,10 +19,8 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-#          activate-environment: test
           miniforge-version: latest
           python-version: ${{ matrix.pyver }}
-#          auto-activate-base: false
           conda-remove-defaults: true
 
       - name: Setup environment
@@ -53,10 +51,8 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           auto-update-conda: true
-          activate-environment: test
           miniforge-version: latest
           python-version: "3.10"
-          auto-activate-base: false
           conda-remove-defaults: true
       - name: Lint
         shell: bash -l {0}
