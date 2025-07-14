@@ -1,6 +1,10 @@
 name: Run tests with miniforge
 on: [push]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     name: Miniconda ${{ matrix.os }} Py${{ matrix.pyver }}
