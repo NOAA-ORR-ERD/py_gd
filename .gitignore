@@ -43,3 +43,4 @@ var/
 #Test Files
 test_images_output/
 wheelhouse/
+.coverage

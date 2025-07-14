@@ -1,0 +1,16 @@
+Using VCPKG on Windows.
+
+Starting from here:
+
+https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-vscode?source=recommendations&pivots=shell-cmd
+
+
+bootstrap vcpkg
+
+Set the PATH, for me that's:
+
+set PATH=%VCPKG_ROOT%;%PATH%
+set "VCPKG_ROOT=C:\Users\Chris.Barker\Documents\vcpkg"
+
+
+
