@@ -6,9 +6,10 @@ concurrency:
   cancel-in-progress: true
 
 on:
+  push
   # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
+  # push:
+  #   branches: ["main"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -43,5 +44,6 @@ jobs:
           # Upload entire repository
           path: 'docs/build/html'
       - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
         id: deployment
         uses: actions/deploy-pages@v4
