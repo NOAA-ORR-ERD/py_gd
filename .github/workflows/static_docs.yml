@@ -6,11 +6,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-on: [push]
+# on: [push]
 # on:
 #   push:
 #     branches: ["main"]
-
+on:
+  push:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
