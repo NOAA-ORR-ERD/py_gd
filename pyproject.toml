@@ -64,6 +64,6 @@ before-build = [
     "cat vcpkg.json",
 ]
 # vcpkg_installed is not in the vcpkg dir -- where is it?
-repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel} --add-path C:/vcpkg/vcpkg_installed/
+repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel} --add-path C:/vcpkg/vcpkg_installed/"
 
 
