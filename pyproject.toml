@@ -60,8 +60,7 @@ macos.environment.MACOSX_DEPLOYMENT_TARGET = "13"
 [tool.cibuildwheel.windows]
 before-build = [
     "pip install delvewheel",
-    "cat vcpkg-configuration.json",
-    "cat vcpkg.json",
+    "ls -a",
 ]
 # vcpkg_installed is not in the vcpkg dir -- where is it?
 repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel} --add-path C:/vcpkg/vcpkg_installed/"
