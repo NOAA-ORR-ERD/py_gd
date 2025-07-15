@@ -64,6 +64,7 @@ jobs:
           # why not put the vcpkg.json in the repo?
           vcpkg new --application
           vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
+          where vcpkg
       - uses: astral-sh/setup-uv@v6
 
       - uses: pypa/cibuildwheel@v3.0
