@@ -55,7 +55,6 @@ jobs:
           echo "VCPKG_INSTALLATION_ROOT=$VCPKG_INSTALLATION_ROOT"
           echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
           echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
-<<<<<<< HEAD
           echo $CMAKE_BINARY_DIR
           # echo "where vcpkg" >> VCPKG_ROOT
           echo $VCPKG_ROOT
@@ -63,12 +62,6 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           # why not put the vcpkg.json in the repo?
-=======
-      - name: Setup deps (Windows)
-        if: runner.os == 'Windows'
-        run: |
-        # why not have the vcpkg.json committed to the repo?
->>>>>>> refs/remotes/origin/scikit_build
           vcpkg new --application
           vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
       - uses: astral-sh/setup-uv@v6
