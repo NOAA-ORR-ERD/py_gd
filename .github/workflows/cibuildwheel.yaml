@@ -56,6 +56,8 @@ jobs:
           echo "VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT" >> $GITHUB_ENV
           echo "CMAKE_TOOLCHAIN_FILE=$VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" >> $GITHUB_ENV
           echo $CMAKE_BINARY_DIR
+          echo "vcpkg is in:"
+          which vcpkg
           VC_PKG_DIR=$(which vcpkg)
           dir $VC_PKG_DIR
       - name: Setup deps (Windows)
