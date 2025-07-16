@@ -5,12 +5,48 @@ Starting from here:
 https://learn.microsoft.com/en-us/vcpkg/get_started/get-started-vscode?source=recommendations&pivots=shell-cmd
 
 
-bootstrap vcpkg
+### bootstrap vcpkg
 
 Set the PATH, for me that's:
 
 set PATH=%VCPKG_ROOT%;%PATH%
 set "VCPKG_ROOT=C:\Users\Chris.Barker\Documents\vcpkg"
 
+## set up install
 
+vcpkg new --application
+vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
+
+vcpkg install
+
+#### Failure:
+```
+error: building libwebp:x64-windows failed with: BUILD_FAILED
+See https://learn.microsoft.com/vcpkg/troubleshoot/build-failures?WT.mc_id=vcpkg_inproduct_cli for more information.
+Elapsed time to handle libwebp:x64-windows: 3.5 s
+Please ensure you're using the latest port files with `git pull` and `vcpkg update`.
+```
+
+
+# Notes from: 
+notes about vcpkg from:
+
+https://github.com/NOAA-ORR-ERD/py_gd/pull/27
+
+## Install libgd
+
+Clone vcpkg repository in repo folder and start vcpkg.
+
+git clone https://github.com/Microsoft/vcpkg.git
+
+# NOTE: --depth 1  would likely make sense
+.\vcpkg\bootstrap-vcpkg.bat
+
+Install libgd. The default location is at vcpkg\installed\x64-windows. It takes
+about half of an hour. This will download and prepare all the dependencies (.h
+and .lib).
+
+vcpkg install libgd --triplet=x64-windows
+
+this failed for me :-( 
 
