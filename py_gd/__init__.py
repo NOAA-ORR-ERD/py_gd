@@ -15,32 +15,13 @@ import os
 
 __version__ = "2.3.3"
 
-if sys.platform.startswith('win'):
-    # This only works for Anaconda / miniconda
-    # On other  systems, logic needs to be added here.
-    # there must be a better way to do this -- why doesn't conda take care of it?
-    libpath = os.path.join(os.path.split(sys.executable)[0], "Library", "bin")
-
-    # Add lib dir to PATH:
-    if (os.path.isfile(os.path.join(libpath, 'libpng16.dll')) and
-            os.path.isfile(os.path.join(libpath, 'zlib.dll')) and
-            os.path.isfile(os.path.join(libpath, 'libgd.dll'))):
-        os.environ['PATH'] = libpath + os.pathsep + os.environ['PATH']
-
 try:
     from .py_gd import *  # noqa: F401
 
 except ImportError as err:
-    if str(err).startswith("DLL load failed:"):
-        if not (os.path.isfile(os.path.join(libpath, 'libpng16.dll')) and
-                os.path.isfile(os.path.join(libpath, 'zlib.dll')) and
-                os.path.isfile(os.path.join(libpath, 'libgd.dll'))):
-            raise RuntimeError("Can't find dlls for libgd, libpng, and libz.\n"
-                               "This kludge is only written to support Anaconda installs\n",
-                               "you may need to add some logic for other library locations",
-                               )
-        else:
-            raise
-    else:
-        raise
-    print(err.args)
+    raise RuntimeError("Can't find shared libs for libgd.\n"
+                       "Make sure they are installed, and on a path where they can be found.\n"
+                       "This may require some additional logic in this __init__.py,"
+                       "But it would be better to use a standard system location"
+                       ) from err
+
