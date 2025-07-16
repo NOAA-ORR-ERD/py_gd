@@ -10,9 +10,6 @@ This __init__ does some kludges to load libraries, and then does an
 from .py_gd import *
 """
 
-import sys
-import os
-
 __version__ = "2.3.3"
 
 try:
@@ -24,4 +21,3 @@ except ImportError as err:
                        "This may require some additional logic in this __init__.py,"
                        "But it would be better to use a standard system location"
                        ) from err
-
