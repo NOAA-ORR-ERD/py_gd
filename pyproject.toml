@@ -60,7 +60,7 @@ macos.environment.MACOSX_DEPLOYMENT_TARGET = "13"
 [tool.cibuildwheel.windows]
 before-build = [
     "pip install delvewheel",
-    "pwd"
+    "pwd",
     "ls -a",
 ]
 # vcpkg_installed is not in the vcpkg dir -- where is it?
