@@ -62,7 +62,6 @@ jobs:
           dir $VC_PKG_DIR
           echo $CWD
           dir
-          dir "py_gd/build/vcpkg_installed/x86-windows/debug/lib/"
 
       - name: Setup deps (Windows)
         if: runner.os == 'Windows'
