@@ -1,6 +1,7 @@
 find_package(PkgConfig)
 if(PKG_CONFIG_FOUND)
-  pkg_check_modules(PC_GD QUIET GD)
+  #pkg_check_modules(PC_GD QUIET GD)
+  pkg_check_modules(PC_GD GD)
 endif()
 
 find_path(GD_INCLUDE_DIR
