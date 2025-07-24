@@ -63,6 +63,6 @@ before-build = [
     "ls -a",
 ]
 # vcpkg_installed is not in the vcpkg dir -- where is it?
-repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel} --add-path C:/vcpkg/vcpkg_installed/"
+repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel} --add-path D:/a/py_gd/py_gd/build/vcpkg_installed/x86-windows/debug/lib/"
 
 
