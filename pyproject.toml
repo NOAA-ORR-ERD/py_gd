@@ -61,9 +61,9 @@ macos.environment.MACOSX_DEPLOYMENT_TARGET = "13"
 before-build = [
     "pip install delvewheel",
     "pwd",
-    "ls -a",
+    "ls -a"
 ]
 # vcpkg_installed is not in the vcpkg dir -- where is it?
-repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel} --add-path py_gd/build/vcpkg_installed/x86-windows/debug/lib/"
+repair-wheel-command = "find . -name libgd.dll; delvewheel repair -w {dest_dir} {wheel} --add-path py_gd/build/vcpkg_installed/x86-windows/debug/lib/"
 
 
