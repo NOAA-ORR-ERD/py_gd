@@ -4,7 +4,7 @@ Python wrappers for libgd graphics drawing lib.
 
 Welcome to the `py_gd` project.
 
-py-gd aims to provide nice Pythonic wrappers around libgd -- a robust, fast, and simple drawing lib:
+py_gd aims to provide nice Pythonic wrappers around libgd -- a robust, fast, and simple drawing lib:
 
 Docs here:
 
@@ -27,7 +27,7 @@ If you want something fast and simple -- `py_gd` may be for you.
 
 `gdmodule` (gitHub: https://github.com/Solomoriah/gdmodule) is a wrapper
 for gd that has been around along time. However:
- - It appears to be minimally maintained (last touched 9 years ago as of this writing)
+ - It appears to be unmaintained (last touched 12 years ago as of this writing)
  - It is a pretty direct wrapper around the gd old-style-C API
  - It is hand-written C extension code -- more or less the state of the art for 1995
    when it was first written, but I really don't want to work on that code!
@@ -47,15 +47,19 @@ However, there is some nice stuff in gdmodule (like including a truetype font) t
 
 ## Dependencies:
 
-`py_gd` currently requires the numpy package: http://www.numpy.org
+### Run Time
+
+At run time, `py_gd` currently requires the numpy package: http://www.numpy.org, but nothing else.
 
 numpy is used to allow you to efficiently pass in data structures for things like vertices of large polygons, etc, and can be used to get a copy of the image buffer, and manipulate it in various ways, as well as passing it back to `py_gd`.
+
+### Build Time
 
 In order to build `py_gd`, the Cython package is also required: http://cython.org/
 
 Most critically, `py_gd` requires the `libgd` libary, which itself requires a number of other libs, such as `libpng`, `libjpeg`, etc, etc...
 
-This makes it a challenge to build on any platform other than Linux. Which is why we use the conda-forge system -- it provides `lib_gd` for us.
+See the Install section for more info
 
 ## Is `py_gd` a complete wrapper around gd?
 
@@ -68,14 +72,14 @@ Major Working features:
  * transparent background
  * built-in fonts for text
  * lines, polygons, arcs
- * experimental spline support (not in libgd itself)
+ * cubic spline support (not in libgd itself)
  * copying between images
  * saving as gif, bmp, png, jpeg, and animated gif.
  * numpy arrays for input and image buffer exchange.
 
 Major Missing features:
  * 32bit "truecolor" support
- * loading images from gif, png, etc...
+ * loading images from gif, png, etc... (not hard to add, just haven't needed it)
  * freetype fonts
  * image manipulations: scaling, etc
 
@@ -98,7 +102,7 @@ Here's what you need to do:
 
 # Install
 
-`py_gd` depends on libgd which, in turn, depends on libpng, and others -- this makes it a major pain to build yourself. we suggest using conda via miniconda, miniforge, or pixi, and the conda packages found in the conda-forge channel. It should be as easy as:
+`py_gd` depends on libgd which, in turn, depends on libpng, and others -- this makes it a major pain to build yourself. We suggest using conda via miniconda, miniforge, or pixi, and the conda packages found in the conda-forge channel. It should be as easy as:
 
 ```
 conda install -c https://conda.anaconda.org/conda-forge py_gd
@@ -108,7 +112,15 @@ This currently works on Mac, Windows and Linux
 
 ## pip installing
 
-We try to maintain packages on PyPi, but they are only source packages -- they will need to be built to work. This is fairly straightforward on Linux, but a serious challenge on Windows and Mac. NOTE: contributions of wheels would be happily accepted.
+We try to maintain packages on PyPi, but they are only source packages -- they will need to be built to work. This is fairly straightforward on Linux, but a serious challenge on Windows and Mac.
+
+NOTE: we are working on pre-built wheels for all major platforms -- stay tuned!
+
+Contributions to the effort would be happily accepted: see:
+
+https://github.com/NOAA-ORR-ERD/py_gd/issues/34
+
+For progress.
 
 # Building
 
@@ -116,19 +128,27 @@ We try to maintain packages on PyPi, but they are only source packages -- they w
 
 `py_gd` depends on libgd which, in turn, depends on libpng, and others -- this makes it a major pain to build on Windows.
 
-Folks have had some luck getting it going with the newer Windows clib providers.
+So far, folks have had the most luck with using the vcpkg system.
+
+https://vcpkg.io/en/index.html
+
+`libgd` is on there, and theoretically can simply be installed::
+
+  vcpkg install libgd
+
+Once vcpkg is setup up properly -- I am no expert on this -- let us know if it works for you, and if you needed to do anything special.
 
 
 ## OS-X
 
-`py_gd` depends on libgd which, in turn, depends on libpng, and others -- You can use macports or homebrew or roll your own to get these, and then the build should work.
+`py_gd` depends on libgd which, in turn, depends on libpng, and others -- You can use macports or homebrew or vcpkg to roll your own to get these, and then the build should work.
 
+We have not tested this ourselves -- let us know what works for you.
 
 ## Linux
 
-`py_gd` depends on libgd, which may be available in your distro's repo (it's used heavily by PHP). However your distro's version may be too old for `py_gd`, so you may have to built it yourself.
+`py_gd` depends on libgd, which may be available in your distro's repo (it's used heavily by PHP).
 
-### building libgd
 
 `py_gd` requires libgd version >= 2.3. If your Linux distro has an up to date version, you can probably simply install it (and the development headers) from the system repos. something like:
 
@@ -137,54 +157,80 @@ apt-get install libgd, libgd-dev
 ```
 or similar yum command (maybe just ``gd`` rather than ``libgd``
 
-### If you dont have a recent libgd
+Once the library and headers are installed to "normal" locations,
+the py_gd build system should find them
 
-If your distro doesn't have a recent version, you'll need to download the source and build it yourself.
 
-(not tested recently)
-
- * Download the source code from [GitHub](https://github.com/libgd/libgd/releases/)
- * Build the tar file from source and install it. The usual:
-
-```bash
-$ ./configure
-$ make
-$ make install
-```
-
-dance. This will install into ``/usr/local/`` if you use the defaults. If your system is not yet set up to find libraries in ``/usr/local/``, then you need to add this line to your bashrc:
-
-```bash 
-export LD_LIBRARY_PATH='/usr/local/lib'
-```
-(or set that globally) It needs to be set whenever you are running `py_gd`.
-
-Note: If you determine that you lack jpeg support -- yu should be able to install jpeg libs with your distro package mamager, e.g.
-
-* libjpeg-turbo-devel
-* libjpeg-turbo
 
 ## Building `py_gd`
 
- * Clone the [`py_gd` repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
- * Create a virtualenv or conda environment to scope your python installations to this project (<i>optional</i>)
+### get the source:
+
+You can get the source:
+
+* From PyPI:
+
+* From a [release on GitHub:](https://github.com/NOAA-ORR-ERD/py_gd/releases)
+
+* By cloning the [`py_gd` repository](https://github.com/NOAA-ORR-ERD/py_gd) to your local machine
+
+
+It's a good idea to create a venv, virtualenv or conda environment to scope your python installations to this project.
+
+### Install the requirements
 
  * with conda:
    - `conda install --file conda_requirements.txt --file conda_requirements_dev.txt`
+
  * with pip:
    - pip install cython numpy pytest
 
  * cd into the repo
 
- * run these commands:
+### Build and Install
+
+Run these commands:
 
 ```bash
-$ pip install ./
+$ python -m pip install .
 ```
 
- * pip install pytest and run pytest to see that everything is working:
+If you want to work on the source, you'll want an "editable" install:
+
+```bash
+$ python -m pip install -e .
+```
+
+### testing
+
+The tests require pytest -- if you haven't used the conda_requirements_dev.txt, you will need to install it:
+
+```bash
+$ python -m pip install pytest
+```
+or
+
+```bash
+$ conda install pytest
+```
+
+Then run the tests:
 
 ```bash
 $ pytest --pyargs py_gd
 ```
- 
+
+That will ensure the installed tests run.
+
+or
+
+```bash
+$ pytest py_gd/test
+```
+
+That will run the tests in the source -- helpful if you want to debug or add tests.
+
+The tests output a number of images -- these are checked against stored checksums for the tests.
+
+But if anything doesn't match, a test may fail. You can look in `test_images_output` dir in the test dir.
+

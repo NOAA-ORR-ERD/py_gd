@@ -60,7 +60,7 @@ jobs:
           dirname $(which vcpkg)
           VC_PKG_DIR=$(dirname $(which vcpkg))
           dir $VC_PKG_DIR
-          ls $VC_PKG_DIR
+          dir "D:/a/py_gd/py_gd/build/vcpkg_installed/x86-windows/debug/lib/"
       - name: Setup deps (Windows)
         if: runner.os == 'Windows'
         run: |
