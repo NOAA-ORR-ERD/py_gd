@@ -73,6 +73,9 @@ jobs:
           # this should install the stuff specified in the vcpckg.json file
           vcpkg --debug install
           dir
+          echo "searching for libgd.dll"
+          find -name libgd.dll
+
 
       - uses: astral-sh/setup-uv@v6
 
