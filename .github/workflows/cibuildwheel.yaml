@@ -71,7 +71,8 @@ jobs:
           vcpkg new --application
           vcpkg add port pkgconf vcpkg-cmake vcpkg-cmake-config libgd
           # this should install the stuff specified in the vcpckg.json file
-          vcpkg --debug install
+          #  however, it still seems to rebuild it all from scratch in cibuildwheel
+          vcpkg install
           dir
           echo "searching for libgd.dll"
           find -name libgd.dll
