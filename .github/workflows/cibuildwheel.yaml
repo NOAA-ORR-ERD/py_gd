@@ -75,7 +75,8 @@ jobs:
           vcpkg install
           dir
           echo "searching for libgd.dll"
-          find -name libgd.dll
+          # powershell find command
+          gci -r -fi libgd.dll
 
 
       - uses: astral-sh/setup-uv@v6
