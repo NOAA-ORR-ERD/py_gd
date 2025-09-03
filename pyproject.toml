@@ -68,6 +68,6 @@ before-build = [
 # Found GD: D:/a/py_gd/py_gd/build/vcpkg_installed/x86-windows/debug/lib/libgd.lib
 # but that doesn't appear to do it :-(
 # maybe that was inside the temporary build environment?
-repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel} --add-path py_gd/build/vcpkg_installed/x86-windows/debug/lib/"
+repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel} --add-path  D:\a\py_gd\py_gd\vcpkg_installed\x64-windows\bin"
 
 
