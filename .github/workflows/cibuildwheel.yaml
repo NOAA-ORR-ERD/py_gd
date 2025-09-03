@@ -78,6 +78,8 @@ jobs:
           # powershell find command
           gci -r -fi libgd.dll
 
+          dir  D:\a\py_gd\py_gd\vcpkg_installed\x64-windows\bin
+
 
       - uses: astral-sh/setup-uv@v6
 
