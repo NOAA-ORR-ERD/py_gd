@@ -35,6 +35,25 @@ def test_init_with_named_scheme():
     assert np.all(cr.color_index[-1] == colors[-1][1])
 
 
+def test_reversed():
+    """The reversed flag should mirror the ramp, not raise."""
+    scheme = 'inferno'
+    forward = ColorRamp(scheme, 100, 1000, num_colors=250)
+    backward = ColorRamp(scheme, 100, 1000, num_colors=250, reversed=True)
+
+    assert backward.color_index.shape == (250, 3)
+    assert np.array_equal(backward.color_index, forward.color_index[::-1])
+
+
+def test_reversed_with_color_list():
+    colors = [(i, i + 5, i + 10) for i in range(25)]
+
+    cr = ColorRamp(colors, 0, 1000, num_colors=100, reversed=True)
+
+    assert np.all(cr.color_index[0] == colors[-1])
+    assert np.all(cr.color_index[-1] == colors[0])
+
+
 def test_init_with_named_base_colors():
     scheme = 'inferno'
     cr = ColorRamp(scheme, 100, 1000, base_colorscheme='web')
