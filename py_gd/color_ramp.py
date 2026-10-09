@@ -52,7 +52,10 @@ class ColorRamp():
             colors = [c[1] for c in colorschemes[colors]]
             # otherwise assume it's in the right form
         if reversed:
-            colors = reversed(colors)
+            # NOTE: the keyword shadows the builtin, so slice instead of
+            # calling reversed(). Slicing also keeps this a sequence, which
+            # create_color_index needs.
+            colors = list(colors)[::-1]
         self.create_color_index(colors)
 
     def create_color_index(self, colors):
